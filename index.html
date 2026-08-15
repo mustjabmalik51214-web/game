@@ -153,7 +153,6 @@
       text-align: center;
     }
 
-    /* Fullscreen Store Layout */
     .fullscreen-store {
       width: 100vw;
       height: 100vh;
@@ -212,7 +211,6 @@
       padding-bottom: 10px;
     }
 
-    /* Stage Arena & Controls */
     #stage-screen {
       background-size: cover;
       background-position: center;
@@ -306,7 +304,6 @@
       pointer-events: none;
     }
 
-    /* Attack FX Animations */
     .hit-anim {
       animation: shake 0.2s;
     }
@@ -318,7 +315,6 @@
       100% { transform: translateX(0); }
     }
 
-    /* Fullscreen Modal Iframe */
     #buy-id-modal {
       display: none;
       position: fixed;
@@ -355,7 +351,6 @@
     <p>Project Alpha requires Landscape Mode to play.</p>
   </div>
 
-  <!-- Special Diamond Purchase Iframe Modal -->
   <div id="buy-id-modal">
     <button class="modal-close-btn" onclick="closeBuyModal()">✕</button>
     <iframe src="https://muhammad-taqi512-lyra.hf.space" frameborder="0" style="width:100%; height:100%;"></iframe>
@@ -391,7 +386,7 @@
   <div id="login-screen" class="screen">
     <div class="card">
       <h2 style="margin-bottom: 10px; color:#00ffcc;">Enter Saved ID</h2>
-      <input type="text" id="id-input" placeholder="taqi+AK-47+1+5000+1">
+      <input type="text" id="id-input" placeholder="taqi+AK-47+1+5000+1+0">
       <div class="btn-group" style="margin-top: 10px;">
         <button class="btn" onclick="loginWithID()">Login</button>
         <button class="btn btn-secondary" onclick="showScreen('entry-screen')">Back</button>
@@ -406,9 +401,10 @@
       <p>Created by Muhammad Taqi</p>
     </div>
 
-    <div class="stats-bar" style="width: 340px;">
+    <div class="stats-bar" style="width: 380px;">
       <span>User: <strong id="user-display" style="color:#00ffcc;">taqi</strong></span>
       <span>Coins: <strong id="coin-display" style="color:#00ffcc;">5000</strong></span>
+      <span>Bots Owned: <strong id="bots-display" style="color:#00ffcc;">0</strong></span>
       <span>Stage: <strong id="stage-display" style="color:#00ffcc;">1</strong></span>
     </div>
 
@@ -416,6 +412,7 @@
       <button class="btn" onclick="openStage()">Play Game</button>
       <button class="btn" onclick="openStore('guns')">Guns Store</button>
       <button class="btn" onclick="openStore('characters')">Characters Store</button>
+      <button class="btn" style="background:#ffaa00; color:#000;" onclick="openStore('bots')">🤖 Buy Helper Bot (2000)</button>
       <button class="btn btn-secondary" onclick="saveUserIdentity()">Save Game ID</button>
       <button class="btn btn-secondary" style="background:#444;" onclick="showScreen('entry-screen')">Logout</button>
     </div>
@@ -437,9 +434,9 @@
       </div>
 
       <div class="store-footer">
-        <button class="btn" onclick="prevItem()">Previous</button>
+        <button id="prev-btn" class="btn" onclick="prevItem()">Previous</button>
         <button id="buy-btn" class="btn btn-secondary" onclick="buyOrEquip()">Buy</button>
-        <button class="btn" onclick="nextItem()">Next</button>
+        <button id="next-btn" class="btn" onclick="nextItem()">Next</button>
       </div>
     </div>
   </div>
@@ -457,8 +454,8 @@
             <option value="bg/desert.jfif">Desert</option>
           </select>
         </div>
-        <div style="font-weight: bold; color: #00ffcc;">Gap Distance: <span id="dist-val">5</span> cm</div>
-        <button class="btn" onclick="showScreen('main-menu')">Home</button>
+        <div style="font-weight: bold; color: #00ffcc;">Active Helper Bots: <span id="active-bots-count">0</span></div>
+        <button class="btn" onclick="leaveStage()">Home</button>
       </div>
 
       <div id="battle-log"></div>
@@ -469,7 +466,7 @@
           <h3 style="color:#00ffcc;" id="user-stage-name">USER</h3>
           <img id="user-stage-img" src="stage/user.jpg" alt="User">
           <div class="hp-bar-bg"><div id="user-hp-bar" class="hp-bar-fill"></div></div>
-          <div style="font-size:0.85rem; color:#fff;" id="user-hp-val">HP: 200/200</div>
+          <div style="font-size:0.85rem; color:#fff;" id="user-hp-val">HP: 250/250</div>
         </div>
 
         <!-- Enemy Unit -->
@@ -477,7 +474,7 @@
           <h3 style="color:#ff0055;" id="enemy-stage-name">BOT ENEMY</h3>
           <img id="enemy-stage-img" src="stage/enemy.jpg" alt="Enemy">
           <div class="hp-bar-bg"><div id="enemy-hp-bar" class="hp-bar-fill" style="background:#ff0055;"></div></div>
-          <div style="font-size:0.85rem; color:#fff;" id="enemy-hp-val">HP: 300/300</div>
+          <div style="font-size:0.85rem; color:#fff;" id="enemy-hp-val">HP: 200/200</div>
         </div>
       </div>
 
@@ -497,44 +494,25 @@
   </div>
 
   <script>
-    // Asset Database
     const gunsDB = [
-      { name: "AK-47", damage: 10, price: 0, currency: "coins", file: "ak47.jfif" },
-      { name: "MP40", damage: 12, price: 2500, currency: "coins", file: "mp40.jfif" },
+      { name: "AK-47", damage: 12, price: 0, currency: "coins", file: "ak47.jfif" },
+      { name: "MP40", damage: 15, price: 2500, currency: "coins", file: "mp40.jfif" },
       { name: "MP5", damage: 25, price: 5000, currency: "coins", file: "mp5.jfif" },
       { name: "AN94", damage: 60, price: 50000, currency: "coins", file: "aug.jfif" },
       { name: "XM8", damage: 57, price: 50000, currency: "coins", file: "m4a1.jfif" },
-      { name: "Plasma", damage: 57, price: 50000, currency: "coins", file: "tactical.jfif" },
-      { name: "G36", damage: 57, price: 50000, currency: "coins", file: "scar.jfif" },
-      { name: "AUG", damage: 56, price: 50000, currency: "coins", file: "aug.jfif" },
-      { name: "Shield Gun", damage: 54, price: 50000, currency: "coins", file: "tactical.jfif" },
-      { name: "FAMAS", damage: 53, price: 50000, currency: "coins", file: "scar.jfif" },
-      { name: "M4A1", damage: 53, price: 50000, currency: "coins", file: "m4a1.jfif" },
-      { name: "SCAR", damage: 53, price: 50000, currency: "coins", file: "scar.jfif" },
-      { name: "Kingfisher", damage: 52, price: 50000, currency: "coins", file: "aug.jfif" },
-      { name: "AWM", damage: 200, price: 0, currency: "diamond_special", file: "awm.jfif" },
-      { name: "SVD", damage: 200, price: 0, currency: "diamond_special", file: "svd.jfif" },
-      { name: "M-Gun", damage: 500, price: 0, currency: "diamond_special", file: "machine gun.jfif" }
+      { name: "AWM", damage: 200, price: 0, currency: "diamond_special", file: "awm.jfif" }
     ];
 
     const charactersDB = [
-      { id: 1, name: "Character 1", hp: 200, price: 250, file: "character.jfif" },
-      { id: 2, name: "Character 2 (Bot)", hp: 400, price: 5000, file: "bot.jfif" },
-      { id: 3, name: "Character 3", hp: 800, price: 10000, file: "head.jfif" },
-      { id: 4, name: "Character 4", hp: 1000, price: 15000, file: "ira.jfif" },
-      { id: 5, name: "Character 5", hp: 1200, price: 20000, file: "mark.jfif" },
-      { id: 6, name: "Character 6", hp: 1400, price: 25000, file: "master.jfif" },
-      { id: 7, name: "Character 7", hp: 1600, price: 30000, file: "mister z.jfif" },
-      { id: 8, name: "Character 8", hp: 1800, price: 35000, file: "salman khan.jfif" },
-      { id: 9, name: "Character 9", hp: 2000, price: 40000, file: "sira.jfif" },
-      { id: 10, name: "Character 10", hp: 2500, price: 50000, file: "tiger shroff.jfif" }
+      { id: 1, name: "Character 1", hp: 250, price: 250, file: "character.jfif" },
+      { id: 2, name: "Character 2", hp: 400, price: 5000, file: "bot.jfif" }
     ];
 
-    // User State
     const userData = {
       username: "taqi",
       coins: 5000,
       stage: 1,
+      helperBots: 0,
       equippedGun: "AK-47",
       equippedCharacter: 1,
       ownedGuns: ["AK-47"],
@@ -545,12 +523,15 @@
     let currentStoreType = "";
     let currentIndex = 0;
 
-    // Fight Logic Dynamic Variables
-    let userMaxHP = 200;
-    let userCurrentHP = 200;
-    let enemyMaxHP = 300;
-    let enemyCurrentHP = 300;
+    let userMaxHP = 250;
+    let userCurrentHP = 250;
+    let enemyMaxHP = 200;
+    let enemyCurrentHP = 200;
     let isBattleActive = false;
+
+    let canUserAttack = true;
+    let enemyAttackTimer = null;
+    let helperBotsTimer = null;
 
     function showScreen(screenId) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -560,6 +541,7 @@
     function updateDashboardUI() {
       document.getElementById('user-display').innerText = userData.username;
       document.getElementById('coin-display').innerText = userData.coins;
+      document.getElementById('bots-display').innerText = userData.helperBots;
       document.getElementById('stage-display').innerText = userData.stage;
     }
 
@@ -569,6 +551,7 @@
       userData.username = name;
       userData.coins = 5000;
       userData.stage = 1;
+      userData.helperBots = 0;
       userData.ownedGuns = ["AK-47"];
       userData.equippedGun = "AK-47";
       userData.ownedCharacters = [1];
@@ -579,7 +562,7 @@
     }
 
     function saveUserIdentity() {
-      const generatedID = `${userData.username}+${userData.ownedGuns.join(',')}+${userData.equippedCharacter}+${userData.coins}+${userData.stage}`;
+      const generatedID = `${userData.username}+${userData.ownedGuns.join(',')}+${userData.equippedCharacter}+${userData.coins}+${userData.stage}+${userData.helperBots}`;
       navigator.clipboard.writeText(generatedID).catch(()=>{});
       alert("Your Saved ID:\n\n" + generatedID);
     }
@@ -597,15 +580,36 @@
       userData.equippedCharacter = parseInt(parts[2]) || 1;
       userData.coins = parseInt(parts[3]) || 5000;
       userData.stage = parseInt(parts[4]) || 1;
+      userData.helperBots = parseInt(parts[5]) || 0;
 
       updateDashboardUI();
       showScreen('main-menu');
     }
 
-    // Store Functions
     function openStore(type) {
       currentStoreType = type;
       currentIndex = 0;
+
+      if (type === 'bots') {
+        document.getElementById('store-title').innerText = 'Helper Bot Store';
+        showScreen('store-screen');
+        document.getElementById('prev-btn').style.display = 'none';
+        document.getElementById('next-btn').style.display = 'none';
+        
+        document.getElementById('store-img').src = 'characters/bot.jfif';
+        document.getElementById('item-name').innerText = 'Attack Helper Bot';
+        document.getElementById('item-stats').innerText = 'Deals +10 Extra Damage Every 1.5 Sec';
+        document.getElementById('item-status').innerText = 'Price: 2000 Coins (Buy as many as you want!)';
+
+        const buyBtn = document.getElementById('buy-btn');
+        buyBtn.innerText = "Buy Helper Bot (2000)";
+        buyBtn.style.background = "#00ffcc";
+        buyBtn.style.color = "#000";
+        return;
+      }
+
+      document.getElementById('prev-btn').style.display = 'inline-block';
+      document.getElementById('next-btn').style.display = 'inline-block';
       document.getElementById('store-title').innerText = type === 'guns' ? 'Guns Store' : 'Characters Store';
       showScreen('store-screen');
       updateStoreItem();
@@ -660,6 +664,18 @@
     }
 
     function buyOrEquip() {
+      if (currentStoreType === 'bots') {
+        if (userData.coins >= 2000) {
+          userData.coins -= 2000;
+          userData.helperBots += 1;
+          updateDashboardUI();
+          alert(`🎉 Congratulation! You bought a Helper Bot! Total Bots: ${userData.helperBots}`);
+        } else {
+          alert("❌ Not enough coins! You need 2000 coins.");
+        }
+        return;
+      }
+
       const isGuns = currentStoreType === 'guns';
       const item = isGuns ? gunsDB[currentIndex] : charactersDB[currentIndex];
 
@@ -699,23 +715,22 @@
       document.getElementById('buy-id-modal').style.display = 'none';
     }
 
-    // --- FIGHT LOGICS & STAGE MECHANICS ---
     function openStage() {
       showScreen('stage-screen');
       userPosX = 50;
       isBattleActive = true;
+      canUserAttack = true;
       
       document.getElementById('attack-btn').style.display = 'block';
       document.getElementById('next-btn').style.display = 'none';
       document.getElementById('battle-log').innerText = '';
+      document.getElementById('active-bots-count').innerText = userData.helperBots;
 
-      // Set Up Player HP
       const currentChar = charactersDB.find(c => c.id === userData.equippedCharacter) || charactersDB[0];
       userMaxHP = currentChar.hp;
       userCurrentHP = userMaxHP;
 
-      // Set Up Enemy HP (Scales with stages)
-      enemyMaxHP = 200 + (userData.stage * 100);
+      enemyMaxHP = 200 + ((userData.stage - 1) * 50);
       enemyCurrentHP = enemyMaxHP;
 
       document.getElementById('user-stage-name').innerText = currentChar.name;
@@ -723,17 +738,18 @@
 
       changeBackground(document.getElementById('bg-selector').value);
       updateStageLayout();
+
+      startEnemyAttackLoop();
+      startHelperBotsLoop();
     }
 
     function updateStageLayout() {
       const distance = userData.stage * 5;
       document.getElementById('dist-val').innerText = distance;
 
-      // Position Player
       const userBox = document.getElementById('user-box');
       userBox.style.left = userPosX + "px";
 
-      // Update HP UI
       updateHPBars();
     }
 
@@ -755,20 +771,22 @@
       document.getElementById('user-box').style.left = userPosX + "px";
     }
 
+    // USER ATTACK: 1 Second Delay & 12 Damage Base
     function playerAttack() {
-      if (!isBattleActive) return;
+      if (!isBattleActive || !canUserAttack) return;
 
-      const currentGun = gunsDB.find(g => g.name === userData.equippedGun) || gunsDB[0];
-      const damageDealt = currentGun.damage;
+      canUserAttack = false;
+      const attackBtn = document.getElementById('attack-btn');
+      attackBtn.style.opacity = '0.5';
 
-      // Enemy takes damage
+      const damageDealt = 12; // Base 12 damage
+
       enemyCurrentHP -= damageDealt;
       triggerAnimation('enemy-box');
-      showBattleLog(` You hit Enemy with ${currentGun.name} for -${damageDealt} HP!`);
+      showBattleLog(`🔥 You hit Enemy for -${damageDealt} HP!`);
 
       if (enemyCurrentHP <= 0) {
         enemyCurrentHP = 0;
-        isBattleActive = false;
         updateHPBars();
         winBattle();
         return;
@@ -776,27 +794,57 @@
 
       updateHPBars();
 
-      // Enemy Automatic Counter-Attack Logic
-      setTimeout(enemyCounterAttack, 600);
+      // Cooldown timer 1 Second
+      setTimeout(() => {
+        canUserAttack = true;
+        attackBtn.style.opacity = '1';
+      }, 1000);
     }
 
-    function enemyCounterAttack() {
-      if (!isBattleActive) return;
+    // ENEMY BOT ATTACK: Every 1.5 Seconds
+    function startEnemyAttackLoop() {
+      clearInterval(enemyAttackTimer);
+      enemyAttackTimer = setInterval(() => {
+        if (!isBattleActive) return;
 
-      const enemyDamage = 15 + (userData.stage * 10);
-      userCurrentHP -= enemyDamage;
-      triggerAnimation('user-box');
-      showBattleLog(`⚡ Enemy counter-attacked! -${enemyDamage} HP!`);
+        const enemyDamage = 10 + (userData.stage * 2);
+        userCurrentHP -= enemyDamage;
+        triggerAnimation('user-box');
+        showBattleLog(`⚡ Enemy Bot hit you for -${enemyDamage} HP!`);
 
-      if (userCurrentHP <= 0) {
-        userCurrentHP = 0;
-        isBattleActive = false;
+        if (userCurrentHP <= 0) {
+          userCurrentHP = 0;
+          updateHPBars();
+          loseBattle();
+          return;
+        }
+
         updateHPBars();
-        loseBattle();
-        return;
-      }
+      }, 1500);
+    }
 
-      updateHPBars();
+    // HELPER BOTS ATTACK: Auto hit enemy every 1.5 Seconds if owned
+    function startHelperBotsLoop() {
+      clearInterval(helperBotsTimer);
+      if (userData.helperBots <= 0) return;
+
+      helperBotsTimer = setInterval(() => {
+        if (!isBattleActive || userData.helperBots <= 0) return;
+
+        const totalBotDamage = userData.helperBots * 10;
+        enemyCurrentHP -= totalBotDamage;
+        triggerAnimation('enemy-box');
+        showBattleLog(`🤖 ${userData.helperBots} Helper Bots hit Enemy for -${totalBotDamage} HP!`);
+
+        if (enemyCurrentHP <= 0) {
+          enemyCurrentHP = 0;
+          updateHPBars();
+          winBattle();
+          return;
+        }
+
+        updateHPBars();
+      }, 1500);
     }
 
     function triggerAnimation(elementId) {
@@ -809,7 +857,14 @@
       document.getElementById('battle-log').innerText = msg;
     }
 
+    function stopBattleTimers() {
+      isBattleActive = false;
+      clearInterval(enemyAttackTimer);
+      clearInterval(helperBotsTimer);
+    }
+
     function winBattle() {
+      stopBattleTimers();
       const rewardCoins = 500 * userData.stage;
       userData.coins += rewardCoins;
       updateDashboardUI();
@@ -820,12 +875,18 @@
     }
 
     function loseBattle() {
-      showBattleLog(`☠️ YOU WERE DEFEATED! Try again or upgrade gun!`);
+      stopBattleTimers();
+      showBattleLog(`☠️ YOU WERE DEFEATED!`);
       document.getElementById('attack-btn').style.display = 'none';
       setTimeout(() => {
         alert("Game Over! Returning to Main Menu.");
         showScreen('main-menu');
       }, 1500);
+    }
+
+    function leaveStage() {
+      stopBattleTimers();
+      showScreen('main-menu');
     }
 
     function nextStage() {
