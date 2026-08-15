@@ -1,838 +1,842 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>3D Offline Shooter - Full Combat Edition</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Project Alpha</title>
+
   <style>
-    body { 
-      touch-action: none; 
-      user-select: none; 
-      -webkit-user-select: none; 
-      overflow: hidden; 
-      background: #0f172a; 
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      user-select: none;
     }
-    .glass { background: rgba(30, 41, 59, 0.85); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.1); }
-    #canvas-container { width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; z-index: 1; }
-    .ui-layer { position: absolute; z-index: 10; width: 100%; height: 100%; pointer-events: none; }
-    .interactive { pointer-events: auto; }
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-    
-    /* Crosshair Center Pointer */
-    #crosshair {
+
+    body {
+      background: radial-gradient(circle at center, #1f1144 0%, #080314 100%);
+      color: #fff;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #orientation-warning {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #080314;
+      z-index: 999999;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+    }
+
+    #orientation-warning h2 {
+      color: #00ffcc;
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+    }
+
+    @media screen and (orientation: portrait) {
+      #orientation-warning {
+        display: flex !important;
+      }
+    }
+
+    .screen {
+      display: none;
+      width: 100%;
+      height: 100%;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .active {
+      display: flex;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 25px 35px;
+      border-radius: 20px;
+      width: 380px;
+      text-align: center;
+      box-shadow: 0 10px 40px rgba(0, 255, 204, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .title-box h1 {
+      font-size: 2.4rem;
+      letter-spacing: 3px;
+      color: #00ffcc;
+      text-shadow: 0 0 25px rgba(0, 255, 204, 0.9);
+    }
+
+    .title-box p {
+      font-size: 0.9rem;
+      color: #ff007f;
+      margin-top: 4px;
+      margin-bottom: 20px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-shadow: 0 0 10px rgba(255, 0, 127, 0.6);
+    }
+
+    .stats-bar {
+      display: flex;
+      justify-content: space-around;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.65);
+      padding: 12px;
+      border-radius: 12px;
+      margin-bottom: 18px;
+      border: 1px solid rgba(0, 255, 204, 0.3);
+      font-size: 0.95rem;
+    }
+
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .btn {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 10px;
+      background: #00ffcc;
+      color: #000;
+      font-weight: bold;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+      box-shadow: 0 0 12px rgba(0, 255, 204, 0.4);
+    }
+
+    .btn:hover {
+      background: #00cca3;
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: #ff0055;
+      color: #fff;
+      box-shadow: 0 0 12px rgba(255, 0, 85, 0.5);
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: 1px solid #00ffcc;
+      background: rgba(10, 5, 25, 0.8);
+      color: #fff;
+      outline: none;
+      text-align: center;
+    }
+
+    /* Fullscreen Store Layout */
+    .fullscreen-store {
+      width: 100vw;
+      height: 100vh;
+      background: radial-gradient(circle, #1a0b36 0%, #04010a 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px;
       position: absolute;
-      top: 50%;
+      top: 0;
+      left: 0;
+      z-index: 10;
+    }
+
+    .store-header {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 25px;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 12px;
+      border: 1px solid rgba(0, 255, 204, 0.2);
+    }
+
+    .store-display {
+      flex: 1;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .full-item-img {
+      max-width: 80%;
+      max-height: 48vh;
+      object-fit: contain;
+      filter: drop-shadow(0 0 25px rgba(0, 255, 204, 0.6));
+      margin-bottom: 12px;
+    }
+
+    .item-title {
+      font-size: 1.6rem;
+      font-weight: bold;
+      color: #fff;
+    }
+
+    .store-footer {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      padding-bottom: 10px;
+    }
+
+    /* Stage Arena & Controls */
+    #stage-screen {
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    .stage-overlay {
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.35);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px;
+    }
+
+    .game-arena {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      height: 60%;
+      position: relative;
+      padding: 0 40px;
+      overflow: hidden;
+    }
+
+    .character-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0, 0, 0, 0.65);
+      padding: 12px 18px;
+      border-radius: 15px;
+      border: 2px solid #00ffcc;
+      box-shadow: 0 0 20px rgba(0, 255, 204, 0.3);
+      position: absolute;
+      transition: left 0.1s linear, transform 0.1s;
+    }
+
+    .character-box img {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #fff;
+    }
+
+    .hp-bar-bg {
+      width: 100px;
+      height: 10px;
+      background: #444;
+      border-radius: 5px;
+      overflow: hidden;
+      border: 1px solid #fff;
+    }
+
+    .hp-bar-fill {
+      height: 100%;
+      background: #00ffcc;
+      width: 100%;
+      transition: width 0.2s;
+    }
+
+    .controls-panel {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0,0,0,0.65);
+      padding: 10px 20px;
+      border-radius: 12px;
+    }
+
+    .move-btn-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    #battle-log {
+      position: absolute;
+      top: 70px;
       left: 50%;
-      transform: translate(-50%, -50%);
+      transform: translateX(-50%);
+      color: #ff007f;
+      font-size: 1.2rem;
+      font-weight: bold;
+      text-shadow: 0 0 10px #000;
       pointer-events: none;
-      z-index: 15;
+    }
+
+    /* Attack FX Animations */
+    .hit-anim {
+      animation: shake 0.2s;
+    }
+
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-10px); }
+      75% { transform: translateX(10px); }
+      100% { transform: translateX(0); }
+    }
+
+    /* Fullscreen Modal Iframe */
+    #buy-id-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #000;
+      z-index: 999999;
+    }
+
+    .modal-close-btn {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      background: #ff0055;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 1000000;
+      box-shadow: 0 0 12px rgba(255, 0, 85, 0.8);
     }
   </style>
 </head>
-<body class="text-white font-sans">
+<body>
 
-  <!-- 3D Canvas Container -->
-  <div id="canvas-container"></div>
-
-  <!-- In-Game Crosshair Overlay -->
-  <div id="crosshair" class="hidden">
-    <div class="w-6 h-6 relative flex items-center justify-center">
-      <div class="absolute w-1 h-3 bg-red-500 top-0"></div>
-      <div class="absolute w-1 h-3 bg-red-500 bottom-0"></div>
-      <div class="absolute h-1 w-3 bg-red-500 left-0"></div>
-      <div class="absolute h-1 w-3 bg-red-500 right-0"></div>
-      <div class="w-1.5 h-1.5 bg-yellow-400 rounded-full"></div>
-    </div>
+  <div id="orientation-warning">
+    <h2>🔄 Please Rotate Your Phone</h2>
+    <p>Project Alpha requires Landscape Mode to play.</p>
   </div>
 
-  <!-- UI Wrapper Layer -->
-  <div class="ui-layer flex flex-col justify-between p-4">
+  <!-- Special Diamond Purchase Iframe Modal -->
+  <div id="buy-id-modal">
+    <button class="modal-close-btn" onclick="closeBuyModal()">✕</button>
+    <iframe src="https://muhammad-taqi512-lyra.hf.space" frameborder="0" style="width:100%; height:100%;"></iframe>
+  </div>
 
-    <!-- Top Bar Navigation HUD -->
-    <header id="main-header" class="glass rounded-xl p-3 flex justify-between items-center interactive hidden">
-      <div class="flex items-center gap-3">
-        <span class="text-lg font-bold text-emerald-400" id="hud-username">Player</span>
-        <span class="text-xs bg-slate-700 px-2 py-1 rounded text-slate-300" id="hud-char-hp">HP: 200</span>
+  <!-- Entry Screen -->
+  <div id="entry-screen" class="screen active">
+    <div class="card">
+      <div class="title-box">
+        <h1>PROJECT ALPHA</h1>
+        <p>Created by Muhammad Taqi</p>
       </div>
-      <div class="flex items-center gap-4">
-        <div class="flex items-center gap-1 bg-slate-900/80 px-3 py-1 rounded-lg">
-          <span>🪙</span><span id="hud-coins" class="font-semibold text-yellow-400">0</span>
-        </div>
-        <div class="flex items-center gap-1 bg-slate-900/80 px-3 py-1 rounded-lg">
-          <span>💎</span><span id="hud-diamonds" class="font-semibold text-cyan-400">0</span>
-          <button onclick="triggerDiamondPurchaseModal()" class="ml-2 bg-emerald-500 hover:bg-emerald-600 text-xs px-2 py-0.5 rounded font-bold">+</button>
-        </div>
-      </div>
-    </header>
-
-    <!-- Main Navigation Tabs -->
-    <nav id="main-nav" class="flex justify-center gap-2 my-2 interactive hidden">
-      <button onclick="openPanel('stages')" class="nav-btn bg-blue-600 px-4 py-2 rounded-lg font-semibold text-sm">Stages (100)</button>
-      <button onclick="openPanel('guns')" class="nav-btn bg-slate-700 px-4 py-2 rounded-lg font-semibold text-sm">Guns Store</button>
-      <button onclick="openPanel('chars')" class="nav-btn bg-slate-700 px-4 py-2 rounded-lg font-semibold text-sm">Characters</button>
-      <button onclick="openPanel('bot')" class="nav-btn bg-slate-700 px-4 py-2 rounded-lg font-semibold text-sm">AI Bots</button>
-    </nav>
-
-    <!-- Content Panels Container -->
-    <main id="panel-container" class="flex-1 overflow-y-auto interactive max-w-4xl w-full mx-auto my-2 hidden">
-      <!-- Stages Panel -->
-      <section id="panel-stages" class="panel-content glass rounded-xl p-4">
-        <h2 class="text-xl font-bold mb-4 text-emerald-400">Select Stage</h2>
-        <div id="stages-grid" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-3"></div>
-      </section>
-
-      <!-- Guns Panel -->
-      <section id="panel-guns" class="panel-content glass rounded-xl p-4 hidden">
-        <h2 class="text-xl font-bold mb-4 text-cyan-400">Guns Store (50+ Weapons)</h2>
-        <div id="guns-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3"></div>
-      </section>
-
-      <!-- Characters Panel -->
-      <section id="panel-chars" class="panel-content glass rounded-xl p-4 hidden">
-        <h2 class="text-xl font-bold mb-4 text-purple-400">Character Upgrades</h2>
-        <div id="chars-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3"></div>
-      </section>
-
-      <!-- Bot Panel -->
-      <section id="panel-bot" class="panel-content glass rounded-xl p-4 hidden flex justify-center">
-        <div class="glass p-6 rounded-xl text-center max-w-sm w-full">
-          <h3 class="text-xl font-bold text-yellow-400 mb-2">Tactical AI Bot Army</h3>
-          <p class="text-sm text-slate-300 mb-2">Buy multiple AI bots to assist you in battle!</p>
-          <div class="text-lg font-bold text-emerald-400 mb-3">Owned Bots: <span id="owned-bots-count" class="text-yellow-400">0</span></div>
-          <p class="font-bold mb-4 text-emerald-400">Price per Bot: 2,000 Coins</p>
-          <button id="buy-bot-btn" onclick="buyBot()" class="w-full bg-emerald-500 hover:bg-emerald-600 py-2 rounded-lg font-bold">Buy AI Bot (+1)</button>
-        </div>
-      </section>
-    </main>
-
-    <!-- In-Game Combat HUD Overlay -->
-    <div id="combat-hud" class="w-full flex justify-between items-end p-2 interactive hidden">
-      <!-- Movement Controls -->
-      <div class="flex flex-col items-center gap-1 glass p-2 rounded-2xl">
-        <button ontouchstart="keys.w=true" ontouchend="keys.w=false" onmousedown="keys.w=true" onmouseup="keys.w=false" class="bg-slate-700/80 active:bg-amber-500 w-12 h-12 rounded-lg font-bold text-xl flex items-center justify-center">▲</button>
-        <div class="flex gap-1">
-          <button ontouchstart="keys.a=true" ontouchend="keys.a=false" onmousedown="keys.a=true" onmouseup="keys.a=false" class="bg-slate-700/80 active:bg-amber-500 w-12 h-12 rounded-lg font-bold text-xl flex items-center justify-center">◄</button>
-          <button ontouchstart="keys.s=true" ontouchend="keys.s=false" onmousedown="keys.s=true" onmouseup="keys.s=false" class="bg-slate-700/80 active:bg-amber-500 w-12 h-12 rounded-lg font-bold text-xl flex items-center justify-center">▼</button>
-          <button ontouchstart="keys.d=true" ontouchend="keys.d=false" onmousedown="keys.d=true" onmouseup="keys.d=false" class="bg-slate-700/80 active:bg-amber-500 w-12 h-12 rounded-lg font-bold text-xl flex items-center justify-center">►</button>
-        </div>
-      </div>
-
-      <!-- Health & Ammo Stats -->
-      <div class="glass p-3 rounded-lg flex flex-col gap-1 min-w-[160px]">
-        <div class="flex justify-between items-center text-xs text-slate-300">
-          <span>HP Bar</span>
-          <span id="hp-text" class="font-bold text-emerald-400">200/200</span>
-        </div>
-        <div class="w-full bg-slate-800 h-3 rounded-full overflow-hidden">
-          <div id="hp-bar" class="bg-emerald-500 h-full w-full transition-all duration-200"></div>
-        </div>
-        <div class="flex justify-between items-center text-xs text-slate-300 mt-2">
-          <span>Ammo:</span>
-          <b id="ammo-count" class="text-yellow-400 text-sm">30 / ∞</b>
-        </div>
-        <span class="text-xs text-slate-300 mt-1">Enemies Left: <b id="combat-enemies-count" class="text-red-400">0</b></span>
-      </div>
-
-      <!-- Action Buttons (Fire, Reload, Special) -->
-      <div class="flex items-center gap-2">
-        <button onclick="reloadWeapon()" class="bg-slate-700 hover:bg-slate-600 active:scale-95 text-white font-bold p-4 rounded-2xl text-xs shadow-lg">RELOAD 🔄</button>
-        <button id="mgun-btn" onclick="fireMGunSpecial()" class="bg-red-600 hover:bg-red-700 active:scale-95 px-4 py-4 rounded-xl font-extrabold text-xs shadow-lg hidden">M-GUN (50% CLEAR)</button>
-        <button id="fire-btn" onclick="shootWeapon()" class="bg-red-600 hover:bg-red-500 active:bg-yellow-500 text-white font-black px-10 py-6 rounded-3xl text-2xl shadow-2xl active:scale-90 transition transform border-2 border-red-400">FIRE 🎯</button>
+      <div class="btn-group">
+        <button class="btn" onclick="showScreen('name-screen')">1. Write Name</button>
+        <button class="btn" onclick="showScreen('login-screen')">2. Login with ID</button>
       </div>
     </div>
   </div>
 
-  <!-- User Login Overlay Modal -->
-  <div id="auth-modal" class="fixed inset-0 bg-slate-950/90 z-50 flex items-center justify-center p-4 interactive">
-    <div class="glass p-6 rounded-2xl max-w-md w-full text-center">
-      <h2 class="text-2xl font-bold mb-2 text-emerald-400">Enter Player Name</h2>
-      <input type="text" id="username-input" placeholder="Enter Name..." class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl mb-4 text-center focus:outline-none focus:border-emerald-500" />
-      <button onclick="authenticateUser()" class="w-full bg-emerald-500 hover:bg-emerald-600 py-3 rounded-xl font-bold transition">Start Game</button>
+  <!-- Name Entry Screen -->
+  <div id="name-screen" class="screen">
+    <div class="card">
+      <h2 style="margin-bottom: 10px; color:#00ffcc;">Enter Name</h2>
+      <input type="text" id="username-input" placeholder="Type your name...">
+      <div class="btn-group" style="margin-top: 10px;">
+        <button class="btn" onclick="registerUser()">Start Game</button>
+        <button class="btn btn-secondary" onclick="showScreen('entry-screen')">Back</button>
+      </div>
     </div>
   </div>
 
-  <!-- Diamond / Premium Choice Overlay Modal -->
-  <div id="diamond-modal" class="fixed inset-0 bg-slate-950/90 z-50 flex items-center justify-center p-4 interactive hidden">
-    <div class="glass p-6 rounded-2xl max-w-sm w-full text-center flex flex-col gap-3">
-      <h3 class="text-lg font-bold text-cyan-400">Premium Diamond Options</h3>
-      <button onclick="handleWriteID()" class="bg-slate-800 hover:bg-slate-700 py-3 rounded-xl font-semibold border border-slate-700">Write Secret ID</button>
-      <button onclick="handleBuyID()" class="bg-cyan-600 hover:bg-cyan-500 py-3 rounded-xl font-bold">Buy ID</button>
-      <button onclick="closeDiamondModal()" class="bg-red-500/20 text-red-400 hover:bg-red-500/30 py-2 rounded-xl text-xs font-semibold">Cancel</button>
+  <!-- Login Screen -->
+  <div id="login-screen" class="screen">
+    <div class="card">
+      <h2 style="margin-bottom: 10px; color:#00ffcc;">Enter Saved ID</h2>
+      <input type="text" id="id-input" placeholder="taqi+AK-47+1+5000+1">
+      <div class="btn-group" style="margin-top: 10px;">
+        <button class="btn" onclick="loginWithID()">Login</button>
+        <button class="btn btn-secondary" onclick="showScreen('entry-screen')">Back</button>
+      </div>
     </div>
   </div>
 
-  <!-- Full Screen Iframe Modal -->
-  <div id="iframe-modal" class="fixed inset-0 bg-black z-50 interactive hidden">
-    <button onclick="closeIframeModal()" class="absolute top-4 right-4 bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2 rounded-lg z-50 shadow-lg">Close (X)</button>
-    <iframe id="target-iframe" src="" class="w-full h-full border-none"></iframe>
+  <!-- Main Dashboard -->
+  <div id="main-menu" class="screen">
+    <div class="title-box">
+      <h1>PROJECT ALPHA</h1>
+      <p>Created by Muhammad Taqi</p>
+    </div>
+
+    <div class="stats-bar" style="width: 340px;">
+      <span>User: <strong id="user-display" style="color:#00ffcc;">taqi</strong></span>
+      <span>Coins: <strong id="coin-display" style="color:#00ffcc;">5000</strong></span>
+      <span>Stage: <strong id="stage-display" style="color:#00ffcc;">1</strong></span>
+    </div>
+
+    <div class="btn-group" style="width: 280px;">
+      <button class="btn" onclick="openStage()">Play Game</button>
+      <button class="btn" onclick="openStore('guns')">Guns Store</button>
+      <button class="btn" onclick="openStore('characters')">Characters Store</button>
+      <button class="btn btn-secondary" onclick="saveUserIdentity()">Save Game ID</button>
+      <button class="btn btn-secondary" style="background:#444;" onclick="showScreen('entry-screen')">Logout</button>
+    </div>
   </div>
 
-  <!-- Game Logic Engine Script -->
+  <!-- Fullscreen Store -->
+  <div id="store-screen" class="screen">
+    <div class="fullscreen-store">
+      <div class="store-header">
+        <h2 id="store-title" style="color: #00ffcc;">Store</h2>
+        <button class="btn" onclick="showScreen('main-menu')">Home</button>
+      </div>
+
+      <div class="store-display">
+        <img id="store-img" class="full-item-img" src="" alt="Item">
+        <div id="item-name" class="item-title">Item Name</div>
+        <div id="item-stats" style="color: #aaa; margin: 4px 0;"></div>
+        <div id="item-status" style="color: #00ffcc; font-weight: bold; margin-bottom: 10px;"></div>
+      </div>
+
+      <div class="store-footer">
+        <button class="btn" onclick="prevItem()">Previous</button>
+        <button id="buy-btn" class="btn btn-secondary" onclick="buyOrEquip()">Buy</button>
+        <button class="btn" onclick="nextItem()">Next</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stage Screen -->
+  <div id="stage-screen" class="screen">
+    <div class="stage-overlay">
+      <div class="store-header">
+        <div>
+          <label style="font-weight: bold; margin-right: 8px;">Select Background: </label>
+          <select id="bg-selector" onchange="changeBackground(this.value)">
+            <option value="bg/ground.jfif">Ground</option>
+            <option value="bg/ground1.jfif">Ground 1</option>
+            <option value="bg/ground2.jfif">Ground 2</option>
+            <option value="bg/desert.jfif">Desert</option>
+          </select>
+        </div>
+        <div style="font-weight: bold; color: #00ffcc;">Gap Distance: <span id="dist-val">5</span> cm</div>
+        <button class="btn" onclick="showScreen('main-menu')">Home</button>
+      </div>
+
+      <div id="battle-log"></div>
+
+      <div class="game-arena" id="arena-container">
+        <!-- User Unit -->
+        <div class="character-box" id="user-box" style="left: 50px;">
+          <h3 style="color:#00ffcc;" id="user-stage-name">USER</h3>
+          <img id="user-stage-img" src="stage/user.jpg" alt="User">
+          <div class="hp-bar-bg"><div id="user-hp-bar" class="hp-bar-fill"></div></div>
+          <div style="font-size:0.85rem; color:#fff;" id="user-hp-val">HP: 200/200</div>
+        </div>
+
+        <!-- Enemy Unit -->
+        <div class="character-box" id="enemy-box" style="right: 50px; border-color: #ff0055;">
+          <h3 style="color:#ff0055;" id="enemy-stage-name">BOT ENEMY</h3>
+          <img id="enemy-stage-img" src="stage/enemy.jpg" alt="Enemy">
+          <div class="hp-bar-bg"><div id="enemy-hp-bar" class="hp-bar-fill" style="background:#ff0055;"></div></div>
+          <div style="font-size:0.85rem; color:#fff;" id="enemy-hp-val">HP: 300/300</div>
+        </div>
+      </div>
+
+      <!-- Controls Panel -->
+      <div class="controls-panel">
+        <div class="move-btn-group">
+          <button class="btn" onclick="movePlayer(-10)">◀ Back</button>
+          <button class="btn" onclick="movePlayer(10)">Forward ▶</button>
+          <button class="btn btn-secondary" onclick="movePlayer(25)">Sprint ⚡</button>
+        </div>
+        
+        <button id="attack-btn" class="btn" style="background:#ff0055; color:#fff; font-size:1.1rem;" onclick="playerAttack()">🔥 ATTACK</button>
+        
+        <button id="next-btn" class="btn" style="background:#ffaa00; color:#000; display:none;" onclick="nextStage()">Next Stage ➔</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    const STORAGE_KEY = "3d_tps_offline_game_state";
-    let state = {
-      username: "",
-      coins: 1000,
-      diamonds: 0,
-      completedStages: [],
-      activeStage: 1,
+    // Asset Database
+    const gunsDB = [
+      { name: "AK-47", damage: 10, price: 0, currency: "coins", file: "ak47.jfif" },
+      { name: "MP40", damage: 12, price: 2500, currency: "coins", file: "mp40.jfif" },
+      { name: "MP5", damage: 25, price: 5000, currency: "coins", file: "mp5.jfif" },
+      { name: "AN94", damage: 60, price: 50000, currency: "coins", file: "aug.jfif" },
+      { name: "XM8", damage: 57, price: 50000, currency: "coins", file: "m4a1.jfif" },
+      { name: "Plasma", damage: 57, price: 50000, currency: "coins", file: "tactical.jfif" },
+      { name: "G36", damage: 57, price: 50000, currency: "coins", file: "scar.jfif" },
+      { name: "AUG", damage: 56, price: 50000, currency: "coins", file: "aug.jfif" },
+      { name: "Shield Gun", damage: 54, price: 50000, currency: "coins", file: "tactical.jfif" },
+      { name: "FAMAS", damage: 53, price: 50000, currency: "coins", file: "scar.jfif" },
+      { name: "M4A1", damage: 53, price: 50000, currency: "coins", file: "m4a1.jfif" },
+      { name: "SCAR", damage: 53, price: 50000, currency: "coins", file: "scar.jfif" },
+      { name: "Kingfisher", damage: 52, price: 50000, currency: "coins", file: "aug.jfif" },
+      { name: "AWM", damage: 200, price: 0, currency: "diamond_special", file: "awm.jfif" },
+      { name: "SVD", damage: 200, price: 0, currency: "diamond_special", file: "svd.jfif" },
+      { name: "M-Gun", damage: 500, price: 0, currency: "diamond_special", file: "machine gun.jfif" }
+    ];
+
+    const charactersDB = [
+      { id: 1, name: "Character 1", hp: 200, price: 250, file: "character.jfif" },
+      { id: 2, name: "Character 2 (Bot)", hp: 400, price: 5000, file: "bot.jfif" },
+      { id: 3, name: "Character 3", hp: 800, price: 10000, file: "head.jfif" },
+      { id: 4, name: "Character 4", hp: 1000, price: 15000, file: "ira.jfif" },
+      { id: 5, name: "Character 5", hp: 1200, price: 20000, file: "mark.jfif" },
+      { id: 6, name: "Character 6", hp: 1400, price: 25000, file: "master.jfif" },
+      { id: 7, name: "Character 7", hp: 1600, price: 30000, file: "mister z.jfif" },
+      { id: 8, name: "Character 8", hp: 1800, price: 35000, file: "salman khan.jfif" },
+      { id: 9, name: "Character 9", hp: 2000, price: 40000, file: "sira.jfif" },
+      { id: 10, name: "Character 10", hp: 2500, price: 50000, file: "tiger shroff.jfif" }
+    ];
+
+    // User State
+    const userData = {
+      username: "taqi",
+      coins: 5000,
+      stage: 1,
       equippedGun: "AK-47",
+      equippedCharacter: 1,
       ownedGuns: ["AK-47"],
-      equippedChar: 1,
-      ownedChars: [1],
-      botCount: 0,
-      mGunFiredThisMatch: false
+      ownedCharacters: [1]
     };
 
-    function loadState() {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        try { state = { ...state, ...JSON.parse(saved) }; } catch (e) { console.error(e); }
-      }
-    }
-    function saveState() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-      updateUI();
-    }
+    let userPosX = 50;
+    let currentStoreType = "";
+    let currentIndex = 0;
 
-    function generateGunSecretID(gunName) {
-      const uname = (state.username || "player").toLowerCase();
-      const gname = gunName.toLowerCase().replace(/[^a-z0-9]/g, '');
-      return `${uname}mt${uname}${uname.length}${gname}`;
-    }
+    // Fight Logic Dynamic Variables
+    let userMaxHP = 200;
+    let userCurrentHP = 200;
+    let enemyMaxHP = 300;
+    let enemyCurrentHP = 300;
+    let isBattleActive = false;
 
-    const gunsDB = [
-      { name: "AK-47", damage: 25, magazine: 30, price: 0, currency: "coins" },
-      { name: "MP40", damage: 20, magazine: 40, price: 2500, currency: "coins" },
-      { name: "MP5", damage: 30, magazine: 35, price: 5000, currency: "coins" },
-      { name: "AN94", damage: 65, magazine: 30, price: 50000, currency: "coins" },
-      { name: "XM8", damage: 60, magazine: 35, price: 50000, currency: "coins" },
-      { name: "M4A1", damage: 55, magazine: 30, price: 50000, currency: "coins" },
-      { name: "AWM", damage: 200, magazine: 5, price: 0, currency: "diamond_special" },
-      { name: "M-Gun", damage: 500, magazine: 100, price: 0, currency: "diamond_special" }
-    ];
-
-    const charsDB = [
-      { id: 1, name: "Desert Warrior", hp: 200, price: 0, color: 0x00f3ff },
-      { id: 2, name: "Sand Titan", hp: 200, price: 5000, color: 0xeab308 },
-      { id: 3, name: "Desert Ranger", hp: 200, price: 10000, color: 0x10b981 }
-    ];
-
-    const keys = { w: false, a: false, s: false, d: false };
-    window.addEventListener("keydown", (e) => {
-      if (e.key === "w" || e.key === "W" || e.key === "ArrowUp") keys.w = true;
-      if (e.key === "a" || e.key === "A" || e.key === "ArrowLeft") keys.a = true;
-      if (e.key === "s" || e.key === "S" || e.key === "ArrowDown") keys.s = true;
-      if (e.key === "d" || e.key === "D" || e.key === "ArrowRight") keys.d = true;
-      if (e.key === " ") shootWeapon();
-      if (e.key === "r" || e.key === "R") reloadWeapon();
-    });
-    window.addEventListener("keyup", (e) => {
-      if (e.key === "w" || e.key === "W" || e.key === "ArrowUp") keys.w = false;
-      if (e.key === "a" || e.key === "A" || e.key === "ArrowLeft") keys.a = false;
-      if (e.key === "s" || e.key === "S" || e.key === "ArrowDown") keys.s = false;
-      if (e.key === "d" || e.key === "D" || e.key === "ArrowRight") keys.d = false;
-    });
-
-    function authenticateUser() {
-      const input = document.getElementById("username-input").value.trim();
-      if (!input) return alert("Please enter a valid name");
-
-      state.username = input;
-      saveState();
-      document.getElementById("auth-modal").classList.add("hidden");
-      document.getElementById("main-header").classList.remove("hidden");
-      document.getElementById("main-nav").classList.remove("hidden");
-      document.getElementById("panel-container").classList.remove("hidden");
-
-      initUI();
-      initThreeJS();
+    function showScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(screenId).classList.add('active');
     }
 
-    function updateUI() {
-      document.getElementById("hud-username").innerText = state.username || "Player";
-      document.getElementById("hud-coins").innerText = state.coins;
-      document.getElementById("hud-diamonds").innerText = state.diamonds;
-      document.getElementById("hud-char-hp").innerText = `HP: 200`;
-
-      const botCountElem = document.getElementById("owned-bots-count");
-      if (botCountElem) botCountElem.innerText = state.botCount || 0;
+    function updateDashboardUI() {
+      document.getElementById('user-display').innerText = userData.username;
+      document.getElementById('coin-display').innerText = userData.coins;
+      document.getElementById('stage-display').innerText = userData.stage;
     }
 
-    function initUI() {
-      updateUI();
-      renderStages();
-      renderGuns();
-      renderChars();
+    function registerUser() {
+      const name = document.getElementById('username-input').value.trim();
+      if (!name) return alert("Please enter a name!");
+      userData.username = name;
+      userData.coins = 5000;
+      userData.stage = 1;
+      userData.ownedGuns = ["AK-47"];
+      userData.equippedGun = "AK-47";
+      userData.ownedCharacters = [1];
+      userData.equippedCharacter = 1;
+
+      updateDashboardUI();
+      showScreen('main-menu');
     }
 
-    function openPanel(panelName) {
-      document.querySelectorAll(".panel-content").forEach(p => p.classList.add("hidden"));
-      document.getElementById(`panel-${panelName}`).classList.remove("hidden");
+    function saveUserIdentity() {
+      const generatedID = `${userData.username}+${userData.ownedGuns.join(',')}+${userData.equippedCharacter}+${userData.coins}+${userData.stage}`;
+      navigator.clipboard.writeText(generatedID).catch(()=>{});
+      alert("Your Saved ID:\n\n" + generatedID);
     }
 
-    function renderStages() {
-      const grid = document.getElementById("stages-grid");
-      grid.innerHTML = "";
-      const maxCompleted = state.completedStages.length > 0 ? Math.max(...state.completedStages) : 0;
-      const unlockedStageLimit = maxCompleted + 1;
+    function loginWithID() {
+      const rawID = document.getElementById('id-input').value.trim();
+      if (!rawID) return alert("Please enter an ID!");
 
-      for (let i = 1; i <= 100; i++) {
-        const isWon = state.completedStages.includes(i);
-        const isUnlocked = i <= unlockedStageLimit;
+      const parts = rawID.split('+');
+      if (parts.length < 5) return alert("Invalid ID format!");
 
-        const card = document.createElement("div");
-        card.className = `glass p-3 rounded-xl text-center flex flex-col justify-between gap-2 border ${isUnlocked ? 'border-amber-600/40' : 'border-slate-800 opacity-50'}`;
-        
-        let buttonHTML = isUnlocked 
-          ? `<button onclick="launchMatch(${i})" class="bg-amber-600 hover:bg-amber-500 text-xs py-1.5 rounded-lg font-bold">${isWon ? 'Replay (100🪙)' : 'Play (500🪙)'}</button>`
-          : `<button disabled class="bg-slate-800 text-slate-500 text-xs py-1.5 rounded-lg font-bold cursor-not-allowed">🔒 Locked</button>`;
+      userData.username = parts[0];
+      userData.ownedGuns = parts[1].split(',');
+      userData.equippedGun = userData.ownedGuns[0] || "AK-47";
+      userData.equippedCharacter = parseInt(parts[2]) || 1;
+      userData.coins = parseInt(parts[3]) || 5000;
+      userData.stage = parseInt(parts[4]) || 1;
 
-        card.innerHTML = `
-          <div>
-            <div class="font-bold text-sm text-amber-300">Stage ${i}</div>
-            <div class="text-xs text-slate-400">Enemies: ${i}</div>
-          </div>
-          ${buttonHTML}
-        `;
-        grid.appendChild(card);
-      }
+      updateDashboardUI();
+      showScreen('main-menu');
     }
 
-    function renderGuns() {
-      const grid = document.getElementById("guns-grid");
-      grid.innerHTML = "";
-      gunsDB.forEach(gun => {
-        const isOwned = state.ownedGuns.includes(gun.name);
-        const isEquipped = state.equippedGun === gun.name;
-        const card = document.createElement("div");
-        card.className = "glass p-3 rounded-xl flex flex-col justify-between gap-2 border border-slate-700/60";
+    // Store Functions
+    function openStore(type) {
+      currentStoreType = type;
+      currentIndex = 0;
+      document.getElementById('store-title').innerText = type === 'guns' ? 'Guns Store' : 'Characters Store';
+      showScreen('store-screen');
+      updateStoreItem();
+    }
 
-        let actionBtn = "";
-        if (isEquipped) {
-          actionBtn = `<button disabled class="w-full bg-blue-600/50 text-white text-xs py-1.5 rounded-lg font-bold">Equipped</button>`;
-        } else if (isOwned) {
-          actionBtn = `<button onclick="equipGun('${gun.name}')" class="w-full bg-blue-600 hover:bg-blue-500 text-xs py-1.5 rounded-lg font-bold">Equip</button>`;
-        } else if (gun.currency === "diamond_special") {
-          actionBtn = `<button onclick="triggerDiamondPurchaseModal()" class="w-full bg-cyan-600 hover:bg-cyan-500 text-xs py-1.5 rounded-lg font-bold">Unlock Weapon</button>`;
+    function updateStoreItem() {
+      const isGuns = currentStoreType === 'guns';
+      const item = isGuns ? gunsDB[currentIndex] : charactersDB[currentIndex];
+      const folder = isGuns ? 'guns/' : 'characters/';
+
+      document.getElementById('store-img').src = folder + item.file;
+      document.getElementById('item-name').innerText = item.name;
+      document.getElementById('item-stats').innerText = isGuns ? `Damage: ${item.damage}` : `HP: ${item.hp}`;
+
+      const buyBtn = document.getElementById('buy-btn');
+      const statusText = document.getElementById('item-status');
+
+      const isOwned = isGuns 
+        ? userData.ownedGuns.includes(item.name)
+        : userData.ownedCharacters.includes(item.id);
+
+      if (isOwned) {
+        statusText.innerText = "Status: OWNED";
+        buyBtn.innerText = "Equip";
+        buyBtn.style.background = "#00ffcc";
+        buyBtn.style.color = "#000";
+      } else {
+        if (isGuns && item.currency === "diamond_special") {
+          statusText.innerText = "Special Diamond Gun";
+          buyBtn.innerText = "Buy Special";
+          buyBtn.style.background = "#ff0055";
+          buyBtn.style.color = "#fff";
         } else {
-          actionBtn = `<button onclick="buyGun('${gun.name}')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-xs py-1.5 rounded-lg font-bold">Buy (${gun.price}🪙)</button>`;
+          statusText.innerText = `Price: ${item.price} Coins`;
+          buyBtn.innerText = "Buy";
+          buyBtn.style.background = "#ff0055";
+          buyBtn.style.color = "#fff";
         }
-
-        card.innerHTML = `
-          <div>
-            <div class="font-bold text-sm text-cyan-300">${gun.name}</div>
-            <div class="text-xs text-slate-400">Damage: <b class="text-red-400">${gun.damage}</b></div>
-          </div>
-          ${actionBtn}
-        `;
-        grid.appendChild(card);
-      });
-    }
-
-    function equipGun(gunName) {
-      state.equippedGun = gunName;
-      saveState();
-      renderGuns();
-    }
-
-    function buyGun(gunName) {
-      const gun = gunsDB.find(g => g.name === gunName);
-      if (gun && state.coins >= gun.price) {
-        state.coins -= gun.price;
-        state.ownedGuns.push(gunName);
-        state.equippedGun = gunName;
-        saveState();
-        renderGuns();
-      } else {
-        alert("Not enough coins!");
       }
     }
 
-    function renderChars() {
-      const grid = document.getElementById("chars-grid");
-      grid.innerHTML = "";
-      charsDB.forEach(c => {
-        const isOwned = state.ownedChars.includes(c.id);
-        const isEquipped = state.equippedChar === c.id;
-        const card = document.createElement("div");
-        card.className = "glass p-3 rounded-xl flex flex-col justify-between gap-2 border border-purple-500/30";
+    function nextItem() {
+      const max = currentStoreType === 'guns' ? gunsDB.length : charactersDB.length;
+      currentIndex = (currentIndex + 1) % max;
+      updateStoreItem();
+    }
 
-        let btn = "";
-        if (isEquipped) {
-          btn = `<button disabled class="w-full bg-purple-600/50 text-white text-xs py-1.5 rounded-lg font-bold">Selected</button>`;
-        } else if (isOwned) {
-          btn = `<button onclick="equipChar(${c.id})" class="w-full bg-purple-600 hover:bg-purple-500 text-xs py-1.5 rounded-lg font-bold">Select</button>`;
+    function prevItem() {
+      const max = currentStoreType === 'guns' ? gunsDB.length : charactersDB.length;
+      currentIndex = (currentIndex - 1 + max) % max;
+      updateStoreItem();
+    }
+
+    function buyOrEquip() {
+      const isGuns = currentStoreType === 'guns';
+      const item = isGuns ? gunsDB[currentIndex] : charactersDB[currentIndex];
+
+      if (isGuns) {
+        if (userData.ownedGuns.includes(item.name)) {
+          userData.equippedGun = item.name;
+          alert("Gun Equipped!");
+        } else if (item.currency === "diamond_special") {
+          document.getElementById('buy-id-modal').style.display = 'block';
+        } else if (userData.coins >= item.price) {
+          userData.coins -= item.price;
+          userData.ownedGuns.push(item.name);
+          userData.equippedGun = item.name;
+          updateDashboardUI();
+          alert("Gun Bought & Equipped!");
         } else {
-          btn = `<button onclick="buyChar(${c.id})" class="w-full bg-emerald-500 hover:bg-emerald-600 text-xs py-1.5 rounded-lg font-bold">Unlock (${c.price}🪙)</button>`;
+          alert("Not enough coins!");
         }
-
-        card.innerHTML = `
-          <div>
-            <div class="font-bold text-sm text-purple-300">${c.name}</div>
-            <div class="text-xs text-slate-400">HP: <b class="text-emerald-400">200</b></div>
-          </div>
-          ${btn}
-        `;
-        grid.appendChild(card);
-      });
-    }
-
-    function equipChar(id) {
-      state.equippedChar = id;
-      saveState();
-      renderChars();
-      if (isMatchActive) rebuildPlayerCharacter();
-    }
-
-    function buyChar(id) {
-      const charData = charsDB.find(c => c.id === id);
-      if (charData && state.coins >= charData.price) {
-        state.coins -= charData.price;
-        state.ownedChars.push(id);
-        state.equippedChar = id;
-        saveState();
-        renderChars();
       } else {
-        alert("Not enough coins!");
-      }
-    }
-
-    function buyBot() {
-      if (state.coins >= 2000) {
-        state.coins -= 2000;
-        state.botCount = (state.botCount || 0) + 1;
-        saveState();
-        alert(`AI Bot purchased! Total Active Bots: ${state.botCount}`);
-      } else {
-        alert("Bot requires 2,000 Coins!");
-      }
-    }
-
-    function triggerDiamondPurchaseModal() { document.getElementById("diamond-modal").classList.remove("hidden"); }
-    function closeDiamondModal() { document.getElementById("diamond-modal").classList.add("hidden"); }
-
-    function handleWriteID() {
-      closeDiamondModal();
-      const input = prompt("Enter Secret ID:");
-      if (!input) return;
-
-      const trimmedInput = input.trim().toLowerCase();
-      let matchedGun = gunsDB.find(g => generateGunSecretID(g.name) === trimmedInput);
-
-      if (matchedGun) {
-        alert(`Secret ID Verified! Unlocked Premium Gun: ${matchedGun.name}`);
-        state.diamonds += 100;
-        if (!state.ownedGuns.includes(matchedGun.name)) state.ownedGuns.push(matchedGun.name);
-        state.equippedGun = matchedGun.name;
-        saveState();
-        renderGuns();
-      } else {
-        alert("Incorrect Secret ID.");
-      }
-    }
-
-    function handleBuyID() {
-      closeDiamondModal();
-      const modal = document.getElementById("iframe-modal");
-      const iframe = document.getElementById("target-iframe");
-      iframe.src = "https://muhammad-taqi512-lyra.hf.space";
-      modal.classList.remove("hidden");
-    }
-
-    function closeIframeModal() {
-      const modal = document.getElementById("iframe-modal");
-      const iframe = document.getElementById("target-iframe");
-      iframe.src = "";
-      modal.classList.add("hidden");
-    }
-
-    // --- THREE.JS GAME ENGINE & COMBAT SYSTEM ---
-    let scene, camera, renderer;
-    let playerGroup, gunMesh, muzzleFlashLight;
-    let botEntities = [];
-    let enemyEntities = [];
-    let activeBullets = [];
-
-    let isMatchActive = false;
-    let currentMatchStage = 1;
-    let playerCurrentHP = 200;
-    let currentAmmo = 30;
-    let maxAmmo = 30;
-    const EQUAL_MAX_HP = 200;
-
-    function initThreeJS() {
-      const container = document.getElementById("canvas-container");
-      scene = new THREE.Scene();
-
-      // Background Texture Loader
-      const textureLoader = new THREE.TextureLoader();
-      textureLoader.crossOrigin = "Anonymous";
-      textureLoader.load("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSfR171h22b9SpoLPVcYgfmKbcDT25UmcPLZR5rFxvjyg&s=10", (texture) => {
-        scene.background = texture;
-      });
-
-      camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-      camera.position.set(0, 7, 14);
-
-      renderer = new THREE.WebGLRenderer({ antialias: true });
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.shadowMap.enabled = true;
-      container.appendChild(renderer.domElement);
-
-      const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-      scene.add(ambientLight);
-
-      const sunLight = new THREE.DirectionalLight(0xffffff, 1.2);
-      sunLight.position.set(30, 40, 20);
-      sunLight.castShadow = true;
-      scene.add(sunLight);
-
-      buildGround();
-
-      window.addEventListener("resize", () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-      });
-
-      animate();
-    }
-
-    function buildGround() {
-      const groundGeo = new THREE.PlaneGeometry(500, 500, 32, 32);
-      const groundMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.8, transparent: true, opacity: 0.85 });
-      const ground = new THREE.Mesh(groundGeo, groundMat);
-      ground.rotation.x = -Math.PI / 2;
-      scene.add(ground);
-    }
-
-    function createProceduralCharacter(themeColorHex, visorColorHex = 0x00f3ff) {
-      const group = new THREE.Group();
-      const armorMat = new THREE.MeshStandardMaterial({ color: themeColorHex, roughness: 0.3 });
-      const darkMat = new THREE.MeshStandardMaterial({ color: 0x1e293b });
-      const visorMat = new THREE.MeshStandardMaterial({ color: visorColorHex, emissive: visorColorHex, emissiveIntensity: 0.6 });
-
-      const torso = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.5, 0.8), armorMat);
-      torso.position.y = 1.95;
-      group.add(torso);
-
-      const head = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.7, 0.7), darkMat);
-      head.position.y = 3.0;
-      group.add(head);
-
-      const visor = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.2, 0.1), visorMat);
-      visor.position.set(0, 3.0, 0.35);
-      group.add(visor);
-
-      // Weapon Attachment Structure
-      const gunGroup = new THREE.Group();
-      const gunBody = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.3, 1.2), new THREE.MeshStandardMaterial({ color: 0x111827 }));
-      gunGroup.add(gunBody);
-
-      muzzleFlashLight = new THREE.PointLight(0xffaa00, 0, 5);
-      muzzleFlashLight.position.set(0, 0.1, -0.7);
-      gunGroup.add(muzzleFlashLight);
-
-      gunGroup.position.set(0.6, 2.0, -0.4);
-      group.add(gunGroup);
-
-      return group;
-    }
-
-    function spawnBullet(startPos, targetPos, color = 0xffff00) {
-      const bulletGeo = new THREE.SphereGeometry(0.25, 8, 8);
-      const bulletMat = new THREE.MeshBasicMaterial({ color: color });
-      const bullet = new THREE.Mesh(bulletGeo, bulletMat);
-      bullet.position.copy(startPos);
-      bullet.position.y = 2.0;
-
-      const dir = new THREE.Vector3().subVectors(targetPos, startPos).normalize();
-      scene.add(bullet);
-      activeBullets.push({ mesh: bullet, direction: dir, life: 50 });
-    }
-
-    function triggerMuzzleFlash() {
-      if (muzzleFlashLight) {
-        muzzleFlashLight.intensity = 3;
-        setTimeout(() => { if (muzzleFlashLight) muzzleFlashLight.intensity = 0; }, 60);
-      }
-    }
-
-    function rebuildPlayerCharacter() {
-      if (playerGroup) scene.remove(playerGroup);
-      const charConfig = charsDB.find(c => c.id === state.equippedChar) || charsDB[0];
-      playerGroup = createProceduralCharacter(charConfig.color);
-      playerGroup.position.set(0, 0, 5);
-      scene.add(playerGroup);
-    }
-
-    function animate() {
-      requestAnimationFrame(animate);
-
-      if (isMatchActive && playerGroup) {
-        // Player Movement Controls
-        const moveSpeed = 0.2;
-        if (keys.w) playerGroup.position.z -= moveSpeed;
-        if (keys.s) playerGroup.position.z += moveSpeed;
-        if (keys.a) playerGroup.position.x -= moveSpeed;
-        if (keys.d) playerGroup.position.x += moveSpeed;
-
-        // Camera Follow Logic
-        camera.position.x = playerGroup.position.x;
-        camera.position.z = playerGroup.position.z + 8;
-        camera.position.y = 5.5;
-        camera.lookAt(playerGroup.position.x, playerGroup.position.y + 1.8, playerGroup.position.z - 6);
-
-        const currentTime = Date.now();
-
-        // 1. AI BOTS FIRE LOGIC
-        botEntities.forEach((botObj, idx) => {
-          if (botObj.hp > 0) {
-            const targetX = playerGroup.position.x + ((idx % 2 === 0 ? 1 : -1) * (Math.floor(idx / 2) + 1) * 2);
-            const targetZ = playerGroup.position.z;
-            botObj.mesh.position.x += (targetX - botObj.mesh.position.x) * 0.05;
-            botObj.mesh.position.z += (targetZ - botObj.mesh.position.z) * 0.05;
-
-            if (currentTime - botObj.lastShotTime > 1000) {
-              const aliveEnemy = enemyEntities.find(e => e.hp > 0);
-              if (aliveEnemy) {
-                spawnBullet(botObj.mesh.position, aliveEnemy.mesh.position, 0x00f3ff);
-                aliveEnemy.hp -= 20;
-                botObj.lastShotTime = currentTime;
-                if (aliveEnemy.hp <= 0) scene.remove(aliveEnemy.mesh);
-              }
-            }
-          }
-        });
-
-        // 2. ENEMIES AI & SHOOTING LOGIC
-        enemyEntities.forEach(enemyObj => {
-          if (enemyObj.hp > 0) {
-            const dx = playerGroup.position.x - enemyObj.mesh.position.x;
-            const dz = playerGroup.position.z - enemyObj.mesh.position.z;
-            const dist = Math.sqrt(dx * dx + dz * dz);
-
-            if (dist > 3) {
-              enemyObj.mesh.position.x += (dx / dist) * 0.05;
-              enemyObj.mesh.position.z += (dz / dist) * 0.05;
-            }
-
-            if (currentTime - enemyObj.lastShotTime > 1100) {
-              const activeBot = botEntities.find(b => b.hp > 0);
-              let targetMesh = activeBot ? activeBot.mesh : playerGroup;
-
-              spawnBullet(enemyObj.mesh.position, targetMesh.position, 0xff0000);
-
-              if (activeBot) {
-                activeBot.hp -= 15;
-                if (activeBot.hp <= 0) scene.remove(activeBot.mesh);
-              } else {
-                playerCurrentHP -= 15;
-                updateHealthHUD();
-                if (playerCurrentHP <= 0) endMatch(false);
-              }
-              enemyObj.lastShotTime = currentTime;
-            }
-          }
-        });
-
-        // 3. BULLETS MOTION & TRAJECTORY
-        for (let i = activeBullets.length - 1; i >= 0; i--) {
-          const b = activeBullets[i];
-          b.mesh.position.addScaledVector(b.direction, 1.0);
-          b.life--;
-          if (b.life <= 0) {
-            scene.remove(b.mesh);
-            activeBullets.splice(i, 1);
-          }
+        if (userData.ownedCharacters.includes(item.id)) {
+          userData.equippedCharacter = item.id;
+          alert("Character Equipped!");
+        } else if (userData.coins >= item.price) {
+          userData.coins -= item.price;
+          userData.ownedCharacters.push(item.id);
+          userData.equippedCharacter = item.id;
+          updateDashboardUI();
+          alert("Character Bought & Equipped!");
+        } else {
+          alert("Not enough coins!");
         }
-
-        checkStageClearCondition();
       }
-
-      renderer.render(scene, camera);
+      updateStoreItem();
     }
 
-    function launchMatch(stageNum) {
-      currentMatchStage = stageNum;
-      state.activeStage = stageNum;
-      state.mGunFiredThisMatch = false;
-
-      const currentGunData = gunsDB.find(g => g.name === state.equippedGun) || gunsDB[0];
-      maxAmmo = currentGunData.magazine || 30;
-      currentAmmo = maxAmmo;
-      updateAmmoHUD();
-
-      document.getElementById("main-nav").classList.add("hidden");
-      document.getElementById("panel-container").classList.add("hidden");
-      document.getElementById("combat-hud").classList.remove("hidden");
-      document.getElementById("crosshair").classList.remove("hidden");
-
-      if (state.equippedGun === "M-Gun") {
-        document.getElementById("mgun-btn").classList.remove("hidden");
-      } else {
-        document.getElementById("mgun-btn").classList.add("hidden");
-      }
-
-      playerCurrentHP = EQUAL_MAX_HP;
-      updateHealthHUD();
-
-      // Clear Active Battlefield
-      botEntities.forEach(b => scene.remove(b.mesh));
-      botEntities = [];
-      enemyEntities.forEach(e => scene.remove(e.mesh));
-      enemyEntities = [];
-      activeBullets.forEach(b => scene.remove(b.mesh));
-      activeBullets = [];
-
-      rebuildPlayerCharacter();
-
-      // Spawn Player AI Bots
-      const totalBots = state.botCount || 0;
-      for (let i = 0; i < totalBots; i++) {
-        const bMesh = createProceduralCharacter(0x3b82f6, 0x60a5fa);
-        bMesh.position.set(playerGroup.position.x + (i + 1) * 2, 0, playerGroup.position.z);
-        scene.add(bMesh);
-        botEntities.push({ mesh: bMesh, hp: EQUAL_MAX_HP, lastShotTime: Date.now() + (i * 200) });
-      }
-
-      const baseDistance = 12 + (stageNum * 3); 
-
-      // Spawn Enemy Squads
-      for (let i = 0; i < stageNum; i++) {
-        const eMesh = createProceduralCharacter(0xdc2626, 0xff0000);
-        eMesh.rotation.y = Math.PI;
-
-        const row = Math.floor(i / 6);
-        const col = i % 6;
-        eMesh.position.set(-10 + (col * 3.5), 0, -baseDistance - (row * 4));
-        scene.add(eMesh);
-
-        enemyEntities.push({ mesh: eMesh, hp: EQUAL_MAX_HP, lastShotTime: Date.now() + (i * 150) });
-      }
-
-      document.getElementById("combat-enemies-count").innerText = enemyEntities.length;
-      isMatchActive = true;
+    function closeBuyModal() {
+      document.getElementById('buy-id-modal').style.display = 'none';
     }
 
-    // MAIN FIRING ACTION
-    function shootWeapon() {
-      if (!isMatchActive) return;
+    // --- FIGHT LOGICS & STAGE MECHANICS ---
+    function openStage() {
+      showScreen('stage-screen');
+      userPosX = 50;
+      isBattleActive = true;
+      
+      document.getElementById('attack-btn').style.display = 'block';
+      document.getElementById('next-btn').style.display = 'none';
+      document.getElementById('battle-log').innerText = '';
 
-      if (currentAmmo <= 0) {
-        reloadWeapon();
+      // Set Up Player HP
+      const currentChar = charactersDB.find(c => c.id === userData.equippedCharacter) || charactersDB[0];
+      userMaxHP = currentChar.hp;
+      userCurrentHP = userMaxHP;
+
+      // Set Up Enemy HP (Scales with stages)
+      enemyMaxHP = 200 + (userData.stage * 100);
+      enemyCurrentHP = enemyMaxHP;
+
+      document.getElementById('user-stage-name').innerText = currentChar.name;
+      document.getElementById('enemy-stage-name').innerText = `BOT Level ${userData.stage}`;
+
+      changeBackground(document.getElementById('bg-selector').value);
+      updateStageLayout();
+    }
+
+    function updateStageLayout() {
+      const distance = userData.stage * 5;
+      document.getElementById('dist-val').innerText = distance;
+
+      // Position Player
+      const userBox = document.getElementById('user-box');
+      userBox.style.left = userPosX + "px";
+
+      // Update HP UI
+      updateHPBars();
+    }
+
+    function updateHPBars() {
+      const userHpPercent = Math.max(0, (userCurrentHP / userMaxHP) * 100);
+      const enemyHpPercent = Math.max(0, (enemyCurrentHP / enemyMaxHP) * 100);
+
+      document.getElementById('user-hp-bar').style.width = userHpPercent + '%';
+      document.getElementById('enemy-hp-bar').style.width = enemyHpPercent + '%';
+
+      document.getElementById('user-hp-val').innerText = `HP: ${Math.max(0, userCurrentHP)}/${userMaxHP}`;
+      document.getElementById('enemy-hp-val').innerText = `HP: ${Math.max(0, enemyCurrentHP)}/${enemyMaxHP}`;
+    }
+
+    function movePlayer(offset) {
+      if(!isBattleActive) return;
+      const arenaWidth = document.getElementById('arena-container').clientWidth;
+      userPosX = Math.max(20, Math.min(arenaWidth - 220, userPosX + offset));
+      document.getElementById('user-box').style.left = userPosX + "px";
+    }
+
+    function playerAttack() {
+      if (!isBattleActive) return;
+
+      const currentGun = gunsDB.find(g => g.name === userData.equippedGun) || gunsDB[0];
+      const damageDealt = currentGun.damage;
+
+      // Enemy takes damage
+      enemyCurrentHP -= damageDealt;
+      triggerAnimation('enemy-box');
+      showBattleLog(` You hit Enemy with ${currentGun.name} for -${damageDealt} HP!`);
+
+      if (enemyCurrentHP <= 0) {
+        enemyCurrentHP = 0;
+        isBattleActive = false;
+        updateHPBars();
+        winBattle();
         return;
       }
 
-      currentAmmo--;
-      updateAmmoHUD();
-      triggerMuzzleFlash();
+      updateHPBars();
 
-      const equipped = gunsDB.find(g => g.name === state.equippedGun) || gunsDB[0];
-      const damage = equipped.damage;
+      // Enemy Automatic Counter-Attack Logic
+      setTimeout(enemyCounterAttack, 600);
+    }
 
-      // Target closest active enemy
-      const target = enemyEntities.find(e => e.hp > 0);
-      if (target) {
-        spawnBullet(playerGroup.position, target.mesh.position, 0xfacc15);
-        target.hp -= damage;
+    function enemyCounterAttack() {
+      if (!isBattleActive) return;
 
-        // Visual recoil bounce
-        playerGroup.position.z += 0.05;
-        setTimeout(() => { playerGroup.position.z -= 0.05; }, 50);
+      const enemyDamage = 15 + (userData.stage * 10);
+      userCurrentHP -= enemyDamage;
+      triggerAnimation('user-box');
+      showBattleLog(`⚡ Enemy counter-attacked! -${enemyDamage} HP!`);
 
-        if (target.hp <= 0) scene.remove(target.mesh);
-      } else {
-        // Shoot straight ahead if no targets left
-        const forwardTarget = new THREE.Vector3().copy(playerGroup.position).add(new THREE.Vector3(0, 0, -20));
-        spawnBullet(playerGroup.position, forwardTarget, 0xfacc15);
+      if (userCurrentHP <= 0) {
+        userCurrentHP = 0;
+        isBattleActive = false;
+        updateHPBars();
+        loseBattle();
+        return;
       }
 
-      checkStageClearCondition();
+      updateHPBars();
     }
 
-    function reloadWeapon() {
-      if (!isMatchActive) return;
-      currentAmmo = maxAmmo;
-      updateAmmoHUD();
+    function triggerAnimation(elementId) {
+      const el = document.getElementById(elementId);
+      el.classList.add('hit-anim');
+      setTimeout(() => el.classList.remove('hit-anim'), 200);
     }
 
-    function updateAmmoHUD() {
-      document.getElementById("ammo-count").innerText = `${currentAmmo} / ∞`;
+    function showBattleLog(msg) {
+      document.getElementById('battle-log').innerText = msg;
     }
 
-    function fireMGunSpecial() {
-      if (!isMatchActive || state.mGunFiredThisMatch) return;
+    function winBattle() {
+      const rewardCoins = 500 * userData.stage;
+      userData.coins += rewardCoins;
+      updateDashboardUI();
 
-      state.mGunFiredThisMatch = true;
-      document.getElementById("mgun-btn").classList.add("hidden");
-
-      const activeEnemies = enemyEntities.filter(e => e.hp > 0);
-      const eliminateCount = Math.ceil(activeEnemies.length / 2);
-
-      for (let i = 0; i < eliminateCount; i++) {
-        if (activeEnemies[i]) {
-          activeEnemies[i].hp = 0;
-          scene.remove(activeEnemies[i].mesh);
-        }
-      }
-
-      checkStageClearCondition();
+      showBattleLog(`🏆 STAGE CLEARED! You Earned +${rewardCoins} Coins!`);
+      document.getElementById('attack-btn').style.display = 'none';
+      document.getElementById('next-btn').style.display = 'block';
     }
 
-    function checkStageClearCondition() {
-      const activeEnemies = enemyEntities.filter(e => e.hp > 0);
-      document.getElementById("combat-enemies-count").innerText = activeEnemies.length;
-
-      if (activeEnemies.length === 0 && isMatchActive) {
-        endMatch(true);
-      }
+    function loseBattle() {
+      showBattleLog(`☠️ YOU WERE DEFEATED! Try again or upgrade gun!`);
+      document.getElementById('attack-btn').style.display = 'none';
+      setTimeout(() => {
+        alert("Game Over! Returning to Main Menu.");
+        showScreen('main-menu');
+      }, 1500);
     }
 
-    function updateHealthHUD() {
-      const percent = Math.max(0, (playerCurrentHP / EQUAL_MAX_HP) * 100);
-      document.getElementById("hp-bar").style.width = `${percent}%`;
-      document.getElementById("hp-text").innerText = `${Math.max(0, playerCurrentHP)}/${EQUAL_MAX_HP}`;
+    function nextStage() {
+      userData.stage += 1;
+      updateDashboardUI();
+      openStage();
     }
 
-    function endMatch(victory) {
-      isMatchActive = false;
-      document.getElementById("combat-hud").classList.add("hidden");
-      document.getElementById("crosshair").classList.add("hidden");
-      document.getElementById("main-nav").classList.remove("hidden");
-      document.getElementById("panel-container").classList.remove("hidden");
-
-      if (victory) {
-        const isFirstWin = !state.completedStages.includes(currentMatchStage);
-        const reward = isFirstWin ? 500 : 100;
-
-        if (isFirstWin) state.completedStages.push(currentMatchStage);
-        state.coins += reward;
-        saveState();
-
-        alert(`VICTORY! Stage ${currentMatchStage} Cleared!\nEarned: ${reward} Coins`);
-      } else {
-        alert("DEFEAT! Health depleted.");
-      }
-
-      renderStages();
+    function changeBackground(bgPath) {
+      document.getElementById('stage-screen').style.backgroundImage = `url('${bgPath}')`;
     }
-
-    window.onload = () => {
-      loadState();
-      if (state.username) {
-        document.getElementById("auth-modal").classList.add("hidden");
-        document.getElementById("main-header").classList.remove("hidden");
-        document.getElementById("main-nav").classList.remove("hidden");
-        document.getElementById("panel-container").classList.remove("hidden");
-        initUI();
-        initThreeJS();
-      }
-    };
   </script>
 </body>
 </html>
