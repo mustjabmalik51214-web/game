@@ -1,0 +1,56 @@
+name: Build Android APK (Landscape Mode)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Initialize Capacitor Project
+        run: |
+          npm init -y
+          npm install @capacitor/core @capacitor/cli @capacitor/android
+          npx cap init "Project Alpha" "com.taqi.projectalpha" --web-dir "."
+          npx cap add android
+
+      - name: Force Landscape Orientation in AndroidManifest
+        run: |
+          MANIFEST_PATH="android/app/src/main/AndroidManifest.xml"
+          if [ -f "$MANIFEST_PATH" ]; then
+            sed -i 's/<activity /<activity android:screenOrientation="landscape" /g' $MANIFEST_PATH
+          fi
+
+      - name: Sync Web Assets to Android
+        run: |
+          npx cap sync android
+
+      - name: Build Android APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Upload Debug APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ProjectAlpha-Landscape-Debug-APK
+          path: android/app/build/outputs/apk/debug/app-debug.apk
