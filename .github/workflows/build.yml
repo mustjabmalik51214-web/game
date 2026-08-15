@@ -1,23 +1,17 @@
-name: Build Android APK with Icon & Splash
+name: Build Clean APK with Icon
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
-  build-apk:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout Code
         uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
 
       - name: Setup Java JDK
         uses: actions/setup-java@v4
@@ -25,45 +19,47 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Prepare Web Assets & Initialize Capacitor
-        run: |
-          mkdir -p www
-          cp -r * www/ 2>/dev/null || true
-          npm init -y
-          npm install @capacitor/core @capacitor/cli @capacitor/android @capacitor/assets
-          npx cap init "Project Alpha" "com.taqi.projectalpha" --web-dir "www"
-          npx cap add android
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
 
-      - name: Generate Icon & Splash Screen
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Build Cordova APK
         run: |
-          mkdir -p assets
-          if [ -f "icon.png" ] && [ -f "splash.png" ]; then
-            cp icon.png assets/icon.png
-            cp splash.png assets/splash.png
-            npx capacitor-assets generate --android
-          else
-            echo "Icon or Splash file missing, skipping assets generation..."
+          npm install -g cordova
+          
+          # 1. Create Cordova project
+          cordova create app com.projectalpha.nexura "PROJECT ALPHA"
+          
+          # 2. Copy Web Source Assets
+          cp -r index.html app/www/ 2>/dev/null || true
+          cp -r characters gun bg stage app/www/ 2>/dev/null || true
+          
+          # 3. Add Custom Icon if present
+          if [ -f "icon.png" ]; then
+            cp icon.png app/www/icon.png
+            sed -i '/<\/widget>/i \    <icon src="www/icon.png" \/>' app/config.xml
+          fi
+          
+          # 4. Set Landscape Orientation in config.xml
+          sed -i '/<\/widget>/i \    <preference name="Orientation" value="landscape" \/>' app/config.xml
+
+          # 5. Add Android Platform & Build
+          cd app
+          cordova platform add android
+          
+          # Fix Gradle executable permissions
+          if [ -d "platforms/android" ]; then
+            chmod +x platforms/android/gradlew || true
           fi
 
-      - name: Force Landscape Orientation
-        run: |
-          MANIFEST_PATH="android/app/src/main/AndroidManifest.xml"
-          if [ -f "$MANIFEST_PATH" ]; then
-            sed -i 's/<activity /<activity android:screenOrientation="sensorLandscape" /g' $MANIFEST_PATH
-          fi
+          cordova build android --debug
 
-      - name: Sync Capacitor
-        run: |
-          npx cap sync android
-
-      - name: Build Android APK
-        run: |
-          cd android
-          chmod +x gradlew
-          ./gradlew assembleDebug
-
-      - name: Upload Debug APK Artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: ProjectAlpha-Debug-APK
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          name: PROJECT-ALPHA-APK
+          path: app/platforms/android/app/build/outputs/apk/debug/app-debug.apk
