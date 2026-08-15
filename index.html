@@ -2,8 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Project Alpha</title>
+  
+  <link rel="manifest" href="data:application/json,{
+    &quot;name&quot;: &quot;Project Alpha&quot;,
+    &quot;short_name&quot;: &quot;ProjectAlpha&quot;,
+    &quot;start_url&quot;: &quot;.&quot;,
+    &quot;display&quot;: &quot;fullscreen&quot;,
+    &quot;orientation&quot;: &quot;landscape&quot;,
+    &quot;background_color&quot;: &quot;#080511&quot;,
+    &quot;theme_color&quot;: &quot;#080511&quot;
+  }">
+
   <style>
     * {
       box-sizing: border-box;
@@ -17,11 +28,40 @@
       background: radial-gradient(circle at center, #1b1035 0%, #080511 100%);
       color: #fff;
       height: 100vh;
+      width: 100vw;
       overflow: hidden;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
+    }
+
+    #orientation-warning {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #080511;
+      z-index: 99999;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+    }
+
+    #orientation-warning h2 {
+      color: #00ffcc;
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+    }
+
+    @media screen and (orientation: portrait) {
+      #orientation-warning {
+        display: flex !important;
+      }
     }
 
     .screen {
@@ -38,33 +78,31 @@
       display: flex;
     }
 
-    /* Modern Glassmorphism Card */
     .card {
       background: rgba(255, 255, 255, 0.05);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      padding: 30px;
+      padding: 25px 35px;
       border-radius: 20px;
-      width: 350px;
+      width: 360px;
       text-align: center;
       box-shadow: 0 8px 32px 0 rgba(0, 255, 204, 0.2);
       border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .title-box h1 {
-      font-size: 2.5rem;
+      font-size: 2.2rem;
       letter-spacing: 3px;
       color: #00ffcc;
       text-shadow: 0 0 20px rgba(0, 255, 204, 0.8);
     }
 
     .title-box p {
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: #00ffcc;
-      margin-top: 5px;
-      margin-bottom: 25px;
+      margin-top: 4px;
+      margin-bottom: 20px;
       font-weight: 600;
-      letter-spacing: 1px;
     }
 
     .stats-bar {
@@ -72,28 +110,28 @@
       justify-content: space-around;
       width: 100%;
       background: rgba(0, 0, 0, 0.6);
-      padding: 12px 15px;
+      padding: 10px 15px;
       border-radius: 12px;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
       border: 1px solid rgba(0, 255, 204, 0.3);
-      font-size: 0.95rem;
+      font-size: 0.9rem;
     }
 
     .btn-group {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
       width: 100%;
     }
 
     .btn {
-      padding: 12px 20px;
+      padding: 10px 18px;
       border: none;
       border-radius: 10px;
       background: #00ffcc;
       color: #000;
       font-weight: bold;
-      font-size: 1rem;
+      font-size: 0.95rem;
       cursor: pointer;
       transition: all 0.2s ease;
       text-align: center;
@@ -103,7 +141,6 @@
     .btn:hover {
       background: #00cca3;
       transform: translateY(-2px);
-      box-shadow: 0 0 15px rgba(0, 255, 204, 0.7);
     }
 
     .btn-secondary {
@@ -112,25 +149,18 @@
       box-shadow: 0 0 10px rgba(255, 0, 85, 0.4);
     }
 
-    .btn-secondary:hover {
-      background: #cc0044;
-      box-shadow: 0 0 15px rgba(255, 0, 85, 0.7);
-    }
-
     input {
       width: 100%;
-      padding: 12px;
-      margin: 10px 0;
+      padding: 10px;
+      margin: 8px 0;
       border-radius: 8px;
       border: 1px solid #00ffcc;
       background: rgba(15, 12, 41, 0.8);
       color: #fff;
       outline: none;
       text-align: center;
-      font-size: 1rem;
     }
 
-    /* Fullscreen Store Styling */
     .fullscreen-store {
       width: 100vw;
       height: 100vh;
@@ -139,7 +169,7 @@
       flex-direction: column;
       justify-content: space-between;
       align-items: center;
-      padding: 20px;
+      padding: 15px;
       position: absolute;
       top: 0;
       left: 0;
@@ -163,23 +193,20 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      position: relative;
     }
 
     .full-item-img {
-      max-width: 85%;
-      max-height: 55vh;
+      max-width: 80%;
+      max-height: 45vh;
       object-fit: contain;
       filter: drop-shadow(0 0 20px rgba(0, 255, 204, 0.5));
-      margin-bottom: 20px;
+      margin-bottom: 10px;
     }
 
     .item-title {
-      font-size: 1.5rem;
+      font-size: 1.3rem;
       font-weight: bold;
       color: #fff;
-      margin-bottom: 10px;
-      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
     }
 
     .store-footer {
@@ -188,14 +215,13 @@
       justify-content: center;
       align-items: center;
       gap: 20px;
-      padding-bottom: 20px;
+      padding-bottom: 10px;
     }
 
-    /* Stage Screen */
+    /* Stage Arena & Controls */
     #stage-screen {
       background-size: cover;
       background-position: center;
-      transition: background 0.3s ease;
     }
 
     .stage-overlay {
@@ -206,52 +232,101 @@
       flex-direction: column;
       justify-content: space-between;
       align-items: center;
-      padding: 20px;
+      padding: 15px;
     }
 
     .game-arena {
       display: flex;
-      justify-content: space-around;
+      justify-content: space-between;
       align-items: center;
       width: 100%;
-      flex: 1;
+      height: 60%;
+      position: relative;
+      padding: 0 40px;
+      overflow: hidden;
     }
 
     .character-box {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       background: rgba(0, 0, 0, 0.6);
-      padding: 20px;
+      padding: 15px;
       border-radius: 15px;
       border: 2px solid #00ffcc;
       box-shadow: 0 0 20px rgba(0, 255, 204, 0.3);
+      position: absolute;
+      transition: left 0.1s linear;
     }
 
     .character-box img {
-      width: 140px;
-      height: 140px;
+      width: 100px;
+      height: 100px;
       border-radius: 50%;
       object-fit: cover;
       border: 3px solid #fff;
     }
 
-    select {
-      padding: 10px 15px;
-      border-radius: 8px;
-      border: 1px solid #00ffcc;
-      background: #0f0c29;
+    .controls-panel {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0,0,0,0.6);
+      padding: 10px 20px;
+      border-radius: 12px;
+    }
+
+    .move-btn-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    /* Fullscreen Modal Iframe */
+    #buy-id-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #000;
+      z-index: 999999;
+    }
+
+    .modal-close-btn {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      background: #ff0055;
       color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      font-size: 1.2rem;
       font-weight: bold;
-      outline: none;
       cursor: pointer;
+      z-index: 1000000;
+      box-shadow: 0 0 10px rgba(255, 0, 85, 0.8);
     }
   </style>
 </head>
 <body>
 
-  <!-- Entry Options -->
+  <div id="orientation-warning">
+    <h2>🔄 Please Rotate Your Phone</h2>
+    <p>Project Alpha requires Landscape Mode to play.</p>
+  </div>
+
+  <!-- Special Diamond Purchase Iframe Modal -->
+  <div id="buy-id-modal">
+    <button class="modal-close-btn" onclick="closeBuyModal()">✕</button>
+    <iframe src="https://muhammad-taqi512-lyra.hf.space" frameborder="0" style="width:100%; height:100%;"></iframe>
+  </div>
+
+  <!-- Entry Screen -->
   <div id="entry-screen" class="screen active">
     <div class="card">
       <div class="title-box">
@@ -268,7 +343,7 @@
   <!-- Name Entry Screen -->
   <div id="name-screen" class="screen">
     <div class="card">
-      <h2 style="margin-bottom: 15px; color:#00ffcc;">Enter Name</h2>
+      <h2 style="margin-bottom: 10px; color:#00ffcc;">Enter Name</h2>
       <input type="text" id="username-input" placeholder="Type your name...">
       <div class="btn-group" style="margin-top: 10px;">
         <button class="btn" onclick="registerUser()">Start Game</button>
@@ -280,8 +355,8 @@
   <!-- Login Screen -->
   <div id="login-screen" class="screen">
     <div class="card">
-      <h2 style="margin-bottom: 15px; color:#00ffcc;">Enter Saved ID</h2>
-      <input type="text" id="id-input" placeholder="taqi+ohh you are genuis,default+default+e---+e">
+      <h2 style="margin-bottom: 10px; color:#00ffcc;">Enter Saved ID</h2>
+      <input type="text" id="id-input" placeholder="taqi+AK-47+1+a">
       <div class="btn-group" style="margin-top: 10px;">
         <button class="btn" onclick="loginWithID()">Login</button>
         <button class="btn btn-secondary" onclick="showScreen('entry-screen')">Back</button>
@@ -296,10 +371,10 @@
       <p>Created by Muhammad Taqi</p>
     </div>
 
-    <div class="stats-bar" style="width: 320px;">
+    <div class="stats-bar" style="width: 340px;">
       <span>User: <strong id="user-display" style="color:#00ffcc;">taqi</strong></span>
       <span>Coins: <strong id="coin-display" style="color:#00ffcc;">5000</strong></span>
-      <span>Stage: <strong id="stage-display" style="color:#00ffcc;">5</strong></span>
+      <span>Stage: <strong id="stage-display" style="color:#00ffcc;">1</strong></span>
     </div>
 
     <div class="btn-group" style="width: 280px;">
@@ -311,7 +386,7 @@
     </div>
   </div>
 
-  <!-- Fullscreen Guns/Characters Store -->
+  <!-- Fullscreen Store -->
   <div id="store-screen" class="screen">
     <div class="fullscreen-store">
       <div class="store-header">
@@ -322,7 +397,8 @@
       <div class="store-display">
         <img id="store-img" class="full-item-img" src="" alt="Item">
         <div id="item-name" class="item-title">Item Name</div>
-        <div id="item-status" style="color: #00ffcc; font-weight: bold; margin-bottom: 15px;"></div>
+        <div id="item-stats" style="color: #aaa; margin: 4px 0;"></div>
+        <div id="item-status" style="color: #00ffcc; font-weight: bold; margin-bottom: 10px;"></div>
       </div>
 
       <div class="store-footer">
@@ -338,7 +414,7 @@
     <div class="stage-overlay">
       <div class="store-header">
         <div>
-          <label style="font-weight: bold; margin-right: 8px;">Select Background: </label>
+          <label style="font-weight: bold; margin-right: 8px;">Background: </label>
           <select id="bg-selector" onchange="changeBackground(this.value)">
             <option value="bg/ground.jfif">Ground</option>
             <option value="bg/ground1.jfif">Ground 1</option>
@@ -346,76 +422,84 @@
             <option value="bg/desert.jfif">Desert</option>
           </select>
         </div>
+        <div style="font-weight: bold; color: #00ffcc;">Distance: <span id="dist-val">5</span>m</div>
         <button class="btn" onclick="showScreen('main-menu')">Home</button>
       </div>
 
-      <div class="game-arena">
-        <div class="character-box">
-          <h3 style="color:#00ffcc;">USER</h3>
+      <div class="game-arena" id="arena-container">
+        <!-- User Unit -->
+        <div class="character-box" id="user-box" style="left: 50px;">
+          <h3 style="color:#00ffcc;" id="user-stage-name">USER</h3>
           <img id="user-stage-img" src="stage/user.jpg" alt="User">
+          <div style="font-size:0.8rem; color:#fff;" id="user-hp-val">HP: 200</div>
         </div>
-        
-        <h1 style="color:#ff0055; font-size: 3rem; text-shadow: 0 0 10px #ff0055;">VS</h1>
 
-        <div class="character-box">
+        <!-- Enemy Unit -->
+        <div class="character-box" id="enemy-box" style="right: 50px; border-color: #ff0055;">
           <h3 style="color:#ff0055;">ENEMY BOT</h3>
           <img id="enemy-stage-img" src="stage/enemy.jpg" alt="Enemy">
+          <div style="font-size:0.8rem; color:#fff;">HP: 300</div>
         </div>
+      </div>
+
+      <!-- Movement Control Panel -->
+      <div class="controls-panel">
+        <div class="move-btn-group">
+          <button class="btn" onclick="movePlayer(-10)">◀ Back</button>
+          <button class="btn" onclick="movePlayer(10)">Forward ▶</button>
+          <button class="btn btn-secondary" onclick="movePlayer(25)">Sprint ⚡</button>
+        </div>
+        <button class="btn" style="background:#ffaa00; color:#000;" onclick="nextStage()">Next Stage ➔</button>
       </div>
     </div>
   </div>
 
   <script>
-    // Game State
+    // Databases
+    const gunsDB = [
+      { name: "AK-47", damage: 10, price: 0, currency: "coins", file: "ak47.jfif" },
+      { name: "MP40", damage: 12, price: 2500, currency: "coins", file: "mp40.jfif" },
+      { name: "MP5", damage: 25, price: 5000, currency: "coins", file: "mp5.jfif" },
+      { name: "AN94", damage: 60, price: 50000, currency: "coins", file: "aug.jfif" },
+      { name: "XM8", damage: 57, price: 50000, currency: "coins", file: "m4a1.jfif" },
+      { name: "Plasma", damage: 57, price: 50000, currency: "coins", file: "tactical.jfif" },
+      { name: "G36", damage: 57, price: 50000, currency: "coins", file: "scar.jfif" },
+      { name: "AUG", damage: 56, price: 50000, currency: "coins", file: "aug.jfif" },
+      { name: "Shield Gun", damage: 54, price: 50000, currency: "coins", file: "tactical.jfif" },
+      { name: "FAMAS", damage: 53, price: 50000, currency: "coins", file: "scar.jfif" },
+      { name: "M4A1", damage: 53, price: 50000, currency: "coins", file: "m4a1.jfif" },
+      { name: "SCAR", damage: 53, price: 50000, currency: "coins", file: "scar.jfif" },
+      { name: "Kingfisher", damage: 52, price: 50000, currency: "coins", file: "aug.jfif" },
+      { name: "AWM", damage: 200, price: 0, currency: "diamond_special", file: "awm.jfif" },
+      { name: "SVD", damage: 200, price: 0, currency: "diamond_special", file: "svd.jfif" },
+      { name: "M-Gun", damage: 500, price: 0, currency: "diamond_special", file: "machine gun.jfif" }
+    ];
+
+    const charactersDB = [
+      { id: 1, name: "Character 1", hp: 200, price: 250, file: "character.jfif" },
+      { id: 2, name: "Character 2", hp: 400, price: 5000, file: "bot.jfif" },
+      { id: 3, name: "Character 3", hp: 800, price: 10000, file: "head.jfif" },
+      { id: 4, name: "Character 4", hp: 1000, price: 15000, file: "ira.jfif" },
+      { id: 5, name: "Character 5", hp: 1200, price: 20000, file: "mark.jfif" },
+      { id: 6, name: "Character 6", hp: 1400, price: 25000, file: "master.jfif" },
+      { id: 7, name: "Character 7", hp: 1600, price: 30000, file: "mister z.jfif" },
+      { id: 8, name: "Character 8", hp: 1800, price: 35000, file: "salman khan.jfif" },
+      { id: 9, name: "Character 9", hp: 2000, price: 40000, file: "sira.jfif" },
+      { id: 10, name: "Character 10", hp: 2500, price: 50000, file: "tiger shroff.jfif" }
+    ];
+
+    // User State
     const userData = {
       username: "taqi",
       coins: 5000,
-      stage: 5,
-      equippedGun: "ak47.jfif",
-      equippedCharacter: "character.jfif",
-      ownedGuns: ["ak47.jfif", "svd.jfif"],
-      ownedCharacters: ["character.jfif"]
+      stage: 1,
+      equippedGun: "AK-47",
+      equippedCharacter: 1,
+      ownedGuns: ["AK-47"],
+      ownedCharacters: [1]
     };
 
-    // ID Aliases Mappings
-    const gunAliasMap = {
-      "ak47.jfif": "default",
-      "aug.jfif": "today beautifull day",
-      "awm.jfif": "head hunter mein",
-      "m4a1.jfif": "army wala hon",
-      "machine gun.jfif": "aik dfa shroo hon tou phir",
-      "mp40.jfif": "i am bird ok",
-      "mp5-evo.jfif": "everyone know me",
-      "mp5.jfif": "i am a dragon",
-      "scar.jfif": "i am king of forest",
-      "svd.jfif": "ohh you are genuis",
-      "tactical.jfif": "ok my boss thanks"
-    };
-
-    const charAliasMap = {
-      "akshay kumar.jfif": "i am hero",
-      "bot.jfif": "i am ai",
-      "character.jfif": "default",
-      "head.jfif": "tum mujhy nahi janty",
-      "ira.jfif": "you are not kamyar",
-      "mark.jfif": "i am a black dot",
-      "master.jfif": "i am head of all",
-      "mister z.jfif": "you are not gen z",
-      "salman khan.jfif": "me are king",
-      "sira.jfif": "i am girl ok",
-      "sonia.jfif": "everyone see me on tv",
-      "tiger shroff.jfif": "i am floop actor"
-    };
-
-    const gunReverseMap = Object.fromEntries(Object.entries(gunAliasMap).map(([k, v]) => [v, k]));
-    const charReverseMap = Object.fromEntries(Object.entries(charAliasMap).map(([k, v]) => [v, k]));
-
-    const digitMap = { '1':'a', '2':'b', '3':'c', '4':'d', '5':'e', '6':'f', '7':'g', '8':'h', '9':'i', '0':'-' };
-    const digitReverseMap = Object.fromEntries(Object.entries(digitMap).map(([k, v]) => [v, k]));
-
-    const gunFiles = Object.keys(gunAliasMap);
-    const characterFiles = Object.keys(charAliasMap);
-
+    let userPosX = 50;
     let currentStoreType = "";
     let currentIndex = 0;
 
@@ -435,52 +519,18 @@
       if (!name) return alert("Please enter a name!");
       userData.username = name;
       userData.coins = 5000;
-      userData.stage = 5;
-      userData.ownedGuns = ["ak47.jfif", "svd.jfif"];
-      userData.equippedGun = "svd.jfif";
-      userData.ownedCharacters = ["character.jfif"];
-      userData.equippedCharacter = "character.jfif";
+      userData.stage = 1;
+      userData.ownedGuns = ["AK-47"];
+      userData.equippedGun = "AK-47";
+      userData.ownedCharacters = [1];
+      userData.equippedCharacter = 1;
 
       updateDashboardUI();
       showScreen('main-menu');
     }
 
-    // Encoding Logic
-    function encodeCoins(num) {
-      return String(num).split('').map(d => digitMap[d] || '').join('');
-    }
-
-    function decodeCoins(str) {
-      return parseInt(str.split('').map(c => digitReverseMap[c] || '').join('')) || 0;
-    }
-
-    function encodeStage(stageNum) {
-      let code = "";
-      let n = stageNum;
-      while (n > 0) {
-        let rem = (n - 1) % 26;
-        code = String.fromCharCode(97 + rem) + code;
-        n = Math.floor((n - 1) / 26);
-      }
-      return code || "a";
-    }
-
-    function decodeStage(code) {
-      let stage = 0;
-      for (let i = 0; i < code.length; i++) {
-        stage = stage * 26 + (code.charCodeAt(i) - 96);
-      }
-      return stage || 1;
-    }
-
     function saveUserIdentity() {
-      const gunsCode = userData.ownedGuns.map(g => gunAliasMap[g] || g).join(',');
-      const charCode = charAliasMap[userData.equippedCharacter] || userData.equippedCharacter;
-      const coinCode = encodeCoins(userData.coins);
-      const stageCode = encodeStage(userData.stage);
-
-      const generatedID = `${userData.username}+${gunsCode}+${charCode}+${coinCode}+${stageCode}`;
-      
+      const generatedID = `${userData.username}+${userData.ownedGuns.join(',')}+${userData.equippedCharacter}+${userData.coins}+${userData.stage}`;
       navigator.clipboard.writeText(generatedID).catch(()=>{});
       alert("Your Generated ID:\n\n" + generatedID);
     }
@@ -493,25 +543,17 @@
       if (parts.length < 5) return alert("Invalid ID format!");
 
       userData.username = parts[0];
-      
-      const gunAliases = parts[1].split(',');
-      userData.ownedGuns = gunAliases.map(a => gunReverseMap[a] || a);
-      userData.equippedGun = userData.ownedGuns[0] || "ak47.jfif";
-
-      const charAlias = parts[2];
-      userData.equippedCharacter = charReverseMap[charAlias] || charAlias;
-      if (!userData.ownedCharacters.includes(userData.equippedCharacter)) {
-        userData.ownedCharacters.push(userData.equippedCharacter);
-      }
-
-      userData.coins = decodeCoins(parts[3]);
-      userData.stage = decodeStage(parts[4]);
+      userData.ownedGuns = parts[1].split(',');
+      userData.equippedGun = userData.ownedGuns[0] || "AK-47";
+      userData.equippedCharacter = parseInt(parts[2]) || 1;
+      userData.coins = parseInt(parts[3]) || 5000;
+      userData.stage = parseInt(parts[4]) || 1;
 
       updateDashboardUI();
       showScreen('main-menu');
     }
 
-    // Fullscreen Stores Mechanics
+    // Stores Mechanics
     function openStore(type) {
       currentStoreType = type;
       currentIndex = 0;
@@ -521,19 +563,20 @@
     }
 
     function updateStoreItem() {
-      const list = currentStoreType === 'guns' ? gunFiles : characterFiles;
-      const folder = currentStoreType === 'guns' ? 'gun/' : 'characters/';
-      const fileName = list[currentIndex];
-      
-      document.getElementById('store-img').src = folder + fileName;
-      document.getElementById('item-name').innerText = fileName;
+      const isGuns = currentStoreType === 'guns';
+      const item = isGuns ? gunsDB[currentIndex] : charactersDB[currentIndex];
+      const folder = isGuns ? 'gun/' : 'characters/';
 
-      const isOwned = currentStoreType === 'guns' 
-        ? userData.ownedGuns.includes(fileName)
-        : userData.ownedCharacters.includes(fileName);
+      document.getElementById('store-img').src = folder + item.file;
+      document.getElementById('item-name').innerText = item.name;
+      document.getElementById('item-stats').innerText = isGuns ? `Damage: ${item.damage}` : `HP: ${item.hp}`;
 
       const buyBtn = document.getElementById('buy-btn');
       const statusText = document.getElementById('item-status');
+
+      const isOwned = isGuns 
+        ? userData.ownedGuns.includes(item.name)
+        : userData.ownedCharacters.includes(item.id);
 
       if (isOwned) {
         statusText.innerText = "Status: OWNED";
@@ -541,50 +584,59 @@
         buyBtn.style.background = "#00ffcc";
         buyBtn.style.color = "#000";
       } else {
-        statusText.innerText = "Price: 200 Coins";
-        buyBtn.innerText = "Buy";
-        buyBtn.style.background = "#ff0055";
-        buyBtn.style.color = "#fff";
+        if (isGuns && item.currency === "diamond_special") {
+          statusText.innerText = "Special Diamond Gun";
+          buyBtn.innerText = "Buy Special";
+          buyBtn.style.background = "#ff0055";
+          buyBtn.style.color = "#fff";
+        } else {
+          statusText.innerText = `Price: ${item.price} Coins`;
+          buyBtn.innerText = "Buy";
+          buyBtn.style.background = "#ff0055";
+          buyBtn.style.color = "#fff";
+        }
       }
     }
 
     function nextItem() {
-      const list = currentStoreType === 'guns' ? gunFiles : characterFiles;
-      currentIndex = (currentIndex + 1) % list.length;
+      const max = currentStoreType === 'guns' ? gunsDB.length : charactersDB.length;
+      currentIndex = (currentIndex + 1) % max;
       updateStoreItem();
     }
 
     function prevItem() {
-      const list = currentStoreType === 'guns' ? gunFiles : characterFiles;
-      currentIndex = (currentIndex - 1 + list.length) % list.length;
+      const max = currentStoreType === 'guns' ? gunsDB.length : charactersDB.length;
+      currentIndex = (currentIndex - 1 + max) % max;
       updateStoreItem();
     }
 
     function buyOrEquip() {
-      const list = currentStoreType === 'guns' ? gunFiles : characterFiles;
-      const item = list[currentIndex];
+      const isGuns = currentStoreType === 'guns';
+      const item = isGuns ? gunsDB[currentIndex] : charactersDB[currentIndex];
 
-      if (currentStoreType === 'guns') {
-        if (userData.ownedGuns.includes(item)) {
-          userData.equippedGun = item;
+      if (isGuns) {
+        if (userData.ownedGuns.includes(item.name)) {
+          userData.equippedGun = item.name;
           alert("Gun Equipped!");
-        } else if (userData.coins >= 200) {
-          userData.coins -= 200;
-          userData.ownedGuns.push(item);
-          userData.equippedGun = item;
+        } else if (item.currency === "diamond_special") {
+          document.getElementById('buy-id-modal').style.display = 'block';
+        } else if (userData.coins >= item.price) {
+          userData.coins -= item.price;
+          userData.ownedGuns.push(item.name);
+          userData.equippedGun = item.name;
           updateDashboardUI();
           alert("Gun Bought & Equipped!");
         } else {
           alert("Not enough coins!");
         }
       } else {
-        if (userData.ownedCharacters.includes(item)) {
-          userData.equippedCharacter = item;
+        if (userData.ownedCharacters.includes(item.id)) {
+          userData.equippedCharacter = item.id;
           alert("Character Equipped!");
-        } else if (userData.coins >= 200) {
-          userData.coins -= 200;
-          userData.ownedCharacters.push(item);
-          userData.equippedCharacter = item;
+        } else if (userData.coins >= item.price) {
+          userData.coins -= item.price;
+          userData.ownedCharacters.push(item.id);
+          userData.equippedCharacter = item.id;
           updateDashboardUI();
           alert("Character Bought & Equipped!");
         } else {
@@ -594,10 +646,39 @@
       updateStoreItem();
     }
 
-    // Stage Screen BG Logic
+    function closeBuyModal() {
+      document.getElementById('buy-id-modal').style.display = 'none';
+    }
+
+    // Stage Engine & Distance Logic
     function openStage() {
       showScreen('stage-screen');
-      changeBackground(document.getElementById('bg-selector').value);
+      userPosX = 50;
+      updateStageLayout();
+    }
+
+    function updateStageLayout() {
+      const distance = userData.stage * 5; // Distance grows per stage (5m, 10m, 15m...)
+      document.getElementById('dist-val').innerText = distance;
+
+      const userBox = document.getElementById('user-box');
+      userBox.style.left = userPosX + "px";
+
+      const currentChar = charactersDB.find(c => c.id === userData.equippedCharacter) || charactersDB[0];
+      document.getElementById('user-stage-name').innerText = currentChar.name;
+      document.getElementById('user-hp-val').innerText = `HP: ${currentChar.hp}`;
+    }
+
+    function movePlayer(offset) {
+      const arenaWidth = document.getElementById('arena-container').clientWidth;
+      userPosX = Math.max(20, Math.min(arenaWidth - 200, userPosX + offset));
+      document.getElementById('user-box').style.left = userPosX + "px";
+    }
+
+    function nextStage() {
+      userData.stage += 1;
+      updateDashboardUI();
+      openStage();
     }
 
     function changeBackground(bgPath) {
