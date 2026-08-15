@@ -25,11 +25,13 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Initialize Capacitor Project
+      - name: Prepare Web Assets & Initialize Capacitor
         run: |
+          mkdir -p www
+          cp -r * www/ 2>/dev/null || true
           npm init -y
           npm install @capacitor/core @capacitor/cli @capacitor/android @capacitor/assets
-          npx cap init "Project Alpha" "com.taqi.projectalpha" --web-dir "."
+          npx cap init "Project Alpha" "com.taqi.projectalpha" --web-dir "www"
           npx cap add android
 
       - name: Generate Icon & Splash Screen
@@ -47,7 +49,7 @@ jobs:
         run: |
           MANIFEST_PATH="android/app/src/main/AndroidManifest.xml"
           if [ -f "$MANIFEST_PATH" ]; then
-            sed -i 's/<activity /<activity android:screenOrientation="landscape" /g' $MANIFEST_PATH
+            sed -i 's/<activity /<activity android:screenOrientation="sensorLandscape" /g' $MANIFEST_PATH
           fi
 
       - name: Sync Capacitor
