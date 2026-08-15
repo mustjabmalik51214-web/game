@@ -17,7 +17,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
       - name: Setup Java JDK
         uses: actions/setup-java@v4
@@ -35,9 +35,13 @@ jobs:
       - name: Generate Icon & Splash Screen
         run: |
           mkdir -p assets
-          cp icon.png assets/icon.png || true
-          cp splash.png assets/splash.png || true
-          npx capacitor-assets generate --android
+          if [ -f "icon.png" ] && [ -f "splash.png" ]; then
+            cp icon.png assets/icon.png
+            cp splash.png assets/splash.png
+            npx capacitor-assets generate --android
+          else
+            echo "Icon or Splash file missing, skipping assets generation..."
+          fi
 
       - name: Force Landscape Orientation
         run: |
