@@ -499,7 +499,7 @@
             <button onclick="showScreen('store-screen')">🛍️ CHARACTER STORE</button>
             <button onclick="showScreen('upgrade-screen')">⚡ UPGRADES</button>
             <button onclick="showScreen('bot-screen')">🤖 BOT MANAGEMENT</button>
-            <button onclick="buyGenericBot()">➕ BUY BOT (1200 🪙)</button>
+            <button onclick="buyGenericBot()">➕ BUY BOT (500 🪙)</button>
         </div>
         <div class="creator-link" onclick="openCreatorLink()">created by muhammad taqi</div>
     </div>
@@ -563,8 +563,8 @@
 
     <!-- Stages Screen -->
     <div id="stages-screen" class="screen">
-        <h2>SELECT STAGE (1-300)</h2>
-        <p style="margin:10px;">Map 1: Stages 1-100 | Map 2: Stages 101-300 (unlock after Stage 100)</p>
+        <h2>SELECT STAGE (1-200)</h2>
+        <p style="margin:10px;">Defeat all 200 stages to become the ultimate champion!</p>
         <br>
         <div class="stage-grid" id="stage-grid"></div>
         <button onclick="showScreen('home-screen')">BACK TO MENU</button>
@@ -861,13 +861,13 @@
         }
 
         function buyGenericBot() {
-            if (userData.coins >= 1200) {
-                userData.coins -= 1200;
+            if (userData.coins >= 500) {
+                userData.coins -= 500;
                 userData.genericBots++;
                 saveData();
                 alert("Generic Bot purchased! 🤖");
             } else {
-                alert("Not enough coins! Need 1200 🪙.");
+                alert("Not enough coins! Need 500 🪙.");
             }
         }
 
@@ -901,10 +901,9 @@
         function renderStages() {
             const grid = document.getElementById('stage-grid');
             grid.innerHTML = '';
-            const map1End = 100;
-            const map2End = 300;
+            const totalStages = 200;
             
-            for (let i = 1; i <= map2End; i++) {
+            for (let i = 1; i <= totalStages; i++) {
                 const btn = document.createElement('button');
                 btn.className = 'stage-btn';
                 
@@ -1087,30 +1086,23 @@
 
             enemyUnits = [];
             
-            if (stageNum <= 100) {
-                // Map 1: enemy HP = 72 * stageNum
-                let eMaxHp = 72 * stageNum;
-                let eDmg = 10 + Math.floor((stageNum - 1) * 0.5);
-                let enemyMain = createUnit(canvas.width - 160, canvas.height - 130, eMaxHp, eDmg, '#ff4757', 'rgba(255, 71, 87, 0.8)', false, 'Enemy', 0.7);
-                enemyUnits.push(enemyMain);
-            } else {
-                let mainEnemy = createUnit(canvas.width - 160, canvas.height - 130, 500, 50, '#ff4757', 'rgba(255, 71, 87, 0.8)', false, 'Boss Enemy', 0.7);
-                enemyUnits.push(mainEnemy);
-                
-                let botCount = stageNum - 100;
-                for (let i = 0; i < botCount; i++) {
-                    let enemyBot = createUnit(
-                        canvas.width - 160 - (i+1)*70, canvas.height - 130,
-                        200, 15,
-                        '#ff8c00', 'rgba(255, 140, 0, 0.6)',
-                        false, `Enemy Bot ${i+1}`, 1.0
-                    );
-                    enemyUnits.push(enemyBot);
-                }
+            // Always use Map 2 style enemies (new stages 1-200 = old 101-300)
+            let mainEnemy = createUnit(canvas.width - 160, canvas.height - 130, 500, 50, '#ff4757', 'rgba(255, 71, 87, 0.8)', false, 'Boss Enemy', 0.7);
+            enemyUnits.push(mainEnemy);
+            
+            let botCount = stageNum; // stage 1 has 1 bot, stage 200 has 200 bots
+            for (let i = 0; i < botCount; i++) {
+                let enemyBot = createUnit(
+                    canvas.width - 160 - (i+1)*70, canvas.height - 130,
+                    200, 15,
+                    '#ff8c00', 'rgba(255, 140, 0, 0.6)',
+                    false, `Enemy Bot ${i+1}`, 1.0
+                );
+                enemyUnits.push(enemyBot);
             }
 
             document.getElementById('player-name-display').innerText = userData.name;
-            document.getElementById('stage-display').innerText = `Stage ${stageNum} (${stageNum <= 100 ? 'Map 1' : 'Map 2'})`;
+            document.getElementById('stage-display').innerText = `Stage ${stageNum}`;
             
             updateMainHPBars();
 
@@ -1391,7 +1383,7 @@
             if (won) {
                 if (currentStage === userData.unlockedStage) {
                     prize = 500;
-                    if (userData.unlockedStage < 300) {
+                    if (userData.unlockedStage < 200) {
                         userData.unlockedStage += 1;
                     }
                 } else {
