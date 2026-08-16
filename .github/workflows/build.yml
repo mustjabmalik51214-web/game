@@ -32,7 +32,7 @@ jobs:
           npm install -g cordova
           
           # 1. Create Cordova project
-          cordova create app com.stickman3.taqi "Stickman 3 Horror Night"
+          cordova create app com.stickman.nexura "Stickman Runner"
           
           # 2. Copy Web Source Assets
           cp -r index.html app/www/ 2>/dev/null || true
@@ -61,5 +61,5 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: STICKMAN-HORROR-NIGHT-3
+          name: Stickman-Runner-GAME
           path: app/platforms/android/app/build/outputs/apk/debug/app-debug.apk
