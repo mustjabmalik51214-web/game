@@ -477,6 +477,8 @@ let player = {
   height: 50,
   velocityY: 0,
   isGrounded: false,
+  jumpCount: 0, // Track up to 4 jumps
+  maxJumps: 4,  // 4 Jumps Limit
   animFrame: 0
 };
 
@@ -491,10 +493,12 @@ function update() {
   player.velocityY += gravity;
   player.y += player.velocityY;
 
+  // Ground Collision & Jump Reset
   if (player.y >= 360) {
     player.y = 360;
     player.velocityY = 0;
     player.isGrounded = true;
+    player.jumpCount = 0; // Reset jumps back to 0 on ground touch
   }
 
   player.animFrame += 0.25; 
@@ -657,11 +661,12 @@ function drawStickman(x, y, color, frame, isGrounded) {
   ctx.shadowBlur = 0;
 }
 
-// --- CONTROLS & BACK BUTTON HANDLING ---
+// --- CONTROLS & 4-JUMP MECHANIC ---
 function jump() {
-  if (player.isGrounded && isPlaying) {
-    player.velocityY = -10.5;
+  if (isPlaying && player.jumpCount < player.maxJumps) {
+    player.velocityY = -10.5; // Jump strength
     player.isGrounded = false;
+    player.jumpCount++;      // Increment jump count up to 4
   }
 }
 
@@ -669,7 +674,6 @@ window.addEventListener('keydown', e => {
   if (e.code === 'Space' || e.code === 'ArrowUp') {
     jump();
   } else if (e.code === 'Escape') {
-    // Return to Main Menu on ESC key press
     showMainMenu();
   }
 });
@@ -719,6 +723,7 @@ function startGame() {
   coinsArr = [];
   player.y = 360;
   player.velocityY = 0;
+  player.jumpCount = 0; // Reset jump counter at start
 
   closeModals();
   updateHUD();
@@ -737,7 +742,7 @@ function updateHUD() {
 }
 
 function showMainMenu() {
-  isPlaying = false; // Pause gameplay if active
+  isPlaying = false;
   closeModals();
   document.getElementById('mainMenu').classList.remove('hidden');
   updateHUD();
