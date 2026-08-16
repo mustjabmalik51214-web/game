@@ -630,7 +630,8 @@
             baseHp: 250,
             unlockedStage: 1,
             genericBots: 0,
-            activeBots: []
+            activeBots: [],
+            freeCoinsGiven: false  // NEW: track if the welcome bonus has been granted
         };
 
         let currentStage = 1;
@@ -644,6 +645,8 @@
                 if (!userData.unlockedStage) userData.unlockedStage = 1;
                 if (!userData.genericBots) userData.genericBots = 0;
                 if (!userData.activeBots) userData.activeBots = [];
+                // Ensure freeCoinsGiven exists for backward compatibility
+                if (userData.freeCoinsGiven === undefined) userData.freeCoinsGiven = false;
                 return true;
             }
             return false;
@@ -691,6 +694,11 @@
             const input = document.getElementById('username-input').value.trim();
             if (input) {
                 userData.name = input;
+                // Give 1500 free coins if this is a new user (first time entering name)
+                if (!userData.freeCoinsGiven) {
+                    userData.coins = 1500;
+                    userData.freeCoinsGiven = true;
+                }
                 saveData();
                 showScreen('home-screen');
             }
