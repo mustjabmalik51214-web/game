@@ -1,1415 +1,889 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STICKMAN FIGHT - Deluxe Edition</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary: #8a2be2;
-            --primary-glow: #a855f7;
-            --accent: #ff2a6d;
-            --cyan: #05d9e8;
-            --gold: #ffb703;
-            --bg-dark: #0b0c10;
-            --card-bg: rgba(30, 31, 48, 0.7);
-            --border-glow: rgba(168, 85, 247, 0.3);
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stickman Runner Ultimate - Created by Muhammad Taqi</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600;700&display=swap');
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            user-select: none;
-            font-family: 'Poppins', sans-serif;
-        }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      font-family: 'Poppins', sans-serif;
+    }
 
-        body {
-            background-color: var(--bg-dark);
-            color: #ffffff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            overflow: hidden;
-            background: radial-gradient(circle at center, #1f1a3a 0%, #080711 100%);
-        }
+    body {
+      background: radial-gradient(circle at center, #1e1b4b, #0f172a, #020617);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
 
-        body::before {
-            content: '';
-            position: absolute;
-            width: 300px;
-            height: 300px;
-            background: var(--primary-glow);
-            filter: blur(150px);
-            opacity: 0.15;
-            top: 10%;
-            left: 10%;
-            z-index: 0;
-        }
+    /* Top Developer Branding Header */
+    .dev-branding {
+      position: absolute;
+      top: 15px;
+      left: 20px;
+      font-size: 14px;
+      letter-spacing: 1px;
+      color: #94a3b8;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 8px 20px;
+      border-radius: 30px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      z-index: 100;
+    }
 
-        body::after {
-            content: '';
-            position: absolute;
-            width: 300px;
-            height: 300px;
-            background: var(--cyan);
-            filter: blur(150px);
-            opacity: 0.15;
-            bottom: 10%;
-            right: 10%;
-            z-index: 0;
-        }
+    .dev-branding a {
+      color: #38bdf8;
+      text-decoration: none;
+      font-weight: 700;
+      font-family: 'Orbitron', sans-serif;
+      text-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
 
-        .screen {
-            display: none;
-            width: 100vw;
-            height: 100vh;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 10;
-            backdrop-filter: blur(8px);
-        }
+    .dev-branding a:hover {
+      color: #818cf8;
+      text-shadow: 0 0 20px rgba(129, 140, 248, 1);
+      text-decoration: underline;
+    }
 
-        .active {
-            display: flex;
-        }
+    /* Profile Badge on Top Right */
+    .user-profile-badge {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(15, 23, 42, 0.85);
+      padding: 6px 16px;
+      border-radius: 30px;
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      z-index: 100;
+      transition: all 0.3s ease;
+    }
 
-        button {
-            padding: 12px 28px;
-            font-size: 15px;
-            font-weight: 700;
-            font-family: 'Orbitron', sans-serif;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            background: linear-gradient(135deg, #7928ca, #ff0080);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            box-shadow: 0 4px 20px rgba(121, 40, 202, 0.4);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
+    .user-profile-badge:hover {
+      border-color: #38bdf8;
+      box-shadow: 0 0 25px rgba(56, 189, 248, 0.5);
+      transform: translateY(-2px);
+    }
 
-        button:hover {
-            transform: translateY(-2px) scale(1.03);
-            box-shadow: 0 6px 25px rgba(255, 0, 128, 0.6);
-        }
+    .user-avatar {
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, #ef4444, #38bdf8);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 14px;
+    }
 
-        button:active {
-            transform: translateY(1px) scale(0.97);
-        }
+    /* Main Canvas Container */
+    #game-container {
+      position: relative;
+      width: 900px;
+      height: 500px;
+      background: #000;
+      border-radius: 24px;
+      box-shadow: 0 0 60px rgba(56, 189, 248, 0.25), 0 20px 50px rgba(0,0,0,0.9);
+      overflow: hidden;
+      border: 2px solid rgba(56, 189, 248, 0.3);
+      margin-top: 30px;
+    }
 
-        button:disabled {
-            background: #333 !important;
-            color: #777 !important;
-            cursor: not-allowed;
-            box-shadow: none !important;
-            transform: none !important;
-        }
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
 
-        h1.game-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 52px;
-            font-weight: 900;
-            text-align: center;
-            background: linear-gradient(180deg, #ffffff 20%, #a855f7 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 30px rgba(168, 85, 247, 0.5);
-            margin-bottom: 30px;
-            letter-spacing: 2px;
-        }
+    /* HUD Bar */
+    .ui-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 20px;
+    }
 
-        h2 {
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 700;
-            letter-spacing: 1px;
-            color: #fff;
-            text-shadow: 0 0 10px rgba(255,255,255,0.3);
-        }
+    .hud {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      z-index: 5;
+    }
 
-        #name-screen {
-            background: rgba(11, 12, 16, 0.85);
-        }
+    .hud-box {
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(12px);
+      padding: 10px 22px;
+      border-radius: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
 
-        #name-screen input {
-            padding: 14px 24px;
-            font-size: 18px;
-            border-radius: 12px;
-            border: 2px solid var(--primary-glow);
-            outline: none;
-            margin-bottom: 20px;
-            text-align: center;
-            background: rgba(20, 21, 33, 0.8);
-            color: #fff;
-            box-shadow: 0 0 15px rgba(168, 85, 247, 0.2);
-            transition: 0.3s;
-        }
+    /* Glassmorphism Modals */
+    .modal {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(10, 15, 30, 0.88);
+      backdrop-filter: blur(16px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      pointer-events: auto;
+      z-index: 10;
+      transition: all 0.3s ease;
+    }
 
-        #name-screen input:focus {
-            border-color: var(--cyan);
-            box-shadow: 0 0 25px rgba(5, 217, 232, 0.4);
-        }
+    .hidden {
+      display: none !important;
+    }
 
-        .creator-link {
-            position: absolute;
-            bottom: 20px;
-            color: #a855f7;
-            text-decoration: none;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            letter-spacing: 1px;
-            transition: 0.3s;
-            background: rgba(168, 85, 247, 0.1);
-            padding: 8px 18px;
-            border-radius: 20px;
-            border: 1px solid rgba(168, 85, 247, 0.3);
-        }
+    h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 46px;
+      font-weight: 900;
+      margin-bottom: 5px;
+      background: linear-gradient(135deg, #ef4444, #38bdf8, #f59e0b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 30px rgba(56, 189, 248, 0.4);
+    }
 
-        .creator-link:hover {
-            color: #fff;
-            background: var(--primary-glow);
-            box-shadow: 0 0 15px var(--primary-glow);
-        }
+    h2, h3 {
+      font-family: 'Orbitron', sans-serif;
+      color: #38bdf8;
+      letter-spacing: 1px;
+    }
 
-        .stats-bar {
-            position: absolute;
-            top: 25px;
-            right: 30px;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(12px);
-            padding: 10px 22px;
-            border-radius: 30px;
-            font-size: 18px;
-            font-weight: 700;
-            font-family: 'Orbitron', sans-serif;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            color: var(--gold);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+    .btn {
+      background: linear-gradient(135deg, #0284c7, #2563eb);
+      color: #fff;
+      border: none;
+      padding: 12px 30px;
+      font-size: 16px;
+      font-weight: 700;
+      border-radius: 12px;
+      cursor: pointer;
+      margin: 8px;
+      box-shadow: 0 4px 20px rgba(2, 132, 199, 0.4);
+      transition: all 0.25s ease;
+    }
 
-        .menu-btns {
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-            width: 250px;
-        }
+    .btn:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 8px 25px rgba(2, 132, 199, 0.7);
+      background: linear-gradient(135deg, #38bdf8, #3d82f6);
+    }
 
-        .store-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-            width: 90%;
-            height: 68vh;
-            overflow-y: auto;
-            padding: 15px;
-            background: rgba(18, 19, 31, 0.6);
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            margin-bottom: 20px;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
-        }
+    .btn-secondary {
+      background: linear-gradient(135deg, #334155, #1e293b);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
 
-        .store-grid::-webkit-scrollbar {
-            width: 8px;
-        }
+    .btn-danger {
+      background: linear-gradient(135deg, #dc2626, #991b1b);
+      box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4);
+    }
 
-        .store-grid::-webkit-scrollbar-thumb {
-            background: var(--primary-glow);
-            border-radius: 10px;
-        }
+    /* Grids & Cards */
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      max-height: 280px;
+      overflow-y: auto;
+      width: 90%;
+      padding: 15px;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      margin: 15px 0;
+    }
 
-        .char-card {
-            background: var(--card-bg);
-            padding: 18px;
-            border-radius: 16px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-            border: 1px solid var(--border-glow);
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            position: relative;
-        }
+    .grid-container::-webkit-scrollbar {
+      width: 6px;
+    }
+    .grid-container::-webkit-scrollbar-thumb {
+      background: #38bdf8;
+      border-radius: 10px;
+    }
 
-        .char-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--cyan);
-            box-shadow: 0 10px 25px rgba(5, 217, 232, 0.2);
-        }
+    .grid-card {
+      background: rgba(30, 41, 59, 0.7);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 12px 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
 
-        .char-card.owned {
-            border-color: #2ed573;
-            background: rgba(46, 213, 115, 0.08);
-        }
+    .grid-card.active {
+      border-color: #38bdf8;
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.5);
+      background: rgba(56, 189, 248, 0.15);
+    }
 
-        .char-preview {
-            width: 80px;
-            height: 90px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 12px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
+    .grid-card.locked {
+      opacity: 0.5;
+      filter: grayscale(0.6);
+    }
 
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(10px);
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-        }
+    .grid-card p {
+      font-size: 11px;
+      margin-top: 6px;
+      font-weight: 600;
+    }
 
-        .modal-content {
-            background: #181926;
-            padding: 30px;
-            border-radius: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-            text-align: center;
-            width: 320px;
-            border: 1px solid var(--primary-glow);
-            box-shadow: 0 0 30px rgba(168, 85, 247, 0.3);
-        }
+    input[type="text"] {
+      padding: 12px 20px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(15, 23, 42, 0.8);
+      color: #fff;
+      font-size: 16px;
+      margin: 10px 0;
+      width: 280px;
+      text-align: center;
+      outline: none;
+    }
 
-        #iframe-container {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: #000;
-            z-index: 200;
-        }
+    /* Fullscreen iFrame Overlay */
+    #iframe-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+    }
 
-        #iframe-container iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
+    #iframe-overlay iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
 
-        #close-iframe {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            z-index: 201;
-            background: #ff4757;
-            padding: 10px 20px;
-        }
-
-        #game-screen {
-            background: #05050d;
-        }
-
-        #game-canvas {
-            background: linear-gradient(180deg, #101227 0%, #1a1c38 80%, #0d2818 100%);
-            border-bottom: 6px solid #2ed573;
-            box-shadow: 0 0 50px rgba(46, 213, 115, 0.2);
-        }
-
-        .game-ui {
-            position: absolute;
-            top: 20px;
-            left: 0;
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            padding: 0 40px;
-            box-sizing: border-box;
-            z-index: 20;
-        }
-
-        .fighter-info {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .fighter-info span {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 14px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        .hp-container {
-            width: 240px;
-            background: rgba(0,0,0,0.6);
-            height: 22px;
-            border-radius: 12px;
-            overflow: hidden;
-            border: 2px solid rgba(255,255,255,0.3);
-            box-shadow: 0 0 10px rgba(0,0,0,0.5);
-        }
-
-        .hp-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #ff4757, #ff6b81);
-            width: 100%;
-            transition: width 0.15s ease-out;
-            box-shadow: 0 0 10px #ff4757;
-        }
-
-        .controls {
-            position: absolute;
-            bottom: 25px;
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            padding: 0 50px;
-            box-sizing: border-box;
-            z-index: 20;
-        }
-
-        .d-pad, .action-btns {
-            display: flex;
-            gap: 20px;
-        }
-
-        .ctrl-btn {
-            width: 65px;
-            height: 65px;
-            border-radius: 50%;
-            font-size: 22px;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            touch-action: manipulation;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-            transition: 0.1s;
-        }
-
-        .ctrl-btn:active {
-            background: var(--primary-glow);
-            transform: scale(0.92);
-            box-shadow: 0 0 20px var(--primary-glow);
-        }
-
-        .stage-grid {
-            display: grid;
-            grid-template-columns: repeat(10, 1fr);
-            gap: 12px;
-            width: 85%;
-            max-height: 60vh;
-            overflow-y: auto;
-            padding: 20px;
-            background: rgba(18, 19, 31, 0.6);
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            margin-bottom: 20px;
-        }
-
-        .stage-grid::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .stage-grid::-webkit-scrollbar-thumb {
-            background: var(--primary-glow);
-            border-radius: 10px;
-        }
-
-        .stage-btn {
-            padding: 12px 0;
-            font-size: 14px;
-            border-radius: 10px;
-            background: linear-gradient(135deg, #2b2d42, #3d405b);
-            box-shadow: none;
-        }
-
-        .stage-btn.locked {
-            background: rgba(255,255,255,0.05) !important;
-            color: #555 !important;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .bot-list {
-            width: 90%;
-            max-height: 50vh;
-            overflow-y: auto;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            justify-content: center;
-            padding: 20px;
-            background: rgba(18,19,31,0.6);
-            border-radius: 20px;
-            margin-bottom: 20px;
-        }
-
-        .bot-toggle-card {
-            background: var(--card-bg);
-            padding: 12px;
-            border-radius: 12px;
-            width: 150px;
-            text-align: center;
-            border: 1px solid var(--border-glow);
-        }
-
-        .bot-toggle-card.selected {
-            border-color: #2ed573;
-            background: rgba(46,213,115,0.1);
-        }
-    </style>
+    #iframe-overlay .close-iframe {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      z-index: 51;
+    }
+  </style>
 </head>
 <body>
 
-    <!-- Name Screen -->
-    <div id="name-screen" class="screen">
-        <h1 class="game-title">STICKMAN FIGHT</h1>
-        <h2>WELCOME FIGHTER</h2>
-        <br>
-        <input type="text" id="username-input" placeholder="Enter Your Name...">
-        <button onclick="saveName()">START GAME</button>
+<!-- Header with Developer Link -->
+<div class="dev-branding">
+  Created by <a href="https://nexura.oneapp.dev/" target="_blank">Muhammad Taqi</a>
+</div>
+
+<!-- Profile Badge on Top Right -->
+<div class="user-profile-badge" onclick="openProfileModal()" title="Click to Change Username">
+  <div class="user-avatar" id="avatarLetter">P</div>
+  <span id="profileUsername" style="font-size: 14px; font-weight: 600;">Player1</span>
+  <span style="font-size: 10px; color: #38bdf8;">✏️</span>
+</div>
+
+<div id="game-container">
+  <canvas id="gameCanvas" width="900" height="500"></canvas>
+
+  <div class="ui-layer">
+    <div class="hud">
+      <div class="hud-box" id="scoreDisplay">SCORE: 0</div>
+      <div class="hud-box" id="coinDisplay">COINS: 🪙 0</div>
     </div>
+  </div>
 
-    <!-- Home Screen -->
-    <div id="home-screen" class="screen">
-        <div class="stats-bar">🪙 <span id="coin-display">0</span> | 🤖 <span id="bot-count-display">0</span></div>
-        <h1 class="game-title">STICKMAN FIGHT</h1>
-        <div class="menu-btns">
-            <button onclick="showScreen('stages-screen')">🎮 PLAY STAGES</button>
-            <button onclick="showScreen('store-screen')">🛍️ CHARACTER STORE</button>
-            <button onclick="showScreen('upgrade-screen')">⚡ UPGRADES</button>
-            <button onclick="showScreen('bot-screen')">🤖 BOT MANAGEMENT</button>
-            <button onclick="buyGenericBot()">➕ BUY BOT (500 🪙)</button>
-        </div>
-        <div class="creator-link" onclick="openCreatorLink()">created by muhammad taqi</div>
+  <!-- Main Menu -->
+  <div id="mainMenu" class="modal">
+    <h1>STICKMAN RUNNER</h1>
+    <p style="color: #94a3b8; font-size: 14px; margin-bottom: 25px;">Created by <a href="https://nexura.oneapp.dev/" target="_blank" style="color: #38bdf8; text-decoration: none; font-weight: bold;">Muhammad Taqi</a></p>
+    
+    <div>
+      <button class="btn" onclick="startGame()">PLAY GAME</button>
+      <button class="btn btn-secondary" onclick="openShop()">CHARACTERS (50)</button>
+      <button class="btn btn-secondary" onclick="openMaps()">MAPS (10)</button>
     </div>
+  </div>
 
-    <!-- Store Screen -->
-    <div id="store-screen" class="screen">
-        <h2>CHARACTER STORE</h2>
-        <div class="stats-bar">🪙 <span id="store-coin-display">0</span></div>
-        <br>
-        <div class="store-grid" id="store-grid"></div>
-        <button onclick="showScreen('home-screen')">BACK TO MENU</button>
+  <!-- Username Modal -->
+  <div id="profileModal" class="modal hidden">
+    <h2>CHANGE USERNAME</h2>
+    <p style="font-size: 13px; color: #94a3b8; margin-bottom: 10px;">Set your custom player name</p>
+    <input type="text" id="usernameInputModal" placeholder="Enter Username">
+    <div>
+      <button class="btn" onclick="saveUsername()">SAVE</button>
+      <button class="btn btn-secondary" onclick="showMainMenu()">BACK</button>
     </div>
+  </div>
 
-    <!-- Bot Management Screen -->
-    <div id="bot-screen" class="screen">
-        <h2>BOT MANAGEMENT</h2>
-        <div class="stats-bar">🪙 <span id="bot-coin-display">0</span> | 🤖 <span id="bot-generic-count">0</span></div>
-        <p style="margin:10px 0;">Select owned characters to use as bots in battle</p>
-        <div class="bot-list" id="bot-list"></div>
-        <button onclick="showScreen('home-screen')">BACK TO MENU</button>
+  <!-- Shop Modal -->
+  <div id="shopModal" class="modal hidden">
+    <h2>CHARACTER SHOP</h2>
+    <p style="font-size: 13px; color: #94a3b8; margin-bottom: 5px;">50 Vibrant & Glowing Stickmen (40 Coins each)</p>
+    <div class="grid-container" id="characterGrid"></div>
+    <button class="btn btn-secondary" onclick="showMainMenu()">MAIN MENU</button>
+  </div>
+
+  <!-- Maps Modal -->
+  <div id="mapsModal" class="modal hidden">
+    <h2>SELECT MAP</h2>
+    <p style="font-size: 13px; color: #94a3b8; margin-bottom: 5px;">10 Beautiful Parallax Environments</p>
+    <div class="grid-container" id="mapsGrid"></div>
+    <button class="btn btn-secondary" onclick="showMainMenu()">MAIN MENU</button>
+  </div>
+
+  <!-- Purchase Option Modal -->
+  <div id="purchaseOptionModal" class="modal hidden">
+    <h3 id="buyCharTitle">Unlock Character</h3>
+    <p id="buyCharSub" style="color:#94a3b8; font-size: 13px; margin-bottom: 20px;"></p>
+    <div>
+      <button class="btn" onclick="openPasswordPrompt()">Use Password</button>
+      <button class="btn btn-secondary" onclick="openIframePortal()">Buy via Portal</button>
     </div>
+    <button class="btn btn-danger" style="margin-top: 15px;" onclick="closePurchaseOptions()">CANCEL</button>
+  </div>
 
-    <!-- Buy Options Modal -->
-    <div id="buy-modal" class="modal">
-        <div class="modal-content">
-            <h3>UNLOCK CHARACTER</h3>
-            <p style="color: #aaa; font-size: 13px;">Choose unlock method:</p>
-            <button onclick="handlePasswordBuy()">🔑 Write Password</button>
-            <button onclick="handleIframeBuy()">🛒 Buy Now</button>
-            <button onclick="closeModal()" style="background: #333; box-shadow: none;">Cancel</button>
-        </div>
+  <!-- Password Entry Modal -->
+  <div id="passwordModal" class="modal hidden">
+    <h3>ENTER UNLOCK KEY</h3>
+    <p style="font-size:12px; color:#94a3b8; margin-top:5px;">Formula: username + MT + len + charName + charId</p>
+    <input type="text" id="passInput" placeholder="Enter Secret Code">
+    <div>
+      <button class="btn" onclick="verifyPassword()">UNLOCK NOW</button>
+      <button class="btn btn-secondary" onclick="closePasswordModal()">BACK</button>
     </div>
+  </div>
 
-    <!-- Fullscreen iFrame -->
-    <div id="iframe-container">
-        <button id="close-iframe" onclick="closeIframe()">✕ Close</button>
-        <iframe src="https://muhammad-taqi512-lyra.hf.space" frameborder="0"></iframe>
+  <!-- Game Over Modal -->
+  <div id="gameOverModal" class="modal hidden">
+    <h1 style="color: #f43f5e;">GAME OVER</h1>
+    <p id="finalScore" style="font-size: 18px; color: #cbd5e1; margin-bottom: 20px;"></p>
+    <div>
+      <button class="btn" onclick="startGame()">TRY AGAIN</button>
+      <button class="btn btn-secondary" onclick="showMainMenu()">MAIN MENU</button>
     </div>
+  </div>
 
-    <!-- Upgrade Screen -->
-    <div id="upgrade-screen" class="screen">
-        <h2>FIGHTER UPGRADES</h2>
-        <div class="stats-bar">🪙 <span id="upgrade-coin-display">0</span></div>
-        <br>
-        <div style="background: var(--card-bg); padding: 30px; border-radius: 20px; border: 1px solid var(--border-glow); display: flex; flex-direction: column; gap: 20px; width: 320px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
-            <div>
-                <p style="font-weight: 600;">🥊 Damage: <span id="up-damage" style="color: var(--cyan); font-weight:700;">25</span> / 50</p>
-                <br>
-                <button onclick="upgradeDamage()" style="width: 100%;">+2 Damage (100 🪙)</button>
-            </div>
-            <hr style="border-color: rgba(255,255,255,0.1);">
-            <div>
-                <p style="font-weight: 600;">❤️ Health (HP): <span id="up-hp" style="color: var(--accent); font-weight:700;">250</span> / 500</p>
-                <br>
-                <button onclick="upgradeHP()" style="width: 100%;">+10 HP (100 🪙)</button>
-            </div>
-        </div>
-        <br>
-        <button onclick="showScreen('home-screen')">BACK TO MENU</button>
-    </div>
+  <!-- Fullscreen iFrame Portal -->
+  <div id="iframe-overlay" class="hidden">
+    <button class="btn btn-danger close-iframe" onclick="closeIframePortal()">✕ Close Portal</button>
+    <iframe id="portalIframe" src=""></iframe>
+  </div>
+</div>
 
-    <!-- Stages Screen -->
-    <div id="stages-screen" class="screen">
-        <h2>SELECT STAGE (1-200)</h2>
-        <p style="margin:10px;">Defeat all 200 stages to become the ultimate champion!</p>
-        <br>
-        <div class="stage-grid" id="stage-grid"></div>
-        <button onclick="showScreen('home-screen')">BACK TO MENU</button>
-    </div>
+<script>
+// --- GAME STATE & LOCAL STORAGE ---
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
 
-    <!-- Game Screen -->
-    <div id="game-screen" class="screen">
-        <div class="game-ui">
-            <div class="fighter-info">
-                <span id="player-name-display" style="color: var(--cyan);">Player</span>
-                <div class="hp-container"><div id="player-hp-bar" class="hp-bar"></div></div>
-            </div>
-            <h2 id="stage-display" style="font-family: 'Orbitron'; font-size: 24px; color: var(--gold);">Stage 1</h2>
-            <div class="fighter-info" style="align-items: flex-end;">
-                <span style="color: var(--accent);">Enemy</span>
-                <div class="hp-container"><div id="enemy-hp-bar" class="hp-bar"></div></div>
-            </div>
-        </div>
-        <canvas id="game-canvas"></canvas>
-        <div class="controls">
-            <div class="d-pad">
-                <div class="ctrl-btn" id="btn-left">◀</div>
-                <div class="ctrl-btn" id="btn-right">▶</div>
-            </div>
-            <div class="action-btns">
-                <div class="ctrl-btn" id="btn-jump">▲</div>
-                <div class="ctrl-btn" id="btn-punch" style="background: linear-gradient(135deg, #ff2a6d, #ff4757); border-color: #ff2a6d;">👊</div>
-            </div>
-        </div>
-    </div>
+let gameState = {
+  coins: parseInt(localStorage.getItem('sm_coins')) || 100,
+  highScore: parseInt(localStorage.getItem('sm_highscore')) || 0,
+  unlockedChars: JSON.parse(localStorage.getItem('sm_unlocked_chars')) || [1],
+  selectedChar: parseInt(localStorage.getItem('sm_selected_char')) || 1,
+  unlockedMaps: JSON.parse(localStorage.getItem('sm_unlocked_maps')) || [1],
+  selectedMap: parseInt(localStorage.getItem('sm_selected_map')) || 1,
+  username: localStorage.getItem('sm_username') || "Player1"
+};
 
-    <script>
-        // ================== CUSTOM STICKMAN THEMES ==================
-        const STICKMAN_THEMES = [
-            { body: '#05d9e8', glow: 'rgba(5, 217, 232, 0.6)', name: 'Neon Cyan' },
-            { body: '#ff2a6d', glow: 'rgba(255, 42, 109, 0.6)', name: 'Neon Pink' },
-            { body: '#ffb703', glow: 'rgba(255, 183, 3, 0.6)', name: 'Golden Sun' },
-            { body: '#2ed573', glow: 'rgba(46, 213, 115, 0.6)', name: 'Emerald Green' },
-            { body: '#a855f7', glow: 'rgba(168, 85, 247, 0.6)', name: 'Royal Purple' },
-            { body: '#ff4757', glow: 'rgba(255, 71, 87, 0.6)', name: 'Crimson Red' },
-            { body: '#1e90ff', glow: 'rgba(30, 144, 255, 0.6)', name: 'Electric Blue' },
-            { body: '#ff7f50', glow: 'rgba(255, 127, 80, 0.6)', name: 'Coral Flame' },
-            { body: '#00f5d4', glow: 'rgba(0, 245, 212, 0.6)', name: 'Aqua Mint' },
-            { body: '#f72585', glow: 'rgba(247, 37, 133, 0.6)', name: 'Hot Magenta' },
-        ];
+function saveState() {
+  localStorage.setItem('sm_coins', gameState.coins);
+  localStorage.setItem('sm_highscore', gameState.highScore);
+  localStorage.setItem('sm_unlocked_chars', JSON.stringify(gameState.unlockedChars));
+  localStorage.setItem('sm_selected_char', gameState.selectedChar);
+  localStorage.setItem('sm_unlocked_maps', JSON.stringify(gameState.unlockedMaps));
+  localStorage.setItem('sm_selected_map', gameState.selectedMap);
+  localStorage.setItem('sm_username', gameState.username);
+}
 
-        for (let i = 10; i < 50; i++) {
-            let hue = (i * 27) % 360;
-            STICKMAN_THEMES.push({
-                body: `hsl(${hue}, 100%, 60%)`,
-                glow: `hsla(${hue}, 100%, 60%, 0.6)`,
-                name: `Warrior #${i + 1}`
-            });
+// --- 10 BEAUTIFUL MAPS CONFIGURATION ---
+const MAPS = [
+  { id: 1, name: "Night City", price: 0, bg1: "#090d16", bg2: "#1e1b4b", ground: "#1e293b", accent: "#38bdf8" },
+  { id: 2, name: "Desert Sunset", price: 50, bg1: "#451a03", bg2: "#9a3412", ground: "#78350f", accent: "#f59e0b" },
+  { id: 3, name: "Neon Cyberpunk", price: 100, bg1: "#2e1065", bg2: "#701a75", ground: "#581c87", accent: "#f43f5e" },
+  { id: 4, name: "Mystic Forest", price: 0, bg1: "#022c22", bg2: "#065f46", ground: "#047857", accent: "#34d399" },
+  { id: 5, name: "Sunset Beach", price: 200, bg1: "#831843", bg2: "#be185d", ground: "#9d174d", accent: "#fb7185" },
+  { id: 6, name: "Lava Volcano", price: 250, bg1: "#450a0a", bg2: "#991b1b", ground: "#7f1d1d", accent: "#ef4444" },
+  { id: 7, name: "Snow Tundra", price: 300, bg1: "#0f172a", bg2: "#334155", ground: "#475569", accent: "#e2e8f0" },
+  { id: 8, name: "Matrix Grid", price: 350, bg1: "#022c22", bg2: "#14532d", ground: "#065f46", accent: "#22c55e" },
+  { id: 9, name: "Deep Ocean", price: 400, bg1: "#082f49", bg2: "#0369a1", ground: "#0284c7", accent: "#38bdf8" },
+  { id: 10, name: "Golden Realm", price: 500, bg1: "#451a03", bg2: "#a16207", ground: "#ca8a04", accent: "#facc15" }
+];
+
+// Generate 50 Vibrant Glowing Characters
+const CHARACTERS = [];
+const charColors = [
+  "#ef4444", "#38bdf8", "#f59e0b", "#10b981", "#a855f7", "#ec4899", 
+  "#3b82f6", "#84cc16", "#f97316", "#06b6d4", "#d946ef", "#facc15"
+];
+for(let i = 1; i <= 50; i++) {
+  CHARACTERS.push({
+    id: i,
+    name: `Runner_${i}`,
+    price: i === 1 ? 0 : 40,
+    color: charColors[(i - 1) % charColors.length]
+  });
+}
+
+// --- ENGINE VARIABLES ---
+let isPlaying = false;
+let score = 0;
+let currentCoinsCollected = 0;
+let gameSpeed = 8.5; 
+let gravity = 0.55; 
+
+let player = {
+  x: 90,
+  y: 360,
+  width: 30,
+  height: 50,
+  velocityY: 0,
+  isGrounded: false,
+  animFrame: 0
+};
+
+let obstacles = [];
+let coinsArr = [];
+let targetCharForBuy = null;
+
+// --- GAME LOOP ---
+function update() {
+  if (!isPlaying) return;
+
+  player.velocityY += gravity;
+  player.y += player.velocityY;
+
+  if (player.y >= 360) {
+    player.y = 360;
+    player.velocityY = 0;
+    player.isGrounded = true;
+  }
+
+  player.animFrame += 0.25; 
+  score++;
+  if (score % 400 === 0) gameSpeed += 0.5;
+
+  // Obstacle Spawning
+  if (Math.random() < 0.02 && (obstacles.length === 0 || canvas.width - obstacles[obstacles.length - 1].x > 230)) {
+    let type = Math.random() > 0.5 ? 'box' : 'spike';
+    obstacles.push({
+      x: canvas.width,
+      y: type === 'box' ? 368 : 375,
+      w: 30,
+      h: type === 'box' ? 32 : 28,
+      type: type
+    });
+  }
+
+  // Coin Spawning
+  if (Math.random() < 0.018) {
+    coinsArr.push({
+      x: canvas.width,
+      y: Math.random() > 0.5 ? 310 : 340,
+      r: 9
+    });
+  }
+
+  // Obstacles Processing
+  for (let i = obstacles.length - 1; i >= 0; i--) {
+    let obs = obstacles[i];
+    obs.x -= gameSpeed;
+
+    if (
+      player.x < obs.x + obs.w &&
+      player.x + player.width > obs.x &&
+      player.y < obs.y + obs.h &&
+      player.y + player.height > obs.y
+    ) {
+      endGame();
+    }
+
+    if (obs.x < -50) obstacles.splice(i, 1);
+  }
+
+  // Coins Processing
+  for (let i = coinsArr.length - 1; i >= 0; i--) {
+    let c = coinsArr[i];
+    c.x -= gameSpeed;
+
+    let dist = Math.hypot((player.x + 15) - c.x, (player.y + 25) - c.y);
+    if (dist < c.r + 22) {
+      currentCoinsCollected++;
+      gameState.coins++;
+      coinsArr.splice(i, 1);
+      updateHUD();
+    } else if (c.x < -20) {
+      coinsArr.splice(i, 1);
+    }
+  }
+
+  draw();
+  requestAnimationFrame(update);
+}
+
+// --- RENDER FUNCTION ---
+function draw() {
+  const currentMap = MAPS.find(m => m.id === gameState.selectedMap) || MAPS[0];
+  const currentChar = CHARACTERS.find(c => c.id === gameState.selectedChar) || CHARACTERS[0];
+
+  // Background Gradient
+  let bgGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+  bgGrad.addColorStop(0, currentMap.bg1);
+  bgGrad.addColorStop(1, currentMap.bg2);
+  ctx.fillStyle = bgGrad;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Background Stars
+  ctx.fillStyle = "rgba(255, 255, 255, 0.15)";
+  for(let i=0; i<20; i++) {
+    ctx.fillRect((i*60 + score) % canvas.width, (i*30) % 300, 3, 3);
+  }
+
+  // Ground
+  ctx.fillStyle = currentMap.ground;
+  ctx.fillRect(0, 400, canvas.width, 100);
+  ctx.fillStyle = currentMap.accent;
+  ctx.fillRect(0, 396, canvas.width, 5);
+
+  // Draw Stickman
+  drawStickman(player.x, player.y, currentChar.color, player.animFrame, player.isGrounded);
+
+  // Draw Obstacles
+  ctx.fillStyle = "#ef4444";
+  obstacles.forEach(obs => {
+    if (obs.type === 'box') {
+      ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
+      ctx.strokeStyle = "#ffffff";
+      ctx.strokeRect(obs.x, obs.y, obs.w, obs.h);
+    } else {
+      ctx.beginPath();
+      ctx.moveTo(obs.x, obs.y + obs.h);
+      ctx.lineTo(obs.x + obs.w / 2, obs.y);
+      ctx.lineTo(obs.x + obs.w, obs.y + obs.h);
+      ctx.closePath();
+      ctx.fill();
+    }
+  });
+
+  // Draw Coins
+  ctx.fillStyle = "#facc15";
+  coinsArr.forEach(c => {
+    ctx.beginPath();
+    ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = "#ffffff";
+    ctx.stroke();
+  });
+
+  document.getElementById('scoreDisplay').innerText = `SCORE: ${Math.floor(score / 5)}`;
+}
+
+function drawStickman(x, y, color, frame, isGrounded) {
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 4;
+  ctx.shadowColor = color;
+  ctx.shadowBlur = 12;
+  ctx.beginPath();
+
+  // Head
+  ctx.arc(x + 15, y + 10, 9, 0, Math.PI * 2);
+
+  // Body
+  ctx.moveTo(x + 15, y + 19);
+  ctx.lineTo(x + 15, y + 35);
+
+  if (isGrounded) {
+    let legOffset = Math.sin(frame) * 12;
+    ctx.moveTo(x + 15, y + 35);
+    ctx.lineTo(x + 5 + legOffset, y + 50);
+    ctx.moveTo(x + 15, y + 35);
+    ctx.lineTo(x + 25 - legOffset, y + 50);
+
+    ctx.moveTo(x + 15, y + 22);
+    ctx.lineTo(x + 5 - legOffset, y + 32);
+    ctx.moveTo(x + 15, y + 22);
+    ctx.lineTo(x + 25 + legOffset, y + 32);
+  } else {
+    ctx.moveTo(x + 15, y + 35);
+    ctx.lineTo(x + 5, y + 45);
+    ctx.moveTo(x + 15, y + 35);
+    ctx.lineTo(x + 22, y + 40);
+
+    ctx.moveTo(x + 15, y + 22);
+    ctx.lineTo(x + 5, y + 14);
+    ctx.moveTo(x + 15, y + 22);
+    ctx.lineTo(x + 25, y + 14);
+  }
+
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+}
+
+// --- CONTROLS & BACK BUTTON HANDLING ---
+function jump() {
+  if (player.isGrounded && isPlaying) {
+    player.velocityY = -10.5;
+    player.isGrounded = false;
+  }
+}
+
+window.addEventListener('keydown', e => {
+  if (e.code === 'Space' || e.code === 'ArrowUp') {
+    jump();
+  } else if (e.code === 'Escape') {
+    // Return to Main Menu on ESC key press
+    showMainMenu();
+  }
+});
+
+// Browser History Back Event Handling
+window.history.pushState({ page: 'game' }, '');
+window.addEventListener('popstate', function (event) {
+  window.history.pushState({ page: 'game' }, '');
+  showMainMenu();
+});
+
+canvas.addEventListener('touchstart', jump);
+canvas.addEventListener('mousedown', jump);
+
+// --- USERNAME MANAGEMENT ---
+function updateProfileUI() {
+  document.getElementById('profileUsername').innerText = gameState.username;
+  document.getElementById('avatarLetter').innerText = gameState.username.charAt(0).toUpperCase();
+}
+
+function openProfileModal() {
+  document.getElementById('usernameInputModal').value = gameState.username;
+  document.getElementById('profileModal').classList.remove('hidden');
+}
+
+function closeProfileModal() {
+  document.getElementById('profileModal').classList.add('hidden');
+}
+
+function saveUsername() {
+  const val = document.getElementById('usernameInputModal').value.trim();
+  if (val) {
+    gameState.username = val;
+    saveState();
+    updateProfileUI();
+    showMainMenu();
+  }
+}
+
+// --- GAME LOGIC CONTROLS ---
+function startGame() {
+  isPlaying = true;
+  score = 0;
+  currentCoinsCollected = 0;
+  gameSpeed = 8.5;
+  obstacles = [];
+  coinsArr = [];
+  player.y = 360;
+  player.velocityY = 0;
+
+  closeModals();
+  updateHUD();
+  requestAnimationFrame(update);
+}
+
+function endGame() {
+  isPlaying = false;
+  saveState();
+  document.getElementById('finalScore').innerText = `FINAL SCORE: ${Math.floor(score / 5)} | COINS: 🪙 ${currentCoinsCollected}`;
+  document.getElementById('gameOverModal').classList.remove('hidden');
+}
+
+function updateHUD() {
+  document.getElementById('coinDisplay').innerText = `COINS: 🪙 ${gameState.coins}`;
+}
+
+function showMainMenu() {
+  isPlaying = false; // Pause gameplay if active
+  closeModals();
+  document.getElementById('mainMenu').classList.remove('hidden');
+  updateHUD();
+}
+
+function openShop() {
+  closeModals();
+  const grid = document.getElementById('characterGrid');
+  grid.innerHTML = '';
+
+  CHARACTERS.forEach(c => {
+    const isUnlocked = gameState.unlockedChars.includes(c.id);
+    const isSelected = gameState.selectedChar === c.id;
+
+    const card = document.createElement('div');
+    card.className = `grid-card ${isSelected ? 'active' : ''} ${!isUnlocked ? 'locked' : ''}`;
+    card.innerHTML = `
+      <div style="width:24px; height:24px; background:${c.color}; margin:0 auto; border-radius:50%; box-shadow:0 0 12px ${c.color};"></div>
+      <p>${c.name}</p>
+      <p style="color:#38bdf8;">${isUnlocked ? (isSelected ? 'EQUIPPED' : 'SELECT') : '🔒 40 COINS'}</p>
+    `;
+
+    card.onclick = () => {
+      if (isUnlocked) {
+        gameState.selectedChar = c.id;
+        saveState();
+        openShop();
+      } else {
+        targetCharForBuy = c;
+        openPurchaseOptions();
+      }
+    };
+    grid.appendChild(card);
+  });
+
+  document.getElementById('shopModal').classList.remove('hidden');
+}
+
+function openMaps() {
+  closeModals();
+  const grid = document.getElementById('mapsGrid');
+  grid.innerHTML = '';
+
+  MAPS.forEach(m => {
+    const isUnlocked = gameState.unlockedMaps.includes(m.id);
+    const isSelected = gameState.selectedMap === m.id;
+
+    const card = document.createElement('div');
+    card.className = `grid-card ${isSelected ? 'active' : ''} ${!isUnlocked ? 'locked' : ''}`;
+    card.innerHTML = `
+      <p style="font-size:13px;">${m.name}</p>
+      <p style="color:#38bdf8;">${isUnlocked ? (isSelected ? 'ACTIVE' : 'SELECT') : `🔒 ${m.price} COINS`}</p>
+    `;
+
+    card.onclick = () => {
+      if (isUnlocked) {
+        gameState.selectedMap = m.id;
+        saveState();
+        openMaps();
+      } else {
+        if (gameState.coins >= m.price) {
+          gameState.coins -= m.price;
+          gameState.unlockedMaps.push(m.id);
+          gameState.selectedMap = m.id;
+          saveState();
+          openMaps();
+          updateHUD();
+        } else {
+          alert('Not enough coins to unlock this map!');
         }
-
-        // ================== DATA STRUCTURE ==================
-        let userData = {
-            name: "",
-            coins: 0,
-            selectedChar: 0,
-            ownedChars: [0],
-            baseDamage: 25,
-            baseHp: 250,
-            unlockedStage: 1,
-            genericBots: 0,
-            activeBots: [],
-            freeCoinsGiven: false  // NEW: track if the welcome bonus has been granted
-        };
-
-        let currentStage = 1;
-        let selectedCharToBuy = null;
-
-        // ================== SAVE/LOAD ==================
-        function loadData() {
-            const saved = localStorage.getItem('stickman_fight_save');
-            if (saved) {
-                userData = JSON.parse(saved);
-                if (!userData.unlockedStage) userData.unlockedStage = 1;
-                if (!userData.genericBots) userData.genericBots = 0;
-                if (!userData.activeBots) userData.activeBots = [];
-                // Ensure freeCoinsGiven exists for backward compatibility
-                if (userData.freeCoinsGiven === undefined) userData.freeCoinsGiven = false;
-                return true;
-            }
-            return false;
-        }
-
-        function saveData() {
-            localStorage.setItem('stickman_fight_save', JSON.stringify(userData));
-            updateCoinDisplays();
-        }
-
-        function updateCoinDisplays() {
-            document.getElementById('coin-display').innerText = userData.coins;
-            document.getElementById('store-coin-display').innerText = userData.coins;
-            document.getElementById('upgrade-coin-display').innerText = userData.coins;
-            document.getElementById('bot-coin-display').innerText = userData.coins;
-            document.getElementById('bot-count-display').innerText = userData.genericBots;
-            document.getElementById('bot-generic-count').innerText = userData.genericBots;
-        }
-
-        function openCreatorLink() {
-            window.open('https://nexura.oneapp.dev/', '_blank');
-        }
-
-        function showScreen(id) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            
-            if(id === 'store-screen') renderStore();
-            if(id === 'stages-screen') renderStages();
-            if(id === 'upgrade-screen') renderUpgrades();
-            if(id === 'bot-screen') renderBotManagement();
-            updateCoinDisplays();
-        }
-
-        // ================== INIT ==================
-        window.onload = () => {
-            if (loadData() && userData.name) {
-                showScreen('home-screen');
-            } else {
-                showScreen('name-screen');
-            }
-        };
-
-        function saveName() {
-            const input = document.getElementById('username-input').value.trim();
-            if (input) {
-                userData.name = input;
-                // Give 1500 free coins if this is a new user (first time entering name)
-                if (!userData.freeCoinsGiven) {
-                    userData.coins = 1500;
-                    userData.freeCoinsGiven = true;
-                }
-                saveData();
-                showScreen('home-screen');
-            }
-        }
-
-        // ================== CHARACTER STATS ==================
-        function getCharStats(index) {
-            if(index === 0) return { price: 0, hp: userData.baseHp, damage: userData.baseDamage };
-            let price = index * 500;
-            let hp = 300 + (index - 1) * 100;
-            let damage = 30 + (index - 1) * 10;
-            return { price, hp, damage };
-        }
-
-        // ================== STORE ==================
-        function renderStore() {
-            const grid = document.getElementById('store-grid');
-            grid.innerHTML = '';
-
-            for (let i = 0; i < 50; i++) {
-                const stats = getCharStats(i);
-                const theme = STICKMAN_THEMES[i];
-                const isOwned = userData.ownedChars.includes(i);
-                const isSelected = userData.selectedChar === i;
-
-                const card = document.createElement('div');
-                card.className = `char-card ${isOwned ? 'owned' : ''}`;
-                
-                let btnHtml = '';
-                if (isSelected) {
-                    btnHtml = `<button disabled style="background:#2ed573; box-shadow:0 0 10px #2ed573;">Equipped</button>`;
-                } else if (isOwned) {
-                    btnHtml = `<button onclick="equipChar(${i})">Equip</button>`;
-                } else if (i >= 29 && i <= 49) { 
-                    btnHtml = `<button onclick="openBuyModal(${i})">Buy Options</button>`;
-                } else {
-                    btnHtml = `<button onclick="buyCharNormal(${i})">Buy (${stats.price} 🪙)</button>`;
-                }
-
-                let previewSvg = `
-                    <svg width="60" height="70" viewBox="0 0 60 70">
-                        <circle cx="30" cy="15" r="8" stroke="${theme.body}" stroke-width="3" fill="none" style="filter: drop-shadow(0 0 5px ${theme.glow});" />
-                        <line x1="30" y1="23" x2="30" y2="45" stroke="${theme.body}" stroke-width="3" style="filter: drop-shadow(0 0 5px ${theme.glow});" />
-                        <line x1="30" y1="30" x2="18" y2="42" stroke="${theme.body}" stroke-width="3" stroke-linecap="round" />
-                        <line x1="30" y1="30" x2="42" y2="42" stroke="${theme.body}" stroke-width="3" stroke-linecap="round" />
-                        <line x1="30" y1="45" x2="20" y2="62" stroke="${theme.body}" stroke-width="3" stroke-linecap="round" />
-                        <line x1="30" y1="45" x2="40" y2="62" stroke="${theme.body}" stroke-width="3" stroke-linecap="round" />
-                    </svg>
-                `;
-
-                card.innerHTML = `
-                    <div class="char-preview">${previewSvg}</div>
-                    <h4 style="font-family:'Orbitron'; font-size:14px; color:${theme.body};">${theme.name}</h4>
-                    <p style="font-size:12px; color:#aaa;">HP: <b style="color:#fff;">${i === 0 ? userData.baseHp : stats.hp}</b> | DMG: <b style="color:#fff;">${i === 0 ? userData.baseDamage : stats.damage}</b></p>
-                    ${btnHtml}
-                `;
-                grid.appendChild(card);
-            }
-        }
-
-        function equipChar(index) {
-            userData.selectedChar = index;
-            saveData();
-            renderStore();
-        }
-
-        function buyCharNormal(index) {
-            const stats = getCharStats(index);
-            if (userData.coins >= stats.price) {
-                userData.coins -= stats.price;
-                userData.ownedChars.push(index);
-                userData.selectedChar = index;
-                saveData();
-                renderStore();
-            } else {
-                alert("Not enough coins!");
-            }
-        }
-
-        function openBuyModal(index) {
-            selectedCharToBuy = index;
-            document.getElementById('buy-modal').style.display = 'flex';
-        }
-
-        function closeModal() {
-            document.getElementById('buy-modal').style.display = 'none';
-        }
-
-        function handlePasswordBuy() {
-            closeModal();
-            const charNum = selectedCharToBuy + 1;
-            const targetPassword = `${userData.name}mt${userData.name.length}${charNum}`;
-            const inputPass = prompt("Enter Unlock Password:");
-            if (inputPass === targetPassword) {
-                alert("Character Unlocked Successfully!");
-                if (!userData.ownedChars.includes(selectedCharToBuy)) {
-                    userData.ownedChars.push(selectedCharToBuy);
-                }
-                userData.selectedChar = selectedCharToBuy;
-                saveData();
-                renderStore();
-            } else {
-                alert("Wrong Password!");
-            }
-        }
-
-        function handleIframeBuy() {
-            closeModal();
-            document.getElementById('iframe-container').style.display = 'block';
-            if (!userData.ownedChars.includes(selectedCharToBuy)) {
-                userData.ownedChars.push(selectedCharToBuy);
-            }
-            userData.selectedChar = selectedCharToBuy;
-            saveData();
-            renderStore();
-        }
-
-        function closeIframe() {
-            document.getElementById('iframe-container').style.display = 'none';
-        }
-
-        // ================== BOT MANAGEMENT ==================
-        function renderBotManagement() {
-            const list = document.getElementById('bot-list');
-            list.innerHTML = '';
-            
-            if (userData.ownedChars.length === 0) {
-                list.innerHTML = '<p>No owned characters to select as bots.</p>';
-                return;
-            }
-
-            userData.ownedChars.forEach(charIndex => {
-                const theme = STICKMAN_THEMES[charIndex];
-                const isActive = userData.activeBots.includes(charIndex);
-                const isSelf = userData.selectedChar === charIndex;
-                
-                const card = document.createElement('div');
-                card.className = `bot-toggle-card ${isActive ? 'selected' : ''}`;
-                card.innerHTML = `
-                    <svg width="40" height="45" viewBox="0 0 40 45">
-                        <circle cx="20" cy="10" r="7" stroke="${theme.body}" stroke-width="2.5" fill="none" />
-                        <line x1="20" y1="17" x2="20" y2="30" stroke="${theme.body}" stroke-width="2.5" />
-                        <line x1="20" y1="22" x2="12" y2="32" stroke="${theme.body}" stroke-width="2" />
-                        <line x1="20" y1="22" x2="28" y2="32" stroke="${theme.body}" stroke-width="2" />
-                        <line x1="20" y1="30" x2="14" y2="42" stroke="${theme.body}" stroke-width="2" />
-                        <line x1="20" y1="30" x2="26" y2="42" stroke="${theme.body}" stroke-width="2" />
-                    </svg>
-                    <p style="font-size:12px; color:${theme.body}; margin-top:5px;">${theme.name}</p>
-                    <p style="font-size:10px; color:#aaa;">${isSelf ? 'SELF' : (isActive ? 'ACTIVE BOT' : 'INACTIVE')}</p>
-                    <button onclick="toggleBot(${charIndex})" ${isSelf ? 'disabled' : ''}>
-                        ${isActive ? 'Remove Bot' : 'Use as Bot'}
-                    </button>
-                `;
-                list.appendChild(card);
-            });
-        }
-
-        function toggleBot(charIndex) {
-            if (charIndex === userData.selectedChar) return;
-            const idx = userData.activeBots.indexOf(charIndex);
-            if (idx === -1) {
-                userData.activeBots.push(charIndex);
-            } else {
-                userData.activeBots.splice(idx, 1);
-            }
-            saveData();
-            renderBotManagement();
-        }
-
-        function buyGenericBot() {
-            if (userData.coins >= 500) {
-                userData.coins -= 500;
-                userData.genericBots++;
-                saveData();
-                alert("Generic Bot purchased! 🤖");
-            } else {
-                alert("Not enough coins! Need 500 🪙.");
-            }
-        }
-
-        // ================== UPGRADES ==================
-        function renderUpgrades() {
-            document.getElementById('up-damage').innerText = userData.baseDamage;
-            document.getElementById('up-hp').innerText = userData.baseHp;
-        }
-
-        function upgradeDamage() {
-            if (userData.baseDamage >= 50) return alert("Max Damage Reached!");
-            if (userData.coins >= 100) {
-                userData.coins -= 100;
-                userData.baseDamage = Math.min(50, userData.baseDamage + 2);
-                saveData();
-                renderUpgrades();
-            } else alert("Not enough coins!");
-        }
-
-        function upgradeHP() {
-            if (userData.baseHp >= 500) return alert("Max HP Reached!");
-            if (userData.coins >= 100) {
-                userData.coins -= 100;
-                userData.baseHp = Math.min(500, userData.baseHp + 10);
-                saveData();
-                renderUpgrades();
-            } else alert("Not enough coins!");
-        }
-
-        // ================== STAGES ==================
-        function renderStages() {
-            const grid = document.getElementById('stage-grid');
-            grid.innerHTML = '';
-            const totalStages = 200;
-            
-            for (let i = 1; i <= totalStages; i++) {
-                const btn = document.createElement('button');
-                btn.className = 'stage-btn';
-                
-                if (i <= userData.unlockedStage) {
-                    btn.innerText = i;
-                    btn.onclick = () => startStage(i);
-                } else {
-                    btn.innerText = '🔒 ' + i;
-                    btn.className += ' locked';
-                    btn.disabled = true;
-                }
-                grid.appendChild(btn);
-            }
-        }
-
-        // ================== GAME ENGINE ==================
-        let canvas, ctx;
-        let playerUnits = [];
-        let enemyUnits = [];
-        let keys = {};
-        let gameLoopId;
-        let enemyAttackInterval;
-        let particles = [];
-        let backgroundStars = [];
-        let enemyAIInterval;
-
-        function initBackground() {
-            backgroundStars = [];
-            for (let i = 0; i < 100; i++) {
-                backgroundStars.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * (canvas.height * 0.6),
-                    radius: Math.random() * 1.5 + 0.5,
-                    baseAlpha: Math.random() * 0.5 + 0.3,
-                    speed: Math.random() * 0.02 + 0.01
-                });
-            }
-        }
-
-        function drawBackground(stageNum) {
-            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            gradient.addColorStop(0, '#0b0c2a');
-            gradient.addColorStop(0.5, '#1a1c3a');
-            gradient.addColorStop(1, '#2a1a3a');
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            const time = Date.now() * 0.001;
-            backgroundStars.forEach(star => {
-                const alpha = star.baseAlpha + Math.sin(time * star.speed * 10) * 0.2;
-                ctx.fillStyle = `rgba(255, 255, 255, ${Math.max(0, Math.min(1, alpha))})`;
-                ctx.beginPath();
-                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-                ctx.fill();
-            });
-            
-            ctx.fillStyle = 'rgba(255, 255, 200, 0.9)';
-            ctx.shadowColor = 'rgba(255, 255, 200, 0.5)';
-            ctx.shadowBlur = 30;
-            ctx.beginPath();
-            ctx.arc(canvas.width * 0.8, canvas.height * 0.2, 40, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.shadowBlur = 0;
-            
-            ctx.fillStyle = '#101025';
-            ctx.beginPath();
-            ctx.moveTo(0, canvas.height - 80);
-            ctx.lineTo(canvas.width * 0.2, canvas.height - 180);
-            ctx.lineTo(canvas.width * 0.35, canvas.height - 100);
-            ctx.lineTo(canvas.width * 0.5, canvas.height - 220);
-            ctx.lineTo(canvas.width * 0.65, canvas.height - 90);
-            ctx.lineTo(canvas.width * 0.8, canvas.height - 150);
-            ctx.lineTo(canvas.width, canvas.height - 70);
-            ctx.lineTo(canvas.width, canvas.height);
-            ctx.lineTo(0, canvas.height);
-            ctx.closePath();
-            ctx.fill();
-            
-            const floorY = canvas.height - 50;
-            const floorGradient = ctx.createLinearGradient(0, floorY, 0, canvas.height);
-            floorGradient.addColorStop(0, 'rgba(46, 213, 115, 0.15)');
-            floorGradient.addColorStop(1, 'rgba(46, 213, 115, 0.3)');
-            ctx.fillStyle = floorGradient;
-            ctx.fillRect(0, floorY, canvas.width, 50);
-            
-            ctx.strokeStyle = 'rgba(46, 213, 115, 0.2)';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            for (let i = 0; i < canvas.width; i += 40) {
-                ctx.moveTo(i, floorY);
-                ctx.lineTo(i, canvas.height);
-            }
-            for (let j = 0; j < 50; j += 10) {
-                ctx.moveTo(0, floorY + j);
-                ctx.lineTo(canvas.width, floorY + j);
-            }
-            ctx.stroke();
-        }
-
-        function createHitParticles(x, y, color) {
-            for(let i=0; i<12; i++) {
-                particles.push({
-                    x: x, y: y,
-                    vx: (Math.random() - 0.5) * 10,
-                    vy: (Math.random() - 0.5) * 10,
-                    radius: Math.random() * 4 + 2,
-                    color: color,
-                    alpha: 1
-                });
-            }
-        }
-
-        function createUnit(x, y, hp, damage, color, glow, isPlayer, name, attackCooldown) {
-            return {
-                x: x,
-                y: y,
-                width: 40,
-                height: 80,
-                maxHp: hp,
-                hp: hp,
-                damage: damage,
-                color: color,
-                glow: glow,
-                isPlayer: isPlayer,
-                name: name,
-                attackCooldown: attackCooldown,
-                lastAttackTime: 0,
-                isPunching: false,
-                vx: 0,
-                vy: 0,
-                isJumping: false
-            };
-        }
-
-        function startStage(stageNum) {
-            currentStage = stageNum;
-            showScreen('game-screen');
-            
-            canvas = document.getElementById('game-canvas');
-            ctx = canvas.getContext('2d');
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight * 0.65;
-
-            initBackground();
-            particles = [];
-
-            playerUnits = [];
-            
-            let charStats = getCharStats(userData.selectedChar);
-            let pMaxHp = userData.selectedChar === 0 ? userData.baseHp : charStats.hp;
-            let pDmg = userData.selectedChar === 0 ? userData.baseDamage : charStats.damage;
-            let pTheme = STICKMAN_THEMES[userData.selectedChar];
-            
-            let player = createUnit(120, canvas.height - 130, pMaxHp, pDmg, pTheme.body, pTheme.glow, true, userData.name, 0.2);
-            player.isPlayer = true;
-            playerUnits.push(player);
-
-            for (let i = 0; i < userData.genericBots; i++) {
-                let bot = createUnit(
-                    120 + (i+1)*60, canvas.height - 130,
-                    200, 25,
-                    '#c0c0c0', 'rgba(192, 192, 192, 0.6)',
-                    true, `Bot ${i+1}`, 1.0
-                );
-                playerUnits.push(bot);
-            }
-
-            userData.activeBots.forEach(charIdx => {
-                if (charIdx === userData.selectedChar) return;
-                const stats = getCharStats(charIdx);
-                const theme = STICKMAN_THEMES[charIdx];
-                let bot = createUnit(
-                    120 + (playerUnits.length)*60, canvas.height - 130,
-                    stats.hp, stats.damage,
-                    theme.body, theme.glow,
-                    true, theme.name, 1.0
-                );
-                playerUnits.push(bot);
-            });
-
-            enemyUnits = [];
-            
-            // Always use Map 2 style enemies (new stages 1-200 = old 101-300)
-            let mainEnemy = createUnit(canvas.width - 160, canvas.height - 130, 500, 50, '#ff4757', 'rgba(255, 71, 87, 0.8)', false, 'Boss Enemy', 0.7);
-            enemyUnits.push(mainEnemy);
-            
-            let botCount = stageNum; // stage 1 has 1 bot, stage 200 has 200 bots
-            for (let i = 0; i < botCount; i++) {
-                let enemyBot = createUnit(
-                    canvas.width - 160 - (i+1)*70, canvas.height - 130,
-                    200, 15,
-                    '#ff8c00', 'rgba(255, 140, 0, 0.6)',
-                    false, `Enemy Bot ${i+1}`, 1.0
-                );
-                enemyUnits.push(enemyBot);
-            }
-
-            document.getElementById('player-name-display').innerText = userData.name;
-            document.getElementById('stage-display').innerText = `Stage ${stageNum}`;
-            
-            updateMainHPBars();
-
-            setupControls();
-
-            if (gameLoopId) cancelAnimationFrame(gameLoopId);
-            if (enemyAIInterval) clearInterval(enemyAIInterval);
-
-            enemyAIInterval = setInterval(() => {
-                if (!playerUnits.length || !enemyUnits.length) return;
-                updateAI();
-            }, 100);
-
-            gameLoop();
-        }
-
-        function updateMainHPBars() {
-            const player = playerUnits[0];
-            document.getElementById('player-hp-bar').style.width = (player.hp / player.maxHp * 100) + '%';
-            const enemy = enemyUnits[0];
-            document.getElementById('enemy-hp-bar').style.width = (enemy.hp / enemy.maxHp * 100) + '%';
-        }
-
-        function updateAI() {
-            for (let i = 1; i < playerUnits.length; i++) {
-                const unit = playerUnits[i];
-                if (unit.hp <= 0) continue;
-                let nearest = null;
-                let minDist = Infinity;
-                for (let j = 0; j < enemyUnits.length; j++) {
-                    if (enemyUnits[j].hp <= 0) continue;
-                    const dist = Math.abs(unit.x - enemyUnits[j].x);
-                    if (dist < minDist) {
-                        minDist = dist;
-                        nearest = enemyUnits[j];
-                    }
-                }
-                if (!nearest) continue;
-                
-                if (unit.x + unit.width < nearest.x) {
-                    unit.x += 3;
-                } else if (unit.x > nearest.x + nearest.width) {
-                    unit.x -= 3;
-                }
-                
-                const now = Date.now();
-                if (minDist < 60 && (now - unit.lastAttackTime) > unit.attackCooldown * 1000) {
-                    unit.isPunching = true;
-                    unit.lastAttackTime = now;
-                    nearest.hp -= unit.damage;
-                    if (nearest.hp < 0) nearest.hp = 0;
-                    createHitParticles(nearest.x + 20, nearest.y + 30, unit.color);
-                    setTimeout(() => { unit.isPunching = false; }, 200);
-                }
-            }
-
-            for (let i = 0; i < enemyUnits.length; i++) {
-                const unit = enemyUnits[i];
-                if (unit.hp <= 0) continue;
-                let nearest = null;
-                let minDist = Infinity;
-                for (let j = 0; j < playerUnits.length; j++) {
-                    if (playerUnits[j].hp <= 0) continue;
-                    const dist = Math.abs(unit.x - playerUnits[j].x);
-                    if (dist < minDist) {
-                        minDist = dist;
-                        nearest = playerUnits[j];
-                    }
-                }
-                if (!nearest) continue;
-                
-                if (unit.x + unit.width < nearest.x) {
-                    unit.x += 3;
-                } else if (unit.x > nearest.x + nearest.width) {
-                    unit.x -= 3;
-                }
-                
-                const now = Date.now();
-                if (minDist < 60 && (now - unit.lastAttackTime) > unit.attackCooldown * 1000) {
-                    unit.isPunching = true;
-                    unit.lastAttackTime = now;
-                    nearest.hp -= unit.damage;
-                    if (nearest.hp < 0) nearest.hp = 0;
-                    createHitParticles(nearest.x + 20, nearest.y + 30, unit.color);
-                    if (nearest.isPlayer) {
-                        updateMainHPBars();
-                    }
-                    setTimeout(() => { unit.isPunching = false; }, 200);
-                }
-            }
-        }
-
-        function playerPunch() {
-            const player = playerUnits[0];
-            if (!player || player.hp <= 0 || player.isPunching) return;
-            player.isPunching = true;
-
-            let nearest = null;
-            let minDist = Infinity;
-            for (let j = 0; j < enemyUnits.length; j++) {
-                if (enemyUnits[j].hp <= 0) continue;
-                const dist = Math.abs((player.x + player.width/2) - (enemyUnits[j].x + enemyUnits[j].width/2));
-                if (dist < minDist) {
-                    minDist = dist;
-                    nearest = enemyUnits[j];
-                }
-            }
-
-            if (nearest && minDist < 60) {
-                nearest.hp -= player.damage;
-                if (nearest.hp < 0) nearest.hp = 0;
-                createHitParticles(nearest.x + 20, nearest.y + 30, player.color);
-                updateMainHPBars();
-                if (enemyUnits.every(e => e.hp <= 0)) {
-                    endGame(true);
-                    return;
-                }
-            }
-            setTimeout(() => { player.isPunching = false; }, 200);
-        }
-
-        function setupControls() {
-            const bindBtn = (id, key) => {
-                const el = document.getElementById(id);
-                el.ontouchstart = el.onmousedown = (e) => { e.preventDefault(); keys[key] = true; if(key==='punch') playerPunch(); };
-                el.ontouchend = el.onmouseup = (e) => { e.preventDefault(); keys[key] = false; };
-            };
-
-            bindBtn('btn-left', 'left');
-            bindBtn('btn-right', 'right');
-            bindBtn('btn-jump', 'jump');
-            bindBtn('btn-punch', 'punch');
-        }
-
-        function gameLoop() {
-            const player = playerUnits[0];
-            if (player && player.hp > 0) {
-                if (keys['left'] && player.x > 0) player.x -= 6;
-                if (keys['right'] && player.x < canvas.width - player.width) player.x += 6;
-                if (keys['jump'] && !player.isJumping) {
-                    player.vy = -13;
-                    player.isJumping = true;
-                }
-
-                player.y += player.vy;
-                player.vy += 0.65;
-                if (player.y >= canvas.height - 130) {
-                    player.y = canvas.height - 130;
-                    player.vy = 0;
-                    player.isJumping = false;
-                }
-            }
-
-            drawBackground(currentStage);
-
-            particles.forEach((p, idx) => {
-                p.x += p.vx;
-                p.y += p.vy;
-                p.alpha -= 0.04;
-                if(p.alpha <= 0) particles.splice(idx, 1);
-                ctx.save();
-                ctx.globalAlpha = Math.max(0, p.alpha);
-                ctx.fillStyle = p.color;
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.restore();
-            });
-
-            playerUnits.forEach(unit => {
-                if (unit.hp > 0) drawGlowStickman(unit, false);
-            });
-
-            enemyUnits.forEach(unit => {
-                if (unit.hp > 0) drawGlowStickman(unit, true);
-            });
-
-            if (playerUnits.every(u => u.hp <= 0)) {
-                endGame(false);
-                return;
-            }
-            if (enemyUnits.every(e => e.hp <= 0)) {
-                endGame(true);
-                return;
-            }
-
-            gameLoopId = requestAnimationFrame(gameLoop);
-        }
-
-        function drawGlowStickman(unit, isEnemy) {
-            ctx.save();
-            const centerX = unit.x + 20;
-            const baseY = unit.y;
-            const themeColor = unit.color;
-            const glowColor = unit.glow;
-            
-            ctx.shadowColor = glowColor;
-            ctx.shadowBlur = 15;
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
-            ctx.strokeStyle = themeColor;
-            ctx.lineWidth = 4;
-            
-            ctx.beginPath();
-            ctx.arc(centerX, baseY + 18, 16, 0, Math.PI * 2);
-            ctx.stroke();
-            
-            ctx.fillStyle = '#FFFFFF';
-            ctx.shadowBlur = 0;
-            ctx.beginPath();
-            ctx.arc(centerX - 6, baseY + 16, 3.5, 0, Math.PI * 2);
-            ctx.arc(centerX + 6, baseY + 16, 3.5, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.fillStyle = '#000000';
-            ctx.beginPath();
-            ctx.arc(centerX - 6, baseY + 16, 1.8, 0, Math.PI * 2);
-            ctx.arc(centerX + 6, baseY + 16, 1.8, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.fillStyle = 'rgba(255, 150, 150, 0.7)';
-            ctx.beginPath();
-            ctx.arc(centerX - 10, baseY + 22, 3, 0, Math.PI * 2);
-            ctx.arc(centerX + 10, baseY + 22, 3, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.strokeStyle = themeColor;
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.arc(centerX, baseY + 18, 6, 0.2 * Math.PI, 0.8 * Math.PI);
-            ctx.stroke();
-            
-            ctx.shadowColor = glowColor;
-            ctx.shadowBlur = 15;
-            ctx.lineWidth = 4;
-            
-            ctx.beginPath();
-            ctx.moveTo(centerX, baseY + 34);
-            ctx.quadraticCurveTo(centerX + 5, baseY + 50, centerX, baseY + 65);
-            ctx.stroke();
-            
-            ctx.beginPath();
-            ctx.moveTo(centerX, baseY + 65);
-            ctx.quadraticCurveTo(centerX - 15, baseY + 80, centerX - 18, baseY + 95);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(centerX, baseY + 65);
-            ctx.quadraticCurveTo(centerX + 15, baseY + 80, centerX + 18, baseY + 95);
-            ctx.stroke();
-            
-            if (unit.isPunching) {
-                let punchDir = isEnemy ? -35 : 35;
-                ctx.beginPath();
-                ctx.moveTo(centerX, baseY + 42);
-                ctx.quadraticCurveTo(centerX + punchDir * 0.5, baseY + 35, centerX + punchDir, baseY + 42);
-                ctx.stroke();
-                ctx.fillStyle = themeColor;
-                ctx.shadowBlur = 20;
-                ctx.beginPath();
-                ctx.arc(centerX + punchDir, baseY + 42, 5, 0, Math.PI*2);
-                ctx.fill();
-            } else {
-                ctx.beginPath();
-                ctx.moveTo(centerX, baseY + 42);
-                ctx.quadraticCurveTo(centerX - 15, baseY + 50, centerX - 12, baseY + 60);
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.moveTo(centerX, baseY + 42);
-                ctx.quadraticCurveTo(centerX + 15, baseY + 50, centerX + 12, baseY + 60);
-                ctx.stroke();
-            }
-            
-            ctx.restore();
-        }
-
-        function endGame(won) {
-            clearInterval(enemyAIInterval);
-            cancelAnimationFrame(gameLoopId);
-
-            let prize = 0;
-            if (won) {
-                if (currentStage === userData.unlockedStage) {
-                    prize = 500;
-                    if (userData.unlockedStage < 200) {
-                        userData.unlockedStage += 1;
-                    }
-                } else {
-                    prize = 100;
-                }
-            } else {
-                prize = 100;
-            }
-
-            userData.coins += prize;
-            saveData();
-
-            setTimeout(() => {
-                let msg = won ? (prize === 500 ? `🏆 VICTORY! First Time Clear! +${prize} Coins!` : `🏆 VICTORY! Replay Reward: +${prize} Coins!`) : `💀 DEFEAT! You earned ${prize} Coins.`;
-                alert(msg);
-                showScreen('home-screen');
-            }, 150);
-        }
-    </script>
+      }
+    };
+    grid.appendChild(card);
+  });
+
+  document.getElementById('mapsModal').classList.remove('hidden');
+}
+
+function closeModals() {
+  document.querySelectorAll('.modal').forEach(m => m.classList.add('hidden'));
+}
+
+// --- PURCHASING & PASSWORD SYSTEM ---
+function openPurchaseOptions() {
+  document.getElementById('buyCharTitle').innerText = `Unlock ${targetCharForBuy.name}`;
+  document.getElementById('buyCharSub').innerText = `Cost: 40 Coins | ID: ${targetCharForBuy.id}`;
+  document.getElementById('purchaseOptionModal').classList.remove('hidden');
+}
+
+function closePurchaseOptions() {
+  document.getElementById('purchaseOptionModal').classList.add('hidden');
+}
+
+function openPasswordPrompt() {
+  closePurchaseOptions();
+  document.getElementById('passwordModal').classList.remove('hidden');
+}
+
+function closePasswordModal() {
+  document.getElementById('passwordModal').classList.add('hidden');
+}
+
+function verifyPassword() {
+  const enteredPass = document.getElementById('passInput').value.trim();
+  const uname = gameState.username;
+  const len = uname.length;
+  const cName = targetCharForBuy.name;
+  const cNum = targetCharForBuy.id;
+
+  const expectedPass = `${uname}MT${len}${cName}${cNum}`;
+
+  if (enteredPass === expectedPass || gameState.coins >= 40) {
+    if (enteredPass !== expectedPass) {
+      gameState.coins -= 40;
+    }
+    gameState.unlockedChars.push(targetCharForBuy.id);
+    gameState.selectedChar = targetCharForBuy.id;
+    saveState();
+    alert(`Success! ${targetCharForBuy.name} unlocked.`);
+    closePasswordModal();
+    openShop();
+    updateHUD();
+  } else {
+    alert(`Invalid Password!\nExpected Password Format Formula: ${expectedPass}`);
+  }
+}
+
+function openIframePortal() {
+  closePurchaseOptions();
+  const overlay = document.getElementById('iframe-overlay');
+  const iframe = document.getElementById('portalIframe');
+  iframe.src = "https://muhammad-taqi512-lyra.hf.space";
+  overlay.classList.remove('hidden');
+}
+
+function closeIframePortal() {
+  const overlay = document.getElementById('iframe-overlay');
+  const iframe = document.getElementById('portalIframe');
+  iframe.src = "";
+  overlay.classList.add('hidden');
+}
+
+// Initialize
+updateProfileUI();
+updateHUD();
+draw();
+</script>
 </body>
 </html>
