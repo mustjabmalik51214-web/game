@@ -1,894 +1,1657 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Stickman Runner Ultimate - Created by Muhammad Taqi</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600;700&display=swap');
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stickman Runner Ultimate - Cute Edition 🐾</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      user-select: none;
-      font-family: 'Poppins', sans-serif;
-    }
+        :root {
+            --bg-dark: #030014;
+            --bg-mid: #0a0a1f;
+            --accent-1: #00f0ff;
+            --accent-2: #7c3aed;
+            --accent-3: #ff006e;
+            --accent-4: #ffd60a;
+            --accent-5: #00ff87;
+            --glass-bg: rgba(15, 15, 40, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --glass-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0d0;
+            --text-accent: #00f0ff;
+            --font-display: 'Orbitron', monospace;
+            --font-body: 'Poppins', sans-serif;
+            --font-ui: 'Inter', sans-serif;
+            --transition-smooth: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-bounce: all 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
 
-    body {
-      background: radial-gradient(circle at center, #1e1b4b, #0f172a, #020617);
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      overflow: hidden;
-    }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-    /* Top Developer Branding Header */
-    .dev-branding {
-      position: absolute;
-      top: 15px;
-      left: 20px;
-      font-size: 14px;
-      letter-spacing: 1px;
-      color: #94a3b8;
-      background: rgba(255, 255, 255, 0.05);
-      padding: 8px 20px;
-      border-radius: 30px;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-      z-index: 100;
-    }
+        body {
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+            font-family: var(--font-body);
+            position: relative;
+            background-image:
+                radial-gradient(ellipse at 20% 50%, rgba(124, 58, 237, 0.15) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(0, 240, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 80%, rgba(255, 0, 110, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, #0a0a1f 0%, #030014 100%);
+            background-size: 100% 100%;
+            animation: bodyAmbient 12s ease-in-out infinite alternate;
+        }
 
-    .dev-branding a {
-      color: #38bdf8;
-      text-decoration: none;
-      font-weight: 700;
-      font-family: 'Orbitron', sans-serif;
-      text-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
-      transition: all 0.3s ease;
-      cursor: pointer;
-    }
+        @keyframes bodyAmbient {
+            0% {
+                background-image:
+                    radial-gradient(ellipse at 20% 50%, rgba(124, 58, 237, 0.2) 0%, transparent 60%),
+                    radial-gradient(ellipse at 80% 20%, rgba(0, 240, 255, 0.12) 0%, transparent 50%),
+                    radial-gradient(ellipse at 50% 80%, rgba(255, 0, 110, 0.1) 0%, transparent 50%),
+                    radial-gradient(ellipse at 50% 50%, #0a0a1f 0%, #030014 100%);
+            }
+            50% {
+                background-image:
+                    radial-gradient(ellipse at 80% 60%, rgba(0, 240, 255, 0.18) 0%, transparent 60%),
+                    radial-gradient(ellipse at 20% 30%, rgba(255, 0, 110, 0.12) 0%, transparent 50%),
+                    radial-gradient(ellipse at 60% 70%, rgba(124, 58, 237, 0.15) 0%, transparent 55%),
+                    radial-gradient(ellipse at 50% 50%, #0a0a1f 0%, #030014 100%);
+            }
+            100% {
+                background-image:
+                    radial-gradient(ellipse at 30% 70%, rgba(255, 0, 110, 0.18) 0%, transparent 60%),
+                    radial-gradient(ellipse at 70% 40%, rgba(0, 240, 255, 0.15) 0%, transparent 55%),
+                    radial-gradient(ellipse at 50% 30%, rgba(124, 58, 237, 0.12) 0%, transparent 50%),
+                    radial-gradient(ellipse at 50% 50%, #0a0a1f 0%, #030014 100%);
+            }
+        }
 
-    .dev-branding a:hover {
-      color: #818cf8;
-      text-shadow: 0 0 20px rgba(129, 140, 248, 1);
-      text-decoration: underline;
-    }
+        .dev-branding {
+            position: absolute;
+            top: 20px;
+            left: 25px;
+            font-size: 13px;
+            letter-spacing: 1.5px;
+            color: var(--text-secondary);
+            background: var(--glass-bg);
+            padding: 10px 22px;
+            border-radius: 50px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            z-index: 100;
+            transition: var(--transition-smooth);
+            cursor: default;
+        }
 
-    /* Profile Badge on Top Right */
-    .user-profile-badge {
-      position: absolute;
-      top: 15px;
-      right: 20px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: rgba(15, 23, 42, 0.85);
-      padding: 6px 16px;
-      border-radius: 30px;
-      border: 1px solid rgba(56, 189, 248, 0.4);
-      box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
-      cursor: pointer;
-      backdrop-filter: blur(10px);
-      z-index: 100;
-      transition: all 0.3s ease;
-    }
+        .dev-branding:hover {
+            border-color: rgba(0, 240, 255, 0.5);
+            box-shadow: 0 8px 40px rgba(0, 240, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transform: translateY(-1px);
+        }
 
-    .user-profile-badge:hover {
-      border-color: #38bdf8;
-      box-shadow: 0 0 25px rgba(56, 189, 248, 0.5);
-      transform: translateY(-2px);
-    }
+        .dev-branding a {
+            color: var(--accent-1);
+            text-decoration: none;
+            font-weight: 700;
+            font-family: var(--font-display);
+            text-shadow: 0 0 20px rgba(0, 240, 255, 0.7), 0 0 40px rgba(0, 240, 255, 0.3);
+            transition: var(--transition-smooth);
+            cursor: pointer;
+            position: relative;
+        }
 
-    .user-avatar {
-      width: 28px;
-      height: 28px;
-      background: linear-gradient(135deg, #ef4444, #38bdf8);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      font-size: 14px;
-    }
+        .dev-branding a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent-1);
+            transition: var(--transition-smooth);
+            border-radius: 2px;
+            box-shadow: 0 0 10px var(--accent-1);
+        }
 
-    /* Main Canvas Container */
-    #game-container {
-      position: relative;
-      width: 900px;
-      height: 500px;
-      background: #000;
-      border-radius: 24px;
-      box-shadow: 0 0 60px rgba(56, 189, 248, 0.25), 0 20px 50px rgba(0,0,0,0.9);
-      overflow: hidden;
-      border: 2px solid rgba(56, 189, 248, 0.3);
-      margin-top: 30px;
-    }
+        .dev-branding a:hover::after {
+            width: 100%;
+        }
 
-    canvas {
-      display: block;
-      width: 100%;
-      height: 100%;
-    }
+        .dev-branding a:hover {
+            color: #fff;
+            text-shadow: 0 0 30px rgba(0, 240, 255, 1), 0 0 60px rgba(0, 240, 255, 0.6);
+        }
 
-    /* HUD Bar */
-    .ui-layer {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      padding: 20px;
-    }
+        .user-profile-badge {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--glass-bg);
+            padding: 8px 20px;
+            border-radius: 50px;
+            border: 1px solid rgba(0, 240, 255, 0.35);
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.15), var(--glass-shadow);
+            cursor: pointer;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 100;
+            transition: var(--transition-smooth);
+        }
 
-    .hud {
-      display: flex;
-      justify-content: space-between;
-      font-family: 'Orbitron', sans-serif;
-      font-size: 18px;
-      font-weight: 700;
-      z-index: 5;
-    }
+        .user-profile-badge:hover {
+            border-color: var(--accent-1);
+            box-shadow: 0 0 40px rgba(0, 240, 255, 0.4), var(--glass-shadow);
+            transform: translateY(-3px) scale(1.02);
+        }
 
-    .hud-box {
-      background: rgba(15, 23, 42, 0.6);
-      backdrop-filter: blur(12px);
-      padding: 10px 22px;
-      border-radius: 30px;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-    }
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #ff006e, #7c3aed, #00f0ff);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 16px;
+            font-family: var(--font-display);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.4), 0 0 30px rgba(124, 58, 237, 0.3);
+            animation: avatarGlow 3s ease-in-out infinite alternate;
+        }
 
-    /* Glassmorphism Modals */
-    .modal {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(10, 15, 30, 0.88);
-      backdrop-filter: blur(16px);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      pointer-events: auto;
-      z-index: 10;
-      transition: all 0.3s ease;
-    }
+        @keyframes avatarGlow {
+            0% {
+                box-shadow: 0 0 15px rgba(0, 240, 255, 0.4), 0 0 30px rgba(124, 58, 237, 0.3);
+            }
+            100% {
+                box-shadow: 0 0 25px rgba(0, 240, 255, 0.7), 0 0 50px rgba(124, 58, 237, 0.5);
+            }
+        }
 
-    .hidden {
-      display: none !important;
-    }
+        #game-container {
+            position: relative;
+            width: 960px;
+            height: 540px;
+            background: #000;
+            border-radius: 28px;
+            box-shadow:
+                0 0 100px rgba(0, 240, 255, 0.15),
+                0 0 200px rgba(124, 58, 237, 0.1),
+                0 30px 80px rgba(0, 0, 0, 0.8),
+                inset 0 0 80px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            border: 2px solid rgba(0, 240, 255, 0.25);
+            margin-top: 40px;
+            transition: var(--transition-smooth);
+        }
 
-    h1 {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 46px;
-      font-weight: 900;
-      margin-bottom: 5px;
-      background: linear-gradient(135deg, #ef4444, #38bdf8, #f59e0b);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-shadow: 0 0 30px rgba(56, 189, 248, 0.4);
-    }
+        #game-container:hover {
+            border-color: rgba(0, 240, 255, 0.5);
+            box-shadow:
+                0 0 120px rgba(0, 240, 255, 0.25),
+                0 0 250px rgba(124, 58, 237, 0.15),
+                0 30px 80px rgba(0, 0, 0, 0.8),
+                inset 0 0 80px rgba(0, 0, 0, 0.3);
+        }
 
-    h2, h3 {
-      font-family: 'Orbitron', sans-serif;
-      color: #38bdf8;
-      letter-spacing: 1px;
-    }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            border-radius: 26px;
+        }
 
-    .btn {
-      background: linear-gradient(135deg, #0284c7, #2563eb);
-      color: #fff;
-      border: none;
-      padding: 12px 30px;
-      font-size: 16px;
-      font-weight: 700;
-      border-radius: 12px;
-      cursor: pointer;
-      margin: 8px;
-      box-shadow: 0 4px 20px rgba(2, 132, 199, 0.4);
-      transition: all 0.25s ease;
-    }
+        .ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 18px 22px;
+            z-index: 5;
+        }
 
-    .btn:hover {
-      transform: translateY(-3px) scale(1.02);
-      box-shadow: 0 8px 25px rgba(2, 132, 199, 0.7);
-      background: linear-gradient(135deg, #38bdf8, #3d82f6);
-    }
+        .hud {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            font-family: var(--font-display);
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            gap: 12px;
+        }
 
-    .btn-secondary {
-      background: linear-gradient(135deg, #334155, #1e293b);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-      border: 1px solid rgba(255,255,255,0.1);
-    }
+        .hud-box {
+            background: rgba(10, 10, 30, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 12px 24px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transition: var(--transition-smooth);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-    .btn-danger {
-      background: linear-gradient(135deg, #dc2626, #991b1b);
-      box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4);
-    }
+        .hud-box:hover {
+            border-color: rgba(0, 240, 255, 0.4);
+            box-shadow: 0 4px 30px rgba(0, 240, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
 
-    /* Grids & Cards */
-    .grid-container {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 12px;
-      max-height: 280px;
-      overflow-y: auto;
-      width: 90%;
-      padding: 15px;
-      background: rgba(0, 0, 0, 0.4);
-      border-radius: 16px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      margin: 15px 0;
-    }
+        .hud-box .icon {
+            font-size: 18px;
+            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.5));
+        }
 
-    .grid-container::-webkit-scrollbar {
-      width: 6px;
-    }
-    .grid-container::-webkit-scrollbar-thumb {
-      background: #38bdf8;
-      border-radius: 10px;
-    }
+        .modal {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(3, 0, 20, 0.85);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            pointer-events: auto;
+            z-index: 10;
+            transition: var(--transition-smooth);
+            animation: modalFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 26px;
+        }
 
-    .grid-card {
-      background: rgba(30, 41, 59, 0.7);
-      border: 2px solid rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
-      padding: 12px 8px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
 
-    .grid-card.active {
-      border-color: #38bdf8;
-      box-shadow: 0 0 15px rgba(56, 189, 248, 0.5);
-      background: rgba(56, 189, 248, 0.15);
-    }
+        .hidden {
+            display: none !important;
+        }
 
-    .grid-card.locked {
-      opacity: 0.5;
-      filter: grayscale(0.6);
-    }
+        h1 {
+            font-family: var(--font-display);
+            font-size: 48px;
+            font-weight: 900;
+            margin-bottom: 8px;
+            letter-spacing: 3px;
+            background: linear-gradient(135deg, #ff006e, #7c3aed, #00f0ff, #ffd60a);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientTextShift 4s ease-in-out infinite alternate;
+            filter: drop-shadow(0 0 30px rgba(0, 240, 255, 0.4)) drop-shadow(0 0 60px rgba(124, 58, 237, 0.3));
+        }
 
-    .grid-card p {
-      font-size: 11px;
-      margin-top: 6px;
-      font-weight: 600;
-    }
+        @keyframes gradientTextShift {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
 
-    input[type="text"] {
-      padding: 12px 20px;
-      border-radius: 10px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      background: rgba(15, 23, 42, 0.8);
-      color: #fff;
-      font-size: 16px;
-      margin: 10px 0;
-      width: 280px;
-      text-align: center;
-      outline: none;
-    }
+        h2,
+        h3 {
+            font-family: var(--font-display);
+            color: var(--accent-1);
+            letter-spacing: 2px;
+            font-weight: 700;
+            text-shadow: 0 0 20px rgba(0, 240, 255, 0.5), 0 0 40px rgba(0, 240, 255, 0.2);
+        }
 
-    /* Fullscreen iFrame Overlay */
-    #iframe-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: #000;
-      z-index: 50;
-      display: flex;
-      flex-direction: column;
-    }
+        .subtitle-text {
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 400;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            font-family: var(--font-body);
+        }
 
-    #iframe-overlay iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
+        .subtitle-text a {
+            color: var(--accent-1);
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition-smooth);
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+        }
 
-    #iframe-overlay .close-iframe {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      z-index: 51;
-    }
-  </style>
+        .subtitle-text a:hover {
+            color: #fff;
+            text-shadow: 0 0 20px rgba(0, 240, 255, 0.8);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #1a1a3e, #0d0d2b);
+            color: #fff;
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            padding: 14px 32px;
+            font-size: 15px;
+            font-weight: 700;
+            font-family: var(--font-display);
+            letter-spacing: 1.5px;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 6px;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.5), 0 0 15px rgba(0, 240, 255, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transition: var(--transition-bounce);
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+            transition: var(--transition-smooth);
+        }
+
+        .btn:hover::before {
+            left: 100%;
+            transition: all 0.6s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 10px 40px rgba(0, 240, 255, 0.3), 0 0 30px rgba(0, 240, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+            border-color: var(--accent-1);
+            background: linear-gradient(135deg, #1e1e4a, #111138);
+        }
+
+        .btn:active {
+            transform: translateY(-1px) scale(0.98);
+            box-shadow: 0 4px 15px rgba(0, 240, 255, 0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00c8ff, #7c3aed);
+            border-color: rgba(0, 240, 255, 0.6);
+            box-shadow: 0 4px 30px rgba(0, 200, 255, 0.4), 0 0 20px rgba(124, 58, 237, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            font-size: 16px;
+            padding: 16px 40px;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #00e0ff, #8b5cf6);
+            box-shadow: 0 10px 50px rgba(0, 200, 255, 0.5), 0 0 40px rgba(124, 58, 237, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #1a1a35, #0d0d20);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc2626, #991b1b);
+            border-color: rgba(255, 100, 100, 0.4);
+            box-shadow: 0 4px 25px rgba(220, 38, 38, 0.3);
+        }
+
+        .btn-danger:hover {
+            box-shadow: 0 10px 40px rgba(220, 38, 38, 0.5);
+            border-color: rgba(255, 100, 100, 0.7);
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            max-height: 260px;
+            overflow-y: auto;
+            width: 85%;
+            padding: 18px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            margin: 12px 0;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-1) transparent;
+        }
+
+        .grid-container::-webkit-scrollbar {
+            width: 5px;
+        }
+        .grid-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .grid-container::-webkit-scrollbar-thumb {
+            background: var(--accent-1);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+        }
+
+        .grid-card {
+            background: rgba(20, 20, 50, 0.8);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 14px 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition-bounce);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .grid-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.1), transparent);
+            opacity: 0;
+            transition: var(--transition-smooth);
+        }
+
+        .grid-card:hover {
+            border-color: rgba(0, 240, 255, 0.5);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 240, 255, 0.15);
+        }
+
+        .grid-card:hover::before {
+            opacity: 1;
+        }
+
+        .grid-card.active {
+            border-color: var(--accent-1);
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.5), 0 8px 30px rgba(0, 0, 0, 0.5);
+            background: rgba(0, 240, 255, 0.15);
+        }
+
+        .grid-card.active::after {
+            content: '✓';
+            position: absolute;
+            top: 5px;
+            right: 8px;
+            color: var(--accent-1);
+            font-size: 14px;
+            font-weight: bold;
+            text-shadow: 0 0 10px var(--accent-1);
+        }
+
+        .grid-card.locked {
+            opacity: 0.5;
+            filter: grayscale(0.5);
+            cursor: not-allowed;
+        }
+
+        .grid-card.locked:hover {
+            transform: none;
+            border-color: rgba(255, 255, 255, 0.1);
+            box-shadow: none;
+        }
+
+        .grid-card p {
+            font-size: 10px;
+            margin-top: 6px;
+            font-weight: 600;
+            font-family: var(--font-ui);
+            letter-spacing: 0.5px;
+        }
+
+        .grid-card .char-dot {
+            width: 28px;
+            height: 28px;
+            margin: 0 auto;
+            border-radius: 50%;
+            box-shadow: 0 0 20px currentColor, 0 0 40px currentColor;
+            transition: var(--transition-smooth);
+            animation: pulseDot 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulseDot {
+            0% {
+                transform: scale(1);
+            }
+            100% {
+                transform: scale(1.15);
+            }
+        }
+
+        input[type="text"] {
+            padding: 14px 22px;
+            border-radius: 50px;
+            border: 2px solid rgba(0, 240, 255, 0.3);
+            background: rgba(10, 10, 30, 0.9);
+            color: #fff;
+            font-size: 16px;
+            font-family: var(--font-body);
+            margin: 12px 0;
+            width: 300px;
+            text-align: center;
+            outline: none;
+            transition: var(--transition-smooth);
+            letter-spacing: 1px;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--accent-1);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.3), inset 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        input[type="text"]::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+            letter-spacing: 1px;
+        }
+
+        #iframe-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            border-radius: 26px;
+            overflow: hidden;
+        }
+
+        #iframe-overlay iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 26px;
+        }
+
+        #iframe-overlay .close-iframe {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 51;
+            padding: 10px 20px;
+            font-size: 13px;
+            border-radius: 50px;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+        }
+
+        .divider {
+            width: 60%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.5), transparent);
+            margin: 10px 0;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(0, 240, 255, 0.15);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--accent-1);
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+        }
+
+        @media (max-width: 1000px) {
+            #game-container {
+                width: 95vw;
+                height: 55vw;
+                border-radius: 20px;
+            }
+            h1 {
+                font-size: 32px;
+            }
+            .grid-container {
+                grid-template-columns: repeat(3, 1fr);
+                max-height: 220px;
+            }
+            .btn {
+                padding: 10px 20px;
+                font-size: 12px;
+                margin: 4px;
+            }
+            .btn-primary {
+                font-size: 13px;
+                padding: 12px 28px;
+            }
+            .dev-branding,
+            .user-profile-badge {
+                top: 10px;
+                padding: 6px 14px;
+                font-size: 11px;
+            }
+            .hud-box {
+                padding: 8px 16px;
+                font-size: 11px;
+            }
+        }
+    </style>
 </head>
 <body>
 
-<!-- Header with Developer Link -->
-<div class="dev-branding">
-  Created by <a href="https://nexura.oneapp.dev/" target="_blank">Muhammad Taqi</a>
-</div>
-
-<!-- Profile Badge on Top Right -->
-<div class="user-profile-badge" onclick="openProfileModal()" title="Click to Change Username">
-  <div class="user-avatar" id="avatarLetter">P</div>
-  <span id="profileUsername" style="font-size: 14px; font-weight: 600;">Player1</span>
-  <span style="font-size: 10px; color: #38bdf8;">✏️</span>
-</div>
-
-<div id="game-container">
-  <canvas id="gameCanvas" width="900" height="500"></canvas>
-
-  <div class="ui-layer">
-    <div class="hud">
-      <div class="hud-box" id="scoreDisplay">SCORE: 0</div>
-      <div class="hud-box" id="coinDisplay">COINS: 🪙 0</div>
+    <div class="dev-branding">
+        Created by <a href="https://nexura.oneapp.dev/" target="_blank">Muhammad Taqi</a> ⚡
     </div>
-  </div>
 
-  <!-- Main Menu -->
-  <div id="mainMenu" class="modal">
-    <h1>STICKMAN RUNNER</h1>
-    <p style="color: #94a3b8; font-size: 14px; margin-bottom: 25px;">Created by <a href="https://nexura.oneapp.dev/" target="_blank" style="color: #38bdf8; text-decoration: none; font-weight: bold;">Muhammad Taqi</a></p>
-    
-    <div>
-      <button class="btn" onclick="startGame()">PLAY GAME</button>
-      <button class="btn btn-secondary" onclick="openShop()">CHARACTERS (50)</button>
-      <button class="btn btn-secondary" onclick="openMaps()">MAPS (10)</button>
+    <div class="user-profile-badge" onclick="openProfileModal()" title="Click to Change Username">
+        <div class="user-avatar" id="avatarLetter">P</div>
+        <span id="profileUsername" style="font-size: 13px; font-weight: 600; letter-spacing: 0.5px;">Player1</span>
+        <span style="font-size: 12px; color: #00f0ff; text-shadow: 0 0 10px rgba(0,240,255,0.6);">✏️</span>
     </div>
-  </div>
 
-  <!-- Username Modal -->
-  <div id="profileModal" class="modal hidden">
-    <h2>CHANGE USERNAME</h2>
-    <p style="font-size: 13px; color: #94a3b8; margin-bottom: 10px;">Set your custom player name</p>
-    <input type="text" id="usernameInputModal" placeholder="Enter Username">
-    <div>
-      <button class="btn" onclick="saveUsername()">SAVE</button>
-      <button class="btn btn-secondary" onclick="showMainMenu()">BACK</button>
+    <div id="game-container">
+        <canvas id="gameCanvas" width="960" height="540"></canvas>
+
+        <div class="ui-layer">
+            <div class="hud">
+                <div class="hud-box">
+                    <span class="icon">🏆</span>
+                    <span id="scoreDisplay">SCORE: 0</span>
+                </div>
+                <div class="hud-box">
+                    <span class="icon">🪙</span>
+                    <span id="coinDisplay">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="mainMenu" class="modal">
+            <h1>STICKMAN RUNNER</h1>
+            <p class="subtitle-text">Cute Edition 🐾 — Crafted by <a href="https://nexura.oneapp.dev/" target="_blank">Muhammad Taqi</a></p>
+            <div class="divider"></div>
+            <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-top:10px;">
+                <button class="btn btn-primary" onclick="startGame()">▶ PLAY GAME</button>
+                <button class="btn btn-secondary" onclick="openShop()">🎨 CHARACTERS (50)</button>
+                <button class="btn btn-secondary" onclick="openMaps()">🗺️ MAPS (10)</button>
+            </div>
+            <div style="margin-top:16px;">
+                <span class="badge">🏆 High Score: <span id="highScoreDisplay">0</span></span>
+                <span class="badge">👤 Username: <span id="menuUsername">Player1</span></span>
+            </div>
+        </div>
+
+        <div id="profileModal" class="modal hidden">
+            <h2>CHANGE USERNAME</h2>
+            <p style="font-size:12px; color:#94a3b8; letter-spacing:0.5px; margin-bottom:5px;">Set your custom player identity</p>
+            <input type="text" id="usernameInputModal" placeholder="Enter Username">
+            <div style="display:flex; gap:8px;">
+                <button class="btn btn-primary" onclick="saveUsername()">💾 SAVE</button>
+                <button class="btn btn-secondary" onclick="showMainMenu()">← BACK</button>
+            </div>
+        </div>
+
+        <div id="shopModal" class="modal hidden">
+            <h2>🎨 CHARACTER SHOP</h2>
+            <p style="font-size:12px; color:#94a3b8; letter-spacing:0.5px;">50 Vibrant & Glowing Stickmen — 40 Coins Each</p>
+            <div class="grid-container" id="characterGrid"></div>
+            <button class="btn btn-secondary" onclick="showMainMenu()">← MAIN MENU</button>
+        </div>
+
+        <div id="mapsModal" class="modal hidden">
+            <h2>🗺️ SELECT MAP</h2>
+            <p style="font-size:12px; color:#94a3b8; letter-spacing:0.5px;">10 Breathtaking Parallax Environments</p>
+            <div class="grid-container" id="mapsGrid"></div>
+            <button class="btn btn-secondary" onclick="showMainMenu()">← MAIN MENU</button>
+        </div>
+
+        <div id="purchaseOptionModal" class="modal hidden">
+            <h3 id="buyCharTitle" style="font-size:20px;">Unlock Character</h3>
+            <p id="buyCharSub" style="color:#94a3b8; font-size:12px; margin-bottom:16px; letter-spacing:0.5px;"></p>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:center;">
+                <button class="btn btn-primary" onclick="openPasswordPrompt()">🔑 Use Password</button>
+                <button class="btn btn-secondary" onclick="openIframePortal()">🌐 Buy via Portal</button>
+            </div>
+            <button class="btn btn-danger" style="margin-top:14px;" onclick="closePurchaseOptions()">✕ CANCEL</button>
+        </div>
+
+        <div id="passwordModal" class="modal hidden">
+            <h3 style="font-size:18px;">🔑 ENTER UNLOCK KEY</h3>
+            <p style="font-size:11px; color:#94a3b8; margin-top:6px; letter-spacing:0.5px;">Formula: username + MT + len + charName + charId</p>
+            <input type="text" id="passInput" placeholder="Enter Secret Code">
+            <div style="display:flex; gap:8px;">
+                <button class="btn btn-primary" onclick="verifyPassword()">🔓 UNLOCK NOW</button>
+                <button class="btn btn-secondary" onclick="closePasswordModal()">← BACK</button>
+            </div>
+        </div>
+
+        <div id="gameOverModal" class="modal hidden">
+            <h1 style="color:#ff4d6d; font-size:36px;">GAME OVER</h1>
+            <p id="finalScore" style="font-size:17px; color:#cbd5e1; margin-bottom:16px; letter-spacing:1px; font-family:var(--font-display);"></p>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:center;">
+                <button class="btn btn-primary" onclick="startGame()">🔄 TRY AGAIN</button>
+                <button class="btn btn-secondary" onclick="showMainMenu()">🏠 MAIN MENU</button>
+            </div>
+        </div>
+
+        <div id="iframe-overlay" class="hidden">
+            <button class="btn btn-danger close-iframe" onclick="closeIframePortal()">✕ Close Portal</button>
+            <iframe id="portalIframe" src=""></iframe>
+        </div>
     </div>
-  </div>
 
-  <!-- Shop Modal -->
-  <div id="shopModal" class="modal hidden">
-    <h2>CHARACTER SHOP</h2>
-    <p style="font-size: 13px; color: #94a3b8; margin-bottom: 5px;">50 Vibrant & Glowing Stickmen (40 Coins each)</p>
-    <div class="grid-container" id="characterGrid"></div>
-    <button class="btn btn-secondary" onclick="showMainMenu()">MAIN MENU</button>
-  </div>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
 
-  <!-- Maps Modal -->
-  <div id="mapsModal" class="modal hidden">
-    <h2>SELECT MAP</h2>
-    <p style="font-size: 13px; color: #94a3b8; margin-bottom: 5px;">10 Beautiful Parallax Environments</p>
-    <div class="grid-container" id="mapsGrid"></div>
-    <button class="btn btn-secondary" onclick="showMainMenu()">MAIN MENU</button>
-  </div>
+        let gameState = {
+            coins: parseInt(localStorage.getItem('sm_coins')) || 200,
+            highScore: parseInt(localStorage.getItem('sm_highscore')) || 0,
+            unlockedChars: JSON.parse(localStorage.getItem('sm_unlocked_chars')) || [1],
+            selectedChar: parseInt(localStorage.getItem('sm_selected_char')) || 1,
+            unlockedMaps: JSON.parse(localStorage.getItem('sm_unlocked_maps')) || [1],
+            selectedMap: parseInt(localStorage.getItem('sm_selected_map')) || 1,
+            username: localStorage.getItem('sm_username') || "Player1"
+        };
 
-  <!-- Purchase Option Modal -->
-  <div id="purchaseOptionModal" class="modal hidden">
-    <h3 id="buyCharTitle">Unlock Character</h3>
-    <p id="buyCharSub" style="color:#94a3b8; font-size: 13px; margin-bottom: 20px;"></p>
-    <div>
-      <button class="btn" onclick="openPasswordPrompt()">Use Password</button>
-      <button class="btn btn-secondary" onclick="openIframePortal()">Buy via Portal</button>
-    </div>
-    <button class="btn btn-danger" style="margin-top: 15px;" onclick="closePurchaseOptions()">CANCEL</button>
-  </div>
-
-  <!-- Password Entry Modal -->
-  <div id="passwordModal" class="modal hidden">
-    <h3>ENTER UNLOCK KEY</h3>
-    <p style="font-size:12px; color:#94a3b8; margin-top:5px;">Formula: username + MT + len + charName + charId</p>
-    <input type="text" id="passInput" placeholder="Enter Secret Code">
-    <div>
-      <button class="btn" onclick="verifyPassword()">UNLOCK NOW</button>
-      <button class="btn btn-secondary" onclick="closePasswordModal()">BACK</button>
-    </div>
-  </div>
-
-  <!-- Game Over Modal -->
-  <div id="gameOverModal" class="modal hidden">
-    <h1 style="color: #f43f5e;">GAME OVER</h1>
-    <p id="finalScore" style="font-size: 18px; color: #cbd5e1; margin-bottom: 20px;"></p>
-    <div>
-      <button class="btn" onclick="startGame()">TRY AGAIN</button>
-      <button class="btn btn-secondary" onclick="showMainMenu()">MAIN MENU</button>
-    </div>
-  </div>
-
-  <!-- Fullscreen iFrame Portal -->
-  <div id="iframe-overlay" class="hidden">
-    <button class="btn btn-danger close-iframe" onclick="closeIframePortal()">✕ Close Portal</button>
-    <iframe id="portalIframe" src=""></iframe>
-  </div>
-</div>
-
-<script>
-// --- GAME STATE & LOCAL STORAGE ---
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
-
-let gameState = {
-  coins: parseInt(localStorage.getItem('sm_coins')) || 100,
-  highScore: parseInt(localStorage.getItem('sm_highscore')) || 0,
-  unlockedChars: JSON.parse(localStorage.getItem('sm_unlocked_chars')) || [1],
-  selectedChar: parseInt(localStorage.getItem('sm_selected_char')) || 1,
-  unlockedMaps: JSON.parse(localStorage.getItem('sm_unlocked_maps')) || [1],
-  selectedMap: parseInt(localStorage.getItem('sm_selected_map')) || 1,
-  username: localStorage.getItem('sm_username') || "Player1"
-};
-
-function saveState() {
-  localStorage.setItem('sm_coins', gameState.coins);
-  localStorage.setItem('sm_highscore', gameState.highScore);
-  localStorage.setItem('sm_unlocked_chars', JSON.stringify(gameState.unlockedChars));
-  localStorage.setItem('sm_selected_char', gameState.selectedChar);
-  localStorage.setItem('sm_unlocked_maps', JSON.stringify(gameState.unlockedMaps));
-  localStorage.setItem('sm_selected_map', gameState.selectedMap);
-  localStorage.setItem('sm_username', gameState.username);
-}
-
-// --- 10 BEAUTIFUL MAPS CONFIGURATION ---
-const MAPS = [
-  { id: 1, name: "Night City", price: 0, bg1: "#090d16", bg2: "#1e1b4b", ground: "#1e293b", accent: "#38bdf8" },
-  { id: 2, name: "Desert Sunset", price: 50, bg1: "#451a03", bg2: "#9a3412", ground: "#78350f", accent: "#f59e0b" },
-  { id: 3, name: "Neon Cyberpunk", price: 100, bg1: "#2e1065", bg2: "#701a75", ground: "#581c87", accent: "#f43f5e" },
-  { id: 4, name: "Mystic Forest", price: 0, bg1: "#022c22", bg2: "#065f46", ground: "#047857", accent: "#34d399" },
-  { id: 5, name: "Sunset Beach", price: 200, bg1: "#831843", bg2: "#be185d", ground: "#9d174d", accent: "#fb7185" },
-  { id: 6, name: "Lava Volcano", price: 250, bg1: "#450a0a", bg2: "#991b1b", ground: "#7f1d1d", accent: "#ef4444" },
-  { id: 7, name: "Snow Tundra", price: 300, bg1: "#0f172a", bg2: "#334155", ground: "#475569", accent: "#e2e8f0" },
-  { id: 8, name: "Matrix Grid", price: 350, bg1: "#022c22", bg2: "#14532d", ground: "#065f46", accent: "#22c55e" },
-  { id: 9, name: "Deep Ocean", price: 400, bg1: "#082f49", bg2: "#0369a1", ground: "#0284c7", accent: "#38bdf8" },
-  { id: 10, name: "Golden Realm", price: 500, bg1: "#451a03", bg2: "#a16207", ground: "#ca8a04", accent: "#facc15" }
-];
-
-// Generate 50 Vibrant Glowing Characters
-const CHARACTERS = [];
-const charColors = [
-  "#ef4444", "#38bdf8", "#f59e0b", "#10b981", "#a855f7", "#ec4899", 
-  "#3b82f6", "#84cc16", "#f97316", "#06b6d4", "#d946ef", "#facc15"
-];
-for(let i = 1; i <= 50; i++) {
-  CHARACTERS.push({
-    id: i,
-    name: `Runner_${i}`,
-    price: i === 1 ? 0 : 40,
-    color: charColors[(i - 1) % charColors.length]
-  });
-}
-
-// --- ENGINE VARIABLES ---
-let isPlaying = false;
-let score = 0;
-let currentCoinsCollected = 0;
-let gameSpeed = 8.5; 
-let gravity = 0.55; 
-
-let player = {
-  x: 90,
-  y: 360,
-  width: 30,
-  height: 50,
-  velocityY: 0,
-  isGrounded: false,
-  jumpCount: 0, // Track up to 4 jumps
-  maxJumps: 4,  // 4 Jumps Limit
-  animFrame: 0
-};
-
-let obstacles = [];
-let coinsArr = [];
-let targetCharForBuy = null;
-
-// --- GAME LOOP ---
-function update() {
-  if (!isPlaying) return;
-
-  player.velocityY += gravity;
-  player.y += player.velocityY;
-
-  // Ground Collision & Jump Reset
-  if (player.y >= 360) {
-    player.y = 360;
-    player.velocityY = 0;
-    player.isGrounded = true;
-    player.jumpCount = 0; // Reset jumps back to 0 on ground touch
-  }
-
-  player.animFrame += 0.25; 
-  score++;
-  if (score % 400 === 0) gameSpeed += 0.5;
-
-  // Obstacle Spawning
-  if (Math.random() < 0.02 && (obstacles.length === 0 || canvas.width - obstacles[obstacles.length - 1].x > 230)) {
-    let type = Math.random() > 0.5 ? 'box' : 'spike';
-    obstacles.push({
-      x: canvas.width,
-      y: type === 'box' ? 368 : 375,
-      w: 30,
-      h: type === 'box' ? 32 : 28,
-      type: type
-    });
-  }
-
-  // Coin Spawning
-  if (Math.random() < 0.018) {
-    coinsArr.push({
-      x: canvas.width,
-      y: Math.random() > 0.5 ? 310 : 340,
-      r: 9
-    });
-  }
-
-  // Obstacles Processing
-  for (let i = obstacles.length - 1; i >= 0; i--) {
-    let obs = obstacles[i];
-    obs.x -= gameSpeed;
-
-    if (
-      player.x < obs.x + obs.w &&
-      player.x + player.width > obs.x &&
-      player.y < obs.y + obs.h &&
-      player.y + player.height > obs.y
-    ) {
-      endGame();
-    }
-
-    if (obs.x < -50) obstacles.splice(i, 1);
-  }
-
-  // Coins Processing
-  for (let i = coinsArr.length - 1; i >= 0; i--) {
-    let c = coinsArr[i];
-    c.x -= gameSpeed;
-
-    let dist = Math.hypot((player.x + 15) - c.x, (player.y + 25) - c.y);
-    if (dist < c.r + 22) {
-      currentCoinsCollected++;
-      gameState.coins++;
-      coinsArr.splice(i, 1);
-      updateHUD();
-    } else if (c.x < -20) {
-      coinsArr.splice(i, 1);
-    }
-  }
-
-  draw();
-  requestAnimationFrame(update);
-}
-
-// --- RENDER FUNCTION ---
-function draw() {
-  const currentMap = MAPS.find(m => m.id === gameState.selectedMap) || MAPS[0];
-  const currentChar = CHARACTERS.find(c => c.id === gameState.selectedChar) || CHARACTERS[0];
-
-  // Background Gradient
-  let bgGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-  bgGrad.addColorStop(0, currentMap.bg1);
-  bgGrad.addColorStop(1, currentMap.bg2);
-  ctx.fillStyle = bgGrad;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  // Background Stars
-  ctx.fillStyle = "rgba(255, 255, 255, 0.15)";
-  for(let i=0; i<20; i++) {
-    ctx.fillRect((i*60 + score) % canvas.width, (i*30) % 300, 3, 3);
-  }
-
-  // Ground
-  ctx.fillStyle = currentMap.ground;
-  ctx.fillRect(0, 400, canvas.width, 100);
-  ctx.fillStyle = currentMap.accent;
-  ctx.fillRect(0, 396, canvas.width, 5);
-
-  // Draw Stickman
-  drawStickman(player.x, player.y, currentChar.color, player.animFrame, player.isGrounded);
-
-  // Draw Obstacles
-  ctx.fillStyle = "#ef4444";
-  obstacles.forEach(obs => {
-    if (obs.type === 'box') {
-      ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
-      ctx.strokeStyle = "#ffffff";
-      ctx.strokeRect(obs.x, obs.y, obs.w, obs.h);
-    } else {
-      ctx.beginPath();
-      ctx.moveTo(obs.x, obs.y + obs.h);
-      ctx.lineTo(obs.x + obs.w / 2, obs.y);
-      ctx.lineTo(obs.x + obs.w, obs.y + obs.h);
-      ctx.closePath();
-      ctx.fill();
-    }
-  });
-
-  // Draw Coins
-  ctx.fillStyle = "#facc15";
-  coinsArr.forEach(c => {
-    ctx.beginPath();
-    ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = "#ffffff";
-    ctx.stroke();
-  });
-
-  document.getElementById('scoreDisplay').innerText = `SCORE: ${Math.floor(score / 5)}`;
-}
-
-function drawStickman(x, y, color, frame, isGrounded) {
-  ctx.strokeStyle = color;
-  ctx.lineWidth = 4;
-  ctx.shadowColor = color;
-  ctx.shadowBlur = 12;
-  ctx.beginPath();
-
-  // Head
-  ctx.arc(x + 15, y + 10, 9, 0, Math.PI * 2);
-
-  // Body
-  ctx.moveTo(x + 15, y + 19);
-  ctx.lineTo(x + 15, y + 35);
-
-  if (isGrounded) {
-    let legOffset = Math.sin(frame) * 12;
-    ctx.moveTo(x + 15, y + 35);
-    ctx.lineTo(x + 5 + legOffset, y + 50);
-    ctx.moveTo(x + 15, y + 35);
-    ctx.lineTo(x + 25 - legOffset, y + 50);
-
-    ctx.moveTo(x + 15, y + 22);
-    ctx.lineTo(x + 5 - legOffset, y + 32);
-    ctx.moveTo(x + 15, y + 22);
-    ctx.lineTo(x + 25 + legOffset, y + 32);
-  } else {
-    ctx.moveTo(x + 15, y + 35);
-    ctx.lineTo(x + 5, y + 45);
-    ctx.moveTo(x + 15, y + 35);
-    ctx.lineTo(x + 22, y + 40);
-
-    ctx.moveTo(x + 15, y + 22);
-    ctx.lineTo(x + 5, y + 14);
-    ctx.moveTo(x + 15, y + 22);
-    ctx.lineTo(x + 25, y + 14);
-  }
-
-  ctx.stroke();
-  ctx.shadowBlur = 0;
-}
-
-// --- CONTROLS & 4-JUMP MECHANIC ---
-function jump() {
-  if (isPlaying && player.jumpCount < player.maxJumps) {
-    player.velocityY = -10.5; // Jump strength
-    player.isGrounded = false;
-    player.jumpCount++;      // Increment jump count up to 4
-  }
-}
-
-window.addEventListener('keydown', e => {
-  if (e.code === 'Space' || e.code === 'ArrowUp') {
-    jump();
-  } else if (e.code === 'Escape') {
-    showMainMenu();
-  }
-});
-
-// Browser History Back Event Handling
-window.history.pushState({ page: 'game' }, '');
-window.addEventListener('popstate', function (event) {
-  window.history.pushState({ page: 'game' }, '');
-  showMainMenu();
-});
-
-canvas.addEventListener('touchstart', jump);
-canvas.addEventListener('mousedown', jump);
-
-// --- USERNAME MANAGEMENT ---
-function updateProfileUI() {
-  document.getElementById('profileUsername').innerText = gameState.username;
-  document.getElementById('avatarLetter').innerText = gameState.username.charAt(0).toUpperCase();
-}
-
-function openProfileModal() {
-  document.getElementById('usernameInputModal').value = gameState.username;
-  document.getElementById('profileModal').classList.remove('hidden');
-}
-
-function closeProfileModal() {
-  document.getElementById('profileModal').classList.add('hidden');
-}
-
-function saveUsername() {
-  const val = document.getElementById('usernameInputModal').value.trim();
-  if (val) {
-    gameState.username = val;
-    saveState();
-    updateProfileUI();
-    showMainMenu();
-  }
-}
-
-// --- GAME LOGIC CONTROLS ---
-function startGame() {
-  isPlaying = true;
-  score = 0;
-  currentCoinsCollected = 0;
-  gameSpeed = 8.5;
-  obstacles = [];
-  coinsArr = [];
-  player.y = 360;
-  player.velocityY = 0;
-  player.jumpCount = 0; // Reset jump counter at start
-
-  closeModals();
-  updateHUD();
-  requestAnimationFrame(update);
-}
-
-function endGame() {
-  isPlaying = false;
-  saveState();
-  document.getElementById('finalScore').innerText = `FINAL SCORE: ${Math.floor(score / 5)} | COINS: 🪙 ${currentCoinsCollected}`;
-  document.getElementById('gameOverModal').classList.remove('hidden');
-}
-
-function updateHUD() {
-  document.getElementById('coinDisplay').innerText = `COINS: 🪙 ${gameState.coins}`;
-}
-
-function showMainMenu() {
-  isPlaying = false;
-  closeModals();
-  document.getElementById('mainMenu').classList.remove('hidden');
-  updateHUD();
-}
-
-function openShop() {
-  closeModals();
-  const grid = document.getElementById('characterGrid');
-  grid.innerHTML = '';
-
-  CHARACTERS.forEach(c => {
-    const isUnlocked = gameState.unlockedChars.includes(c.id);
-    const isSelected = gameState.selectedChar === c.id;
-
-    const card = document.createElement('div');
-    card.className = `grid-card ${isSelected ? 'active' : ''} ${!isUnlocked ? 'locked' : ''}`;
-    card.innerHTML = `
-      <div style="width:24px; height:24px; background:${c.color}; margin:0 auto; border-radius:50%; box-shadow:0 0 12px ${c.color};"></div>
-      <p>${c.name}</p>
-      <p style="color:#38bdf8;">${isUnlocked ? (isSelected ? 'EQUIPPED' : 'SELECT') : '🔒 40 COINS'}</p>
-    `;
-
-    card.onclick = () => {
-      if (isUnlocked) {
-        gameState.selectedChar = c.id;
-        saveState();
-        openShop();
-      } else {
-        targetCharForBuy = c;
-        openPurchaseOptions();
-      }
-    };
-    grid.appendChild(card);
-  });
-
-  document.getElementById('shopModal').classList.remove('hidden');
-}
-
-function openMaps() {
-  closeModals();
-  const grid = document.getElementById('mapsGrid');
-  grid.innerHTML = '';
-
-  MAPS.forEach(m => {
-    const isUnlocked = gameState.unlockedMaps.includes(m.id);
-    const isSelected = gameState.selectedMap === m.id;
-
-    const card = document.createElement('div');
-    card.className = `grid-card ${isSelected ? 'active' : ''} ${!isUnlocked ? 'locked' : ''}`;
-    card.innerHTML = `
-      <p style="font-size:13px;">${m.name}</p>
-      <p style="color:#38bdf8;">${isUnlocked ? (isSelected ? 'ACTIVE' : 'SELECT') : `🔒 ${m.price} COINS`}</p>
-    `;
-
-    card.onclick = () => {
-      if (isUnlocked) {
-        gameState.selectedMap = m.id;
-        saveState();
-        openMaps();
-      } else {
-        if (gameState.coins >= m.price) {
-          gameState.coins -= m.price;
-          gameState.unlockedMaps.push(m.id);
-          gameState.selectedMap = m.id;
-          saveState();
-          openMaps();
-          updateHUD();
-        } else {
-          alert('Not enough coins to unlock this map!');
+        function saveState() {
+            localStorage.setItem('sm_coins', gameState.coins);
+            localStorage.setItem('sm_highscore', gameState.highScore);
+            localStorage.setItem('sm_unlocked_chars', JSON.stringify(gameState.unlockedChars));
+            localStorage.setItem('sm_selected_char', gameState.selectedChar);
+            localStorage.setItem('sm_unlocked_maps', JSON.stringify(gameState.unlockedMaps));
+            localStorage.setItem('sm_selected_map', gameState.selectedMap);
+            localStorage.setItem('sm_username', gameState.username);
         }
-      }
-    };
-    grid.appendChild(card);
-  });
 
-  document.getElementById('mapsModal').classList.remove('hidden');
-}
+        const MAPS = [
+            { id: 1, name: "Night City", price: 0, bg1: "#090d16", bg2: "#1e1b4b", ground: "#1e293b", accent: "#38bdf8",
+                skyStars: true },
+            { id: 2, name: "Desert Sunset", price: 50, bg1: "#451a03", bg2: "#9a3412", ground: "#78350f", accent: "#f59e0b",
+                skyStars: false },
+            { id: 3, name: "Neon Cyberpunk", price: 100, bg1: "#2e1065", bg2: "#701a75", ground: "#581c87",
+                accent: "#f43f5e", skyStars: true },
+            { id: 4, name: "Mystic Forest", price: 0, bg1: "#022c22", bg2: "#065f46", ground: "#047857", accent: "#34d399",
+                skyStars: false },
+            { id: 5, name: "Sunset Beach", price: 200, bg1: "#831843", bg2: "#be185d", ground: "#9d174d", accent: "#fb7185",
+                skyStars: true },
+            { id: 6, name: "Lava Volcano", price: 250, bg1: "#450a0a", bg2: "#991b1b", ground: "#7f1d1d", accent: "#ef4444",
+                skyStars: false },
+            { id: 7, name: "Snow Tundra", price: 300, bg1: "#0f172a", bg2: "#334155", ground: "#475569", accent: "#e2e8f0",
+                skyStars: true },
+            { id: 8, name: "Matrix Grid", price: 350, bg1: "#022c22", bg2: "#14532d", ground: "#065f46", accent: "#22c55e",
+                skyStars: true },
+            { id: 9, name: "Deep Ocean", price: 400, bg1: "#082f49", bg2: "#0369a1", ground: "#0284c7", accent: "#38bdf8",
+                skyStars: true },
+            { id: 10, name: "Golden Realm", price: 500, bg1: "#451a03", bg2: "#a16207", ground: "#ca8a04",
+                accent: "#facc15", skyStars: false }
+        ];
 
-function closeModals() {
-  document.querySelectorAll('.modal').forEach(m => m.classList.add('hidden'));
-}
+        const charColors = [
+            "#ff006e", "#00f0ff", "#ffd60a", "#00ff87", "#a855f7", "#ff6b6b",
+            "#3b82f6", "#84cc16", "#f97316", "#06b6d4", "#d946ef", "#facc15",
+            "#ff2d55", "#00b4d8", "#ff9f1c", "#2ec4b6", "#e63946", "#4361ee",
+            "#f72585", "#7209b7", "#4cc9f0", "#f4845f", "#06d6a0", "#ef476f",
+            "#118ab2", "#073b4c", "#ffd166", "#ef476f", "#06d6a0", "#118ab2",
+            "#7209b7", "#f72585", "#4361ee", "#e63946", "#2ec4b6", "#ff9f1c",
+            "#00b4d8", "#ff2d55", "#facc15", "#d946ef", "#06b6d4", "#f97316",
+            "#84cc16", "#3b82f6", "#ff6b6b", "#a855f7", "#00ff87", "#ffd60a",
+            "#00f0ff", "#ff006e"
+        ];
 
-// --- PURCHASING & PASSWORD SYSTEM ---
-function openPurchaseOptions() {
-  document.getElementById('buyCharTitle').innerText = `Unlock ${targetCharForBuy.name}`;
-  document.getElementById('buyCharSub').innerText = `Cost: 40 Coins | ID: ${targetCharForBuy.id}`;
-  document.getElementById('purchaseOptionModal').classList.remove('hidden');
-}
+        const CHARACTERS = [];
+        for (let i = 1; i <= 50; i++) {
+            CHARACTERS.push({
+                id: i,
+                name: `Runner_${String(i).padStart(2, '0')}`,
+                price: i === 1 ? 0 : 40,
+                color: charColors[(i - 1) % charColors.length]
+            });
+        }
 
-function closePurchaseOptions() {
-  document.getElementById('purchaseOptionModal').classList.add('hidden');
-}
+        let isPlaying = false;
+        let score = 0;
+        let currentCoinsCollected = 0;
+        let gameSpeed = 8.5;
+        let gravity = 0.55;
+        let screenShake = 0;
+        let particles = [];
+        let trailParticles = [];
+        let heartParticles = [];
+        let bgParallaxOffset = 0;
+        let playerBlinkTimer = 0;
+        let isBlinking = false;
 
-function openPasswordPrompt() {
-  closePurchaseOptions();
-  document.getElementById('passwordModal').classList.remove('hidden');
-}
+        let player = {
+            x: 100,
+            y: 370,
+            width: 28,
+            height: 48,
+            velocityY: 0,
+            isGrounded: false,
+            jumpCount: 0,
+            maxJumps: 4,
+            animFrame: 0,
+            trailTimer: 0,
+            headBob: 0
+        };
 
-function closePasswordModal() {
-  document.getElementById('passwordModal').classList.add('hidden');
-}
+        let obstacles = [];
+        let coinsArr = [];
+        let targetCharForBuy = null;
 
-function verifyPassword() {
-  const enteredPass = document.getElementById('passInput').value.trim();
-  const uname = gameState.username;
-  const len = uname.length;
-  const cName = targetCharForBuy.name;
-  const cNum = targetCharForBuy.id;
+        function spawnParticles(x, y, color, count = 12) {
+            for (let i = 0; i < count; i++) {
+                particles.push({
+                    x: x,
+                    y: y,
+                    vx: (Math.random() - 0.5) * 6,
+                    vy: (Math.random() - 0.5) * 6 - 2,
+                    life: 1,
+                    decay: 0.02 + Math.random() * 0.03,
+                    size: 3 + Math.random() * 4,
+                    color: color
+                });
+            }
+        }
 
-  const expectedPass = `${uname}MT${len}${cName}${cNum}`;
+        function spawnHeartParticles(x, y, color) {
+            for (let i = 0; i < 3; i++) {
+                heartParticles.push({
+                    x: x + (Math.random() - 0.5) * 20,
+                    y: y - Math.random() * 15,
+                    vx: (Math.random() - 0.5) * 2,
+                    vy: -1 - Math.random() * 2,
+                    life: 1,
+                    decay: 0.015 + Math.random() * 0.02,
+                    size: 6 + Math.random() * 6,
+                    color: color
+                });
+            }
+        }
 
-  if (enteredPass === expectedPass || gameState.coins >= 40) {
-    if (enteredPass !== expectedPass) {
-      gameState.coins -= 40;
-    }
-    gameState.unlockedChars.push(targetCharForBuy.id);
-    gameState.selectedChar = targetCharForBuy.id;
-    saveState();
-    alert(`Success! ${targetCharForBuy.name} unlocked.`);
-    closePasswordModal();
-    openShop();
-    updateHUD();
-  } else {
-    alert(`Invalid Password!\nExpected Password Format Formula: ${expectedPass}`);
-  }
-}
+        function spawnTrail(x, y, color) {
+            trailParticles.push({
+                x: x + (Math.random() - 0.5) * 10,
+                y: y + (Math.random() - 0.5) * 10,
+                life: 0.7,
+                decay: 0.025,
+                size: 5 + Math.random() * 5,
+                color: color
+            });
+        }
 
-function openIframePortal() {
-  closePurchaseOptions();
-  const overlay = document.getElementById('iframe-overlay');
-  const iframe = document.getElementById('portalIframe');
-  iframe.src = "https://muhammad-taqi512-lyra.hf.space";
-  overlay.classList.remove('hidden');
-}
+        function update() {
+            if (!isPlaying) return;
 
-function closeIframePortal() {
-  const overlay = document.getElementById('iframe-overlay');
-  const iframe = document.getElementById('portalIframe');
-  iframe.src = "";
-  overlay.classList.add('hidden');
-}
+            player.velocityY += gravity;
+            player.y += player.velocityY;
 
-// Initialize
-updateProfileUI();
-updateHUD();
-draw();
-</script>
+            if (player.y >= 370) {
+                player.y = 370;
+                player.velocityY = 0;
+                player.isGrounded = true;
+                player.jumpCount = 0;
+            }
+
+            player.animFrame += 0.22;
+            player.headBob = Math.sin(player.animFrame * 1.2) * 2;
+            score++;
+            if (score % 400 === 0) gameSpeed += 0.5;
+            bgParallaxOffset += gameSpeed * 0.3;
+
+            const currentMap = MAPS.find(m => m.id === gameState.selectedMap) || MAPS[0];
+            const currentChar = CHARACTERS.find(c => c.id === gameState.selectedChar) || CHARACTERS[0];
+
+            player.trailTimer++;
+            if (player.trailTimer % 3 === 0) {
+                spawnTrail(player.x + 15, player.y + 30, currentChar.color);
+            }
+
+            playerBlinkTimer++;
+            if (playerBlinkTimer > 60 && playerBlinkTimer < 65) {
+                isBlinking = true;
+            } else if (playerBlinkTimer >= 65) {
+                isBlinking = false;
+                playerBlinkTimer = 0;
+            }
+
+            if (Math.random() < 0.022 && (obstacles.length === 0 || canvas.width - obstacles[obstacles.length - 1].x >
+                    250)) {
+                let type = Math.random() > 0.45 ? 'box' : 'spike';
+                obstacles.push({
+                    x: canvas.width,
+                    y: type === 'box' ? 378 : 385,
+                    w: 28,
+                    h: type === 'box' ? 30 : 28,
+                    type: type,
+                    color: type === 'box' ? '#ff4d6d' : '#ff9f1c'
+                });
+            }
+
+            if (Math.random() < 0.02) {
+                coinsArr.push({
+                    x: canvas.width,
+                    y: Math.random() > 0.5 ? 315 : 345,
+                    r: 9,
+                    bobPhase: Math.random() * Math.PI * 2,
+                    collected: false
+                });
+            }
+
+            for (let i = obstacles.length - 1; i >= 0; i--) {
+                let obs = obstacles[i];
+                obs.x -= gameSpeed;
+
+                if (
+                    player.x < obs.x + obs.w &&
+                    player.x + player.width > obs.x &&
+                    player.y < obs.y + obs.h &&
+                    player.y + player.height > obs.y
+                ) {
+                    spawnParticles(player.x + 15, player.y + 25, '#ff4d6d', 20);
+                    screenShake = 15;
+                    endGame();
+                }
+
+                if (obs.x < -60) obstacles.splice(i, 1);
+            }
+
+            for (let i = coinsArr.length - 1; i >= 0; i--) {
+                let c = coinsArr[i];
+                c.x -= gameSpeed;
+                c.bobPhase += 0.08;
+                c.displayY = c.y + Math.sin(c.bobPhase) * 5;
+
+                let dist = Math.hypot((player.x + 14) - c.x, (player.y + 24) - (c.displayY || c.y));
+                if (dist < c.r + 22) {
+                    currentCoinsCollected++;
+                    gameState.coins++;
+                    spawnParticles(c.x, c.displayY || c.y, '#ffd60a', 10);
+                    coinsArr.splice(i, 1);
+                    updateHUD();
+                } else if (c.x < -20) {
+                    coinsArr.splice(i, 1);
+                }
+            }
+
+            for (let i = particles.length - 1; i >= 0; i--) {
+                let p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += 0.12;
+                p.life -= p.decay;
+                if (p.life <= 0) particles.splice(i, 1);
+            }
+
+            for (let i = trailParticles.length - 1; i >= 0; i--) {
+                let t = trailParticles[i];
+                t.life -= t.decay;
+                t.y -= 0.3;
+                if (t.life <= 0) trailParticles.splice(i, 1);
+            }
+
+            for (let i = heartParticles.length - 1; i >= 0; i--) {
+                let h = heartParticles[i];
+                h.x += h.vx;
+                h.y += h.vy;
+                h.vy -= 0.05;
+                h.life -= h.decay;
+                if (h.life <= 0) heartParticles.splice(i, 1);
+            }
+
+            if (screenShake > 0) screenShake *= 0.9;
+            if (screenShake < 0.1) screenShake = 0;
+
+            draw();
+            requestAnimationFrame(update);
+        }
+
+        function draw() {
+            const currentMap = MAPS.find(m => m.id === gameState.selectedMap) || MAPS[0];
+            const currentChar = CHARACTERS.find(c => c.id === gameState.selectedChar) || CHARACTERS[0];
+
+            ctx.save();
+
+            if (screenShake > 0.5) {
+                ctx.translate(
+                    (Math.random() - 0.5) * screenShake * 2,
+                    (Math.random() - 0.5) * screenShake * 2
+                );
+            }
+
+            let bgGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            bgGrad.addColorStop(0, currentMap.bg1);
+            bgGrad.addColorStop(0.6, currentMap.bg2);
+            bgGrad.addColorStop(1, currentMap.ground);
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            if (currentMap.skyStars) {
+                ctx.fillStyle = "rgba(255, 255, 255, 0.12)";
+                for (let i = 0; i < 40; i++) {
+                    let sx = (i * 70 + bgParallaxOffset * 0.2) % canvas.width;
+                    let sy = (i * 27 + 15) % 300;
+                    let twinkle = 0.08 + Math.sin(Date.now() / 500 + i) * 0.06;
+                    ctx.globalAlpha = twinkle;
+                    ctx.fillRect(sx, sy, 2 + (i % 3), 2 + (i % 3));
+                }
+                ctx.globalAlpha = 1;
+            }
+
+            ctx.fillStyle = currentMap.ground;
+            ctx.fillRect(0, 400, canvas.width, 100);
+            ctx.fillStyle = currentMap.accent;
+            ctx.fillRect(0, 397, canvas.width, 5);
+
+            const accentGrad = ctx.createLinearGradient(0, 400, 0, 410);
+            accentGrad.addColorStop(0, currentMap.accent);
+            accentGrad.addColorStop(1, 'transparent');
+            ctx.fillStyle = accentGrad;
+            ctx.fillRect(0, 402, canvas.width, 8);
+
+            trailParticles.forEach(t => {
+                ctx.globalAlpha = t.life * 0.6;
+                ctx.fillStyle = t.color;
+                ctx.shadowColor = t.color;
+                ctx.shadowBlur = 12;
+                ctx.beginPath();
+                ctx.arc(t.x, t.y, t.size * t.life, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            ctx.globalAlpha = 1;
+            ctx.shadowBlur = 0;
+
+            drawStickman(player.x, player.y, currentChar.color, player.animFrame, player.isGrounded, isBlinking, player
+                .headBob);
+
+            obstacles.forEach(obs => {
+                if (obs.type === 'box') {
+                    const boxGrad = ctx.createLinearGradient(obs.x, obs.y, obs.x, obs.y + obs.h);
+                    boxGrad.addColorStop(0, obs.color);
+                    boxGrad.addColorStop(1, '#991b1b');
+                    ctx.fillStyle = boxGrad;
+                    ctx.shadowColor = obs.color;
+                    ctx.shadowBlur = 18;
+                    ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
+                    ctx.shadowBlur = 0;
+                    ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(obs.x + 2, obs.y + 2, obs.w - 4, obs.h - 4);
+                    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+                    ctx.fillRect(obs.x + 4, obs.y + 4, 6, 6);
+                } else {
+                    ctx.shadowColor = obs.color;
+                    ctx.shadowBlur = 15;
+                    ctx.fillStyle = obs.color;
+                    ctx.beginPath();
+                    ctx.moveTo(obs.x, obs.y + obs.h);
+                    ctx.lineTo(obs.x + obs.w / 2, obs.y);
+                    ctx.lineTo(obs.x + obs.w, obs.y + obs.h);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+                    ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+                    ctx.lineWidth = 1.5;
+                    ctx.stroke();
+                }
+            });
+
+            coinsArr.forEach(c => {
+                const cy = c.displayY || c.y;
+                ctx.shadowColor = '#ffd60a';
+                ctx.shadowBlur = 20;
+                ctx.fillStyle = '#ffd60a';
+                ctx.beginPath();
+                ctx.arc(c.x, cy, c.r, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                ctx.fillStyle = '#f59e0b';
+                ctx.font = 'bold 10px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('$', c.x, cy + 4);
+            });
+
+            particles.forEach(p => {
+                ctx.globalAlpha = p.life;
+                ctx.fillStyle = p.color;
+                ctx.shadowColor = p.color;
+                ctx.shadowBlur = 10;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            heartParticles.forEach(h => {
+                ctx.globalAlpha = h.life * 0.9;
+                ctx.fillStyle = h.color;
+                ctx.shadowColor = h.color;
+                ctx.shadowBlur = 15;
+                drawHeart(ctx, h.x, h.y, h.size * h.life);
+            });
+
+            ctx.globalAlpha = 1;
+            ctx.shadowBlur = 0;
+
+            ctx.restore();
+
+            const scoreVal = Math.floor(score / 5);
+            document.getElementById('scoreDisplay').innerText = `SCORE: ${scoreVal}`;
+            if (scoreVal > gameState.highScore) {
+                gameState.highScore = scoreVal;
+            }
+        }
+
+        function drawHeart(context, x, y, size) {
+            context.beginPath();
+            context.moveTo(x, y + size * 0.4);
+            context.bezierCurveTo(x, y, x - size * 0.6, y, x - size * 0.6, y + size * 0.4);
+            context.bezierCurveTo(x - size * 0.6, y + size * 0.8, x, y + size * 1.1, x, y + size * 1.1);
+            context.bezierCurveTo(x, y + size * 1.1, x + size * 0.6, y + size * 0.8, x + size * 0.6, y + size * 0.4);
+            context.bezierCurveTo(x + size * 0.6, y, x, y, x, y + size * 0.4);
+            context.fill();
+        }
+
+        function drawStickman(x, y, color, frame, isGrounded, isBlinking, headBob) {
+            const headX = x + 15;
+            const headY = y + 12 + headBob;
+            const headRadius = 12;
+
+            // Outer glow
+            const outerGlow = ctx.createRadialGradient(headX, headY, 5, headX, headY, 35);
+            outerGlow.addColorStop(0, color + '40');
+            outerGlow.addColorStop(1, 'transparent');
+            ctx.fillStyle = outerGlow;
+            ctx.fillRect(headX - 35, headY - 35, 70, 70);
+
+            // Shadow under body
+            ctx.fillStyle = 'rgba(0,0,0,0.3)';
+            ctx.beginPath();
+            ctx.ellipse(x + 15, y + 50, 18, 5, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Limbs with round caps
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            // Arms
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 5;
+            ctx.shadowColor = color;
+            ctx.shadowBlur = 12;
+
+            if (isGrounded) {
+                let armSwing = Math.sin(frame) * 8;
+                // Left arm
+                ctx.beginPath();
+                ctx.moveTo(x + 6, y + 28);
+                ctx.quadraticCurveTo(x - 2 - armSwing, y + 26, x - 6 - armSwing, y + 18);
+                ctx.stroke();
+                // Right arm
+                ctx.beginPath();
+                ctx.moveTo(x + 24, y + 28);
+                ctx.quadraticCurveTo(x + 32 + armSwing, y + 26, x + 36 + armSwing, y + 18);
+                ctx.stroke();
+                // Left leg
+                ctx.beginPath();
+                ctx.moveTo(x + 12, y + 42);
+                ctx.quadraticCurveTo(x + 4 + armSwing * 1.2, y + 44, x + 2 + armSwing * 1.5, y + 52);
+                ctx.stroke();
+                // Right leg
+                ctx.beginPath();
+                ctx.moveTo(x + 18, y + 42);
+                ctx.quadraticCurveTo(x + 26 - armSwing * 1.2, y + 44, x + 28 - armSwing * 1.5, y + 52);
+                ctx.stroke();
+            } else {
+                // Jumping pose - spread arms and legs
+                ctx.beginPath();
+                ctx.moveTo(x + 6, y + 26);
+                ctx.quadraticCurveTo(x - 2, y + 18, x - 10, y + 8);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(x + 24, y + 26);
+                ctx.quadraticCurveTo(x + 32, y + 18, x + 40, y + 8);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(x + 12, y + 40);
+                ctx.quadraticCurveTo(x + 2, y + 40, x - 4, y + 48);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(x + 18, y + 40);
+                ctx.quadraticCurveTo(x + 28, y + 40, x + 34, y + 48);
+                ctx.stroke();
+            }
+
+            // Body
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 6;
+            ctx.beginPath();
+            ctx.moveTo(x + 15, y + 22);
+            ctx.quadraticCurveTo(x + 18, y + 32, x + 15, y + 40);
+            ctx.stroke();
+
+            // Cute hair tuft
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 3.5;
+            ctx.shadowBlur = 8;
+            ctx.beginPath();
+            ctx.moveTo(headX - 3, headY - 8);
+            ctx.quadraticCurveTo(headX - 5, headY - 16, headX + 2, headY - 14);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(headX + 2, headY - 10);
+            ctx.quadraticCurveTo(headX + 6, headY - 18, headX + 10, headY - 12);
+            ctx.stroke();
+
+            // Head with gradient
+            const headGrad = ctx.createRadialGradient(headX - 4, headY - 5, 3, headX, headY, headRadius);
+            headGrad.addColorStop(0, '#ffffff');
+            headGrad.addColorStop(0.25, color);
+            headGrad.addColorStop(1, color + 'cc');
+            ctx.fillStyle = headGrad;
+            ctx.shadowColor = color;
+            ctx.shadowBlur = 15;
+            ctx.beginPath();
+            ctx.arc(headX, headY, headRadius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+
+            // Ears/cheeks
+            ctx.fillStyle = color;
+            ctx.shadowBlur = 8;
+            ctx.beginPath();
+            ctx.arc(headX - 12, headY + 2, 4, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(headX + 12, headY + 2, 4, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Blush
+            ctx.fillStyle = 'rgba(255, 150, 180, 0.5)';
+            ctx.shadowColor = 'rgba(255, 150, 180, 0.8)';
+            ctx.shadowBlur = 8;
+            ctx.beginPath();
+            ctx.ellipse(headX - 7, headY + 5, 3.5, 2.5, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.ellipse(headX + 7, headY + 5, 3.5, 2.5, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Eyes - big and cute
+            ctx.shadowBlur = 4;
+            ctx.shadowColor = 'rgba(0,0,0,0.3)';
+            if (isBlinking) {
+                // Blink - draw lines
+                ctx.strokeStyle = '#1a1a1a';
+                ctx.lineWidth = 2.5;
+                ctx.beginPath();
+                ctx.moveTo(headX - 8, headY + 2);
+                ctx.quadraticCurveTo(headX - 5, headY + 4, headX - 3, headY + 2);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(headX + 3, headY + 2);
+                ctx.quadraticCurveTo(headX + 5, headY + 4, headX + 8, headY + 2);
+                ctx.stroke();
+            } else {
+                // Big sparkling eyes
+                // Left eye white
+                ctx.fillStyle = '#fff';
+                ctx.beginPath();
+                ctx.ellipse(headX - 6, headY + 1, 4.5, 5.5, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+                // Left pupil
+                ctx.fillStyle = '#1a1a1a';
+                ctx.beginPath();
+                ctx.arc(headX - 5, headY + 2, 3, 0, Math.PI * 2);
+                ctx.fill();
+                // Left highlight
+                ctx.fillStyle = '#fff';
+                ctx.beginPath();
+                ctx.arc(headX - 6, headY - 1, 1.5, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(headX - 4, headY + 3, 0.8, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Right eye white
+                ctx.fillStyle = '#fff';
+                ctx.beginPath();
+                ctx.ellipse(headX + 6, headY + 1, 4.5, 5.5, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+                // Right pupil
+                ctx.fillStyle = '#1a1a1a';
+                ctx.beginPath();
+                ctx.arc(headX + 5, headY + 2, 3, 0, Math.PI * 2);
+                ctx.fill();
+                // Right highlight
+                ctx.fillStyle = '#fff';
+                ctx.beginPath();
+                ctx.arc(headX + 4, headY - 1, 1.5, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(headX + 6, headY + 3, 0.8, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Cute smile
+            ctx.strokeStyle = '#1a1a1a';
+            ctx.lineWidth = 2;
+            ctx.shadowBlur = 3;
+            ctx.beginPath();
+            ctx.arc(headX, headY + 5, 4, 0.2, Math.PI - 0.2);
+            ctx.stroke();
+
+            // Tiny rosy nose
+            ctx.fillStyle = 'rgba(255, 120, 150, 0.7)';
+            ctx.shadowBlur = 4;
+            ctx.shadowColor = 'rgba(255, 120, 150, 0.6)';
+            ctx.beginPath();
+            ctx.ellipse(headX, headY + 1, 2, 1.5, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.shadowBlur = 0;
+            ctx.shadowColor = 'transparent';
+        }
+
+        function jump() {
+            if (isPlaying && player.jumpCount < player.maxJumps) {
+                player.velocityY = -11;
+                player.isGrounded = false;
+                player.jumpCount++;
+                const currentChar = CHARACTERS.find(c => c.id === gameState.selectedChar) || CHARACTERS[0];
+                spawnParticles(player.x + 15, player.y + 48, currentChar.color, 8);
+                spawnHeartParticles(player.x + 15, player.y + 30, '#ff69b4');
+            }
+        }
+
+        window.addEventListener('keydown', e => {
+            if (e.code === 'Space' || e.code === 'ArrowUp') {
+                e.preventDefault();
+                jump();
+            } else if (e.code === 'Escape') {
+                showMainMenu();
+            }
+        });
+
+        window.history.pushState({ page: 'game' }, '');
+        window.addEventListener('popstate', function(event) {
+            window.history.pushState({ page: 'game' }, '');
+            showMainMenu();
+        });
+
+        canvas.addEventListener('touchstart', e => {
+            e.preventDefault();
+            jump();
+        });
+        canvas.addEventListener('mousedown', e => {
+            e.preventDefault();
+            jump();
+        });
+
+        function updateProfileUI() {
+            document.getElementById('profileUsername').innerText = gameState.username;
+            document.getElementById('avatarLetter').innerText = gameState.username.charAt(0).toUpperCase();
+            document.getElementById('menuUsername').innerText = gameState.username;
+            document.getElementById('highScoreDisplay').innerText = gameState.highScore;
+        }
+
+        function openProfileModal() {
+            document.getElementById('usernameInputModal').value = gameState.username;
+            document.getElementById('profileModal').classList.remove('hidden');
+        }
+
+        function closeProfileModal() {
+            document.getElementById('profileModal').classList.add('hidden');
+        }
+
+        function saveUsername() {
+            const val = document.getElementById('usernameInputModal').value.trim();
+            if (val) {
+                gameState.username = val;
+                saveState();
+                updateProfileUI();
+                showMainMenu();
+            }
+        }
+
+        function startGame() {
+            isPlaying = true;
+            score = 0;
+            currentCoinsCollected = 0;
+            gameSpeed = 8.5;
+            obstacles = [];
+            coinsArr = [];
+            particles = [];
+            trailParticles = [];
+            heartParticles = [];
+            player.y = 370;
+            player.velocityY = 0;
+            player.jumpCount = 0;
+            playerBlinkTimer = 0;
+            isBlinking = false;
+            screenShake = 0;
+            closeModals();
+            updateHUD();
+            requestAnimationFrame(update);
+        }
+
+        function endGame() {
+            isPlaying = false;
+            saveState();
+            document.getElementById('finalScore').innerText =
+                `FINAL SCORE: ${Math.floor(score / 5)} | COINS: 🪙 ${currentCoinsCollected}`;
+            updateProfileUI();
+            document.getElementById('gameOverModal').classList.remove('hidden');
+        }
+
+        function updateHUD() {
+            document.getElementById('coinDisplay').innerText = `${gameState.coins}`;
+            document.getElementById('highScoreDisplay').innerText = gameState.highScore;
+        }
+
+        function showMainMenu() {
+            isPlaying = false;
+            closeModals();
+            updateProfileUI();
+            updateHUD();
+            document.getElementById('mainMenu').classList.remove('hidden');
+        }
+
+        function openShop() {
+            closeModals();
+            const grid = document.getElementById('characterGrid');
+            grid.innerHTML = '';
+
+            CHARACTERS.forEach(c => {
+                const isUnlocked = gameState.unlockedChars.includes(c.id);
+                const isSelected = gameState.selectedChar === c.id;
+
+                const card = document.createElement('div');
+                card.className = `grid-card ${isSelected ? 'active' : ''} ${!isUnlocked ? 'locked' : ''}`;
+                card.innerHTML = `
+              <div class="char-dot" style="background:${c.color}; color:${c.color};"></div>
+              <p style="font-size:10px; color:#ddd;">${c.name}</p>
+              <p style="color:${isUnlocked ? (isSelected ? '#00f0ff' : '#38bdf8') : '#ff9f1c'}; font-size:9px; font-weight:700; letter-spacing:0.5px;">
+                ${isUnlocked ? (isSelected ? '★ EQUIPPED' : 'SELECT') : '🔒 40 COINS'}
+              </p>
+            `;
+
+                card.onclick = () => {
+                    if (isUnlocked) {
+                        gameState.selectedChar = c.id;
+                        saveState();
+                        openShop();
+                    } else {
+                        targetCharForBuy = c;
+                        openPurchaseOptions();
+                    }
+                };
+                grid.appendChild(card);
+            });
+
+            document.getElementById('shopModal').classList.remove('hidden');
+        }
+
+        function openMaps() {
+            closeModals();
+            const grid = document.getElementById('mapsGrid');
+            grid.innerHTML = '';
+
+            MAPS.forEach(m => {
+                const isUnlocked = gameState.unlockedMaps.includes(m.id);
+                const isSelected = gameState.selectedMap === m.id;
+
+                const card = document.createElement('div');
+                card.className = `grid-card ${isSelected ? 'active' : ''} ${!isUnlocked ? 'locked' : ''}`;
+                card.innerHTML = `
+              <div class="char-dot" style="background:${m.accent}; color:${m.accent}; width:20px; height:20px;"></div>
+              <p style="font-size:11px; color:#ddd;">${m.name}</p>
+              <p style="color:${isUnlocked ? (isSelected ? '#00f0ff' : '#38bdf8') : '#ff9f1c'}; font-size:9px; font-weight:700;">
+                ${isUnlocked ? (isSelected ? '★ ACTIVE' : 'SELECT') : `🔒 ${m.price} COINS`}
+              </p>
+            `;
+
+                card.onclick = () => {
+                    if (isUnlocked) {
+                        gameState.selectedMap = m.id;
+                        saveState();
+                        openMaps();
+                    } else {
+                        if (gameState.coins >= m.price) {
+                            gameState.coins -= m.price;
+                            gameState.unlockedMaps.push(m.id);
+                            gameState.selectedMap = m.id;
+                            saveState();
+                            openMaps();
+                            updateHUD();
+                        } else {
+                            alert('Not enough coins to unlock this map!');
+                        }
+                    }
+                };
+                grid.appendChild(card);
+            });
+
+            document.getElementById('mapsModal').classList.remove('hidden');
+        }
+
+        function closeModals() {
+            document.querySelectorAll('.modal').forEach(m => m.classList.add('hidden'));
+        }
+
+        function openPurchaseOptions() {
+            document.getElementById('buyCharTitle').innerText = `Unlock ${targetCharForBuy.name}`;
+            document.getElementById('buyCharSub').innerText =
+                `Cost: 40 Coins | ID: ${targetCharForBuy.id} | Color: ${targetCharForBuy.color}`;
+            document.getElementById('purchaseOptionModal').classList.remove('hidden');
+        }
+
+        function closePurchaseOptions() {
+            document.getElementById('purchaseOptionModal').classList.add('hidden');
+        }
+
+        function openPasswordPrompt() {
+            closePurchaseOptions();
+            document.getElementById('passwordModal').classList.remove('hidden');
+        }
+
+        function closePasswordModal() {
+            document.getElementById('passwordModal').classList.add('hidden');
+        }
+
+        function verifyPassword() {
+            const enteredPass = document.getElementById('passInput').value.trim();
+            const uname = gameState.username;
+            const len = uname.length;
+            const cName = targetCharForBuy.name;
+            const cNum = targetCharForBuy.id;
+
+            const expectedPass = `${uname}MT${len}${cName}${cNum}`;
+
+            if (enteredPass === expectedPass || gameState.coins >= 40) {
+                if (enteredPass !== expectedPass) {
+                    gameState.coins -= 40;
+                }
+                gameState.unlockedChars.push(targetCharForBuy.id);
+                gameState.selectedChar = targetCharForBuy.id;
+                saveState();
+                alert(`✨ Success! ${targetCharForBuy.name} unlocked.`);
+                closePasswordModal();
+                openShop();
+                updateHUD();
+                updateProfileUI();
+            } else {
+                alert(`❌ Invalid Password!\n\nExpected Format: ${expectedPass}`);
+            }
+        }
+
+        function openIframePortal() {
+            closePurchaseOptions();
+            const overlay = document.getElementById('iframe-overlay');
+            const iframe = document.getElementById('portalIframe');
+            iframe.src = "https://muhammad-taqi512-lyra.hf.space";
+            overlay.classList.remove('hidden');
+        }
+
+        function closeIframePortal() {
+            const overlay = document.getElementById('iframe-overlay');
+            const iframe = document.getElementById('portalIframe');
+            iframe.src = "";
+            overlay.classList.add('hidden');
+        }
+
+        updateProfileUI();
+        updateHUD();
+        draw();
+    </script>
 </body>
 </html>
