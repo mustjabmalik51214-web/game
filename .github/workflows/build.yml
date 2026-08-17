@@ -32,7 +32,7 @@ jobs:
           npm install -g cordova
 
           # 1. Create Cordova project
-          cordova create app com.lostworld.taqi "LOST WORLD 2"
+          cordova create app com.stickman.sniper "STICKMAN SNIPER SHOOTER 2"
 
           # 2. Copy Web Source Assets
           cp -r index.html app/www/ 2>/dev/null || true
@@ -72,5 +72,5 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: LOST-WORLD-GAME
+          name: STICKMAN-SNIPER-GAME
           path: app/platforms/android/app/build/outputs/apk/debug/app-debug.apk
