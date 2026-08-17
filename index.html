@@ -1,935 +1,841 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Stickman Sniper / Sharpshooter - Muhammad Taqi</title>
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #1a1a2e;
-    color: #fff;
-    user-select: none;
-    overflow: hidden;
-    height: 100vh;
-    width: 100vw;
-  }
-  #app {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: radial-gradient(circle at center, #16213e 0%, #0f0f1f 100%);
-  }
-  .screen {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    padding: 20px;
-    text-align: center;
-  }
-  .screen.active { display: flex; }
-  .title {
-    font-size: 3rem;
-    font-weight: bold;
-    text-shadow: 0 0 20px #ff6b6b;
-    margin-bottom: 5px;
-    background: linear-gradient(45deg, #ff6b6b, #ffd93d);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  .creator {
-    font-size: 1.2rem;
-    color: #aaa;
-    margin-bottom: 20px;
-  }
-  .coin-display {
-    font-size: 1.5rem;
-    background: rgba(255,215,0,0.15);
-    padding: 8px 20px;
-    border-radius: 25px;
-    border: 1px solid #ffd700;
-    margin-bottom: 25px;
-  }
-  .btn {
-    background: linear-gradient(135deg, #ff6b6b, #ee5a24);
-    color: #fff;
-    border: none;
-    padding: 14px 30px;
-    font-size: 1.2rem;
-    border-radius: 30px;
-    cursor: pointer;
-    transition: all 0.3s;
-    margin: 8px;
-    min-width: 200px;
-    box-shadow: 0 5px 15px rgba(255,107,107,0.3);
-  }
-  .btn:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(255,107,107,0.5); }
-  .btn.secondary {
-    background: linear-gradient(135deg, #4facfe, #00f2fe);
-    box-shadow: 0 5px 15px rgba(79,172,254,0.3);
-  }
-  .btn.gold {
-    background: linear-gradient(135deg, #f6d365, #fda085);
-    box-shadow: 0 5px 15px rgba(246,211,101,0.3);
-    color: #333;
-  }
-  .store-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 12px;
-    max-width: 900px;
-    max-height: 70vh;
-    overflow-y: auto;
-    padding: 10px;
-    background: rgba(255,255,255,0.05);
-    border-radius: 15px;
-    margin: 15px 0;
-    width: 100%;
-  }
-  .store-item {
-    background: rgba(255,255,255,0.08);
-    border-radius: 12px;
-    padding: 12px;
-    text-align: center;
-    transition: all 0.3s;
-    border: 1px solid rgba(255,255,255,0.1);
-  }
-  .store-item:hover { transform: scale(1.05); border-color: #ffd700; }
-  .store-item.equipped { border-color: #4caf50; background: rgba(76,175,80,0.2); }
-  .store-item .item-name { font-size: 0.9rem; font-weight: bold; margin-bottom: 5px; }
-  .store-item .item-price { font-size: 0.8rem; color: #ffd700; margin-bottom: 8px; }
-  .store-item button {
-    background: #ff6b6b;
-    color: #fff;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 15px;
-    cursor: pointer;
-    font-size: 0.8rem;
-    transition: background 0.3s;
-  }
-  .store-item button:disabled { background: #555; cursor: not-allowed; }
-  .store-item button.equip { background: #4caf50; }
-  #gameCanvas {
-    border: 2px solid #333;
-    border-radius: 10px;
-    cursor: crosshair;
-    width: 100%;
-    max-width: 900px;
-    height: auto;
-    background: #87ceeb;
-  }
-  .game-ui {
-    position: relative;
-    width: 100%;
-    max-width: 900px;
-  }
-  .ammo-display {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    background: rgba(0,0,0,0.6);
-    padding: 5px 12px;
-    border-radius: 15px;
-    font-size: 1rem;
-  }
-  .stage-display {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: rgba(0,0,0,0.6);
-    padding: 5px 12px;
-    border-radius: 15px;
-    font-size: 1rem;
-  }
-  .result-overlay {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(0,0,0,0.85);
-    padding: 30px;
-    border-radius: 20px;
-    text-align: center;
-    display: none;
-    z-index: 10;
-  }
-  .result-overlay.show { display: block; }
-  .password-box {
-    background: rgba(0,0,0,0.8);
-    padding: 15px;
-    border-radius: 10px;
-    margin: 10px 0;
-    word-break: break-all;
-    font-family: monospace;
-    color: #ffd700;
-  }
-  .modal {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.7);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 100;
-  }
-  .modal.active { display: flex; }
-  .modal-content {
-    background: #1e2a3a;
-    padding: 25px;
-    border-radius: 15px;
-    text-align: center;
-    max-width: 500px;
-    width: 90%;
-  }
-  .stage-select {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-    gap: 8px;
-    max-width: 700px;
-    max-height: 60vh;
-    overflow-y: auto;
-    padding: 15px;
-    background: rgba(255,255,255,0.05);
-    border-radius: 15px;
-    margin: 15px 0;
-  }
-  .stage-btn {
-    background: #4facfe;
-    color: #fff;
-    border: none;
-    padding: 8px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 0.8rem;
-  }
-  .stage-btn.locked { background: #444; cursor: not-allowed; }
-  .stage-btn.completed { background: #4caf50; }
-  /* Name entry screen specific */
-  .name-input {
-    padding: 12px 20px;
-    font-size: 1.3rem;
-    border-radius: 30px;
-    border: 2px solid #4facfe;
-    background: rgba(255,255,255,0.1);
-    color: #fff;
-    outline: none;
-    text-align: center;
-    width: 80%;
-    max-width: 400px;
-    margin: 20px 0;
-  }
-  .name-input::placeholder { color: #aaa; }
-  .rename-btn {
-    position: absolute;
-    top: 15px;
-    left: 15px;
-    background: rgba(0,0,0,0.5);
-    color: #fff;
-    border: 1px solid rgba(255,255,255,0.3);
-    padding: 8px 16px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    z-index: 50;
-    transition: all 0.3s;
-  }
-  .rename-btn:hover {
-    background: rgba(255,107,107,0.7);
-    border-color: #ff6b6b;
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Ludo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --red: #ef4444;
+            --green: #22c55e;
+            --yellow: #eab308;
+            --blue: #3b82f6;
+            --board-bg: #fff;
+            --border-color: #000;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            touch-action: manipulation;
+        }
+
+        /* Game Board */
+        #ludo-board {
+            display: grid;
+            grid-template-columns: repeat(15, 1fr);
+            grid-template-rows: repeat(15, 1fr);
+            width: 100%;
+            max-width: 600px;
+            aspect-ratio: 1/1;
+            background: white;
+            border: 2px solid black;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            margin: 0 auto;
+            border-radius: 8px;
+        }
+
+        .cell {
+            border: 0.5px solid rgba(0,0,0,0.2);
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .base { grid-row: span 6; grid-column: span 6; border: 2px solid black; position: relative; }
+        .base-red { background-color: var(--red); grid-row: 1 / span 6; grid-column: 1 / span 6; }
+        .base-green { background-color: var(--green); grid-row: 1 / span 6; grid-column: 10 / span 6; }
+        .base-blue { background-color: var(--blue); grid-row: 10 / span 6; grid-column: 1 / span 6; }
+        .base-yellow { background-color: var(--yellow); grid-row: 10 / span 6; grid-column: 10 / span 6; }
+
+        .inner-base {
+            background: white;
+            width: 70%;
+            height: 70%;
+            position: absolute;
+            top: 15%;
+            left: 15%;
+            border-radius: 10px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            padding: 10%;
+            gap: 10%;
+        }
+
+        .base-slot {
+            background-color: #f1f5f9;
+            border-radius: 50%;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .path-red { background-color: var(--red); }
+        .path-green { background-color: var(--green); }
+        .path-yellow { background-color: var(--yellow); }
+        .path-blue { background-color: var(--blue); }
+
+        .safe-spot::after {
+            content: '★';
+            color: rgba(0,0,0,0.2);
+            font-size: 1.5rem;
+            position: absolute;
+            z-index: 0;
+        }
+
+        .center-goal {
+            grid-column: 7 / span 3;
+            grid-row: 7 / span 3;
+            position: relative;
+            background: conic-gradient(
+                var(--green) 0deg 90deg,
+                var(--yellow) 90deg 180deg,
+                var(--blue) 180deg 270deg,
+                var(--red) 270deg 360deg
+            );
+            border: 2px solid black;
+        }
+
+        .token {
+            width: 80%;
+            height: 80%;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.4);
+            z-index: 10;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            position: absolute;
+        }
+
+        .token.stacked {
+            width: 60%;
+            height: 60%;
+        }
+
+        .token-red { background: radial-gradient(circle at 30% 30%, #ff8888, var(--red)); }
+        .token-green { background: radial-gradient(circle at 30% 30%, #88ff88, var(--green)); }
+        .token-yellow { background: radial-gradient(circle at 30% 30%, #ffeb88, var(--yellow)); }
+        .token-blue { background: radial-gradient(circle at 30% 30%, #88bbff, var(--blue)); }
+
+        .token.highlight {
+            animation: bounce 1s infinite;
+            border: 2px solid gold;
+            box-shadow: 0 0 10px gold;
+            z-index: 20;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        #dice {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: transform 0.5s ease-out;
+            border: 1px solid #ccc;
+            user-select: none;
+        }
+        #dice.rolling {
+            animation: roll 0.5s linear infinite;
+        }
+        @keyframes roll {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .player-card {
+            transition: all 0.3s ease;
+            opacity: 0.6;
+            transform: scale(0.95);
+        }
+        .player-card.active {
+            opacity: 1;
+            transform: scale(1.05);
+            border: 2px solid currentColor;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .modal {
+            background: rgba(0,0,0,0.7);
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .modal.show { opacity: 1; pointer-events: auto; }
+
+        .start-button {
+            transition: all 0.2s ease;
+        }
+        .start-button.selected {
+            background-color: #4f46e5;
+            color: white;
+        }
+
+        /* Homepage Special */
+        .homepage-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            padding: 30px;
+            text-align: center;
+            max-width: 90%;
+            width: 400px;
+            animation: fadeInUp 0.8s ease-out;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .title {
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, #ef4444, #f59e0b, #10b981, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        .creator {
+            font-size: 1rem;
+            color: #4b5563;
+            margin-bottom: 1.5rem;
+        }
+        .creator a {
+            color: #4f46e5;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .creator a:hover {
+            text-decoration: underline;
+        }
+        .btn-primary {
+            background: linear-gradient(45deg, #4f46e5, #7c3aed);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 5px 15px rgba(79, 70, 229, 0.4);
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(79, 70, 229, 0.6);
+        }
+    </style>
 </head>
 <body>
-<div id="app">
-  <!-- NAME ENTRY SCREEN (Full Page) -->
-  <div id="nameScreen" class="screen">
-    <div class="title" style="font-size:2.2rem; margin-bottom:20px;">Enter Your Name</div>
-    <input type="text" id="usernameInput" class="name-input" placeholder="Your name here..." maxlength="20" autofocus>
-    <button class="btn" onclick="saveUsername()">Continue</button>
-  </div>
 
-  <!-- HOME SCREEN -->
-  <div id="homeScreen" class="screen">
-    <button class="rename-btn" onclick="showNameScreen()">✏️ Rename</button>
-    <div class="title">Stickman Sniper Shooter 3</div>
-    <div class="creator">Created by Muhammad Taqi</div>
-    <div class="coin-display" id="coinDisplayHome">🪙 0</div>
-    <button class="btn" onclick="showScreen('stageSelect')">🎯 Play Game</button>
-    <button class="btn secondary" onclick="showScreen('characterStore')">👤 Character Store</button>
-    <button class="btn secondary" onclick="showScreen('sniperStore')">🔫 Sniper Store</button>
-    <button class="btn gold" onclick="openExternal()">🌐 Open Website</button>
-    <button class="btn gold" onclick="openIframe()">🖥️ Full Page (iframe)</button>
-  </div>
-
-  <!-- CHARACTER STORE -->
-  <div id="characterStore" class="screen">
-    <h2>👤 Character Store</h2>
-    <div class="coin-display" id="coinDisplayChar">🪙 0</div>
-    <div class="store-grid" id="characterGrid"></div>
-    <button class="btn secondary" onclick="showScreen('homeScreen')">⬅️ Back</button>
-  </div>
-
-  <!-- SNIPER STORE -->
-  <div id="sniperStore" class="screen">
-    <h2>🔫 Sniper Store</h2>
-    <div class="coin-display" id="coinDisplaySniper">🪙 0</div>
-    <div class="store-grid" id="sniperGrid"></div>
-    <button class="btn secondary" onclick="showScreen('homeScreen')">⬅️ Back</button>
-  </div>
-
-  <!-- STAGE SELECT -->
-  <div id="stageSelect" class="screen">
-    <h2>🎯 Select Stage</h2>
-    <div class="stage-select" id="stageGrid"></div>
-    <button class="btn secondary" onclick="showScreen('homeScreen')">⬅️ Back</button>
-  </div>
-
-  <!-- GAME SCREEN -->
-  <div id="gameScreen" class="screen">
-    <div class="game-ui">
-      <canvas id="gameCanvas" width="800" height="500"></canvas>
-      <div class="stage-display" id="stageDisplay">Stage: 1</div>
-      <div class="ammo-display" id="ammoDisplay">Ammo: 3</div>
-      <div class="result-overlay" id="resultOverlay">
-        <h2 id="resultTitle"></h2>
-        <p id="resultCoins"></p>
-        <button class="btn" onclick="replayStage()">🔄 Replay</button>
-        <button class="btn secondary" id="nextStageBtn" onclick="nextStage()">➡️ Next Stage</button>
-        <button class="btn gold" onclick="exitToMenu()">🏠 Menu</button>
-      </div>
+    <!-- Homepage (Start Screen) -->
+    <div id="home-screen" class="modal show">
+        <div class="homepage-card">
+            <h1 class="title">SUPER LUDO</h1>
+            <p class="creator">
+                Created by <a href="https://taqi.oneapp.dev" target="_blank" rel="noopener noreferrer">Muhammad Taqi</a>
+            </p>
+            <div class="mb-6">
+                <label class="block text-sm font-semibold mb-3 text-slate-600">Game Mode</label>
+                <div class="flex justify-center gap-3">
+                    <button id="mode-ai" onclick="selectMode('AI')" class="start-button px-4 py-2 rounded-full bg-slate-200 hover:bg-slate-300 font-medium">Vs AI</button>
+                    <button id="mode-human" onclick="selectMode('HUMAN')" class="start-button px-4 py-2 rounded-full bg-slate-200 hover:bg-slate-300 font-medium">Multiplayer</button>
+                </div>
+            </div>
+            <div class="mb-8">
+                <label class="block text-sm font-semibold mb-3 text-slate-600">Number of Players</label>
+                <div class="flex justify-center gap-3">
+                    <button id="players-2" onclick="selectPlayerCount(2)" class="start-button px-4 py-2 rounded-full bg-slate-200 hover:bg-slate-300 font-medium">2</button>
+                    <button id="players-3" onclick="selectPlayerCount(3)" class="start-button px-4 py-2 rounded-full bg-slate-200 hover:bg-slate-300 font-medium">3</button>
+                    <button id="players-4" onclick="selectPlayerCount(4)" class="start-button px-4 py-2 rounded-full bg-slate-200 hover:bg-slate-300 font-medium">4</button>
+                </div>
+            </div>
+            <button onclick="startGame()" class="btn-primary">Start Game</button>
+        </div>
     </div>
-  </div>
-</div>
 
-<!-- MODAL for password -->
-<div id="passwordModal" class="modal">
-  <div class="modal-content">
-    <h3>✅ Purchase Successful!</h3>
-    <p>Your generated password:</p>
-    <div class="password-box" id="generatedPassword"></div>
-    <button class="btn" onclick="closeModal()">OK</button>
-  </div>
-</div>
+    <!-- Header / Info -->
+    <div class="w-full max-w-2xl flex justify-between items-center mb-4 p-2 bg-white/90 rounded-xl shadow-sm">
+        <h1 class="text-xl font-bold text-slate-800">Super Ludo</h1>
+        <button onclick="resetGame()" class="text-sm bg-slate-200 hover:bg-slate-300 px-3 py-1 rounded">Reset</button>
+    </div>
 
-<script>
-// ==================== DATA ====================
-const CHARACTERS = [];
-const SNIPERS = [];
-for (let i = 1; i <= 50; i++) {
-  let price = 500 + (i-1) * 500;
-  CHARACTERS.push({ id: i, name: `Character ${i}`, price: price });
-  let zoom = 1 + (i-1) * 0.02;
-  SNIPERS.push({ id: i, name: `Sniper ${i}`, price: price, zoom: zoom });
-}
+    <!-- Game Area -->
+    <div class="flex flex-col md:flex-row gap-4 items-center justify-center w-full max-w-4xl">
+        
+        <!-- Player Status Left (Red/Blue) -->
+        <div class="hidden md:flex flex-col gap-4 w-32">
+            <div id="p0-card" class="player-card bg-red-100 p-4 rounded-xl text-center text-red-700">
+                <div class="font-bold">Red</div>
+                <div class="text-xs mt-1" id="p0-status">Waiting</div>
+            </div>
+            <div id="p3-card" class="player-card bg-blue-100 p-4 rounded-xl text-center text-blue-700">
+                <div class="font-bold">Blue</div>
+                <div class="text-xs mt-1" id="p3-status">Waiting</div>
+            </div>
+        </div>
 
-// ==================== STATE ====================
-let coins = parseInt(localStorage.getItem('sniper_coins') || '500');
-let ownedCharacters = JSON.parse(localStorage.getItem('sniper_ownedChars') || '[1]');
-let ownedSnipers = JSON.parse(localStorage.getItem('sniper_ownedSnipers') || '[1]');
-let equippedCharacter = parseInt(localStorage.getItem('sniper_equipChar') || '1');
-let equippedSniper = parseInt(localStorage.getItem('sniper_equipSniper') || '1');
-let unlockedStage = parseInt(localStorage.getItem('sniper_unlockedStage') || '1');
-let username = localStorage.getItem('sniper_username') || '';
+        <!-- Board -->
+        <div id="ludo-board">
+            <div class="base base-red">
+                <div class="inner-base">
+                    <div class="base-slot" data-base="0" data-slot="0"></div>
+                    <div class="base-slot" data-base="0" data-slot="1"></div>
+                    <div class="base-slot" data-base="0" data-slot="2"></div>
+                    <div class="base-slot" data-base="0" data-slot="3"></div>
+                </div>
+            </div>
+            <div class="base base-green">
+                <div class="inner-base">
+                    <div class="base-slot" data-base="1" data-slot="0"></div>
+                    <div class="base-slot" data-base="1" data-slot="1"></div>
+                    <div class="base-slot" data-base="1" data-slot="2"></div>
+                    <div class="base-slot" data-base="1" data-slot="3"></div>
+                </div>
+            </div>
+            <div class="base base-blue">
+                <div class="inner-base">
+                    <div class="base-slot" data-base="3" data-slot="0"></div>
+                    <div class="base-slot" data-base="3" data-slot="1"></div>
+                    <div class="base-slot" data-base="3" data-slot="2"></div>
+                    <div class="base-slot" data-base="3" data-slot="3"></div>
+                </div>
+            </div>
+            <div class="base base-yellow">
+                <div class="inner-base">
+                    <div class="base-slot" data-base="2" data-slot="0"></div>
+                    <div class="base-slot" data-base="2" data-slot="1"></div>
+                    <div class="base-slot" data-base="2" data-slot="2"></div>
+                    <div class="base-slot" data-base="2" data-slot="3"></div>
+                </div>
+            </div>
 
-let currentStage = 1;
-let ammo = 3;
-let stickmen = [];
-let gameActive = false;
-let offscreenCanvas = document.createElement('canvas');
-let offscreenCtx = offscreenCanvas.getContext('2d');
-let mouseX = 0, mouseY = 0;
-let scopeRadius = 80;
+            <div class="center-goal">
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <div class="w-full h-full relative"></div>
+                </div>
+            </div>
 
-// ==================== DOM REFS ====================
-const homeScreen = document.getElementById('homeScreen');
-const nameScreen = document.getElementById('nameScreen');
-const characterStore = document.getElementById('characterStore');
-const sniperStore = document.getElementById('sniperStore');
-const stageSelect = document.getElementById('stageSelect');
-const gameScreen = document.getElementById('gameScreen');
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
-const coinDisplayHome = document.getElementById('coinDisplayHome');
-const coinDisplayChar = document.getElementById('coinDisplayChar');
-const coinDisplaySniper = document.getElementById('coinDisplaySniper');
-const characterGrid = document.getElementById('characterGrid');
-const sniperGrid = document.getElementById('sniperGrid');
-const stageGrid = document.getElementById('stageGrid');
-const stageDisplay = document.getElementById('stageDisplay');
-const ammoDisplay = document.getElementById('ammoDisplay');
-const resultOverlay = document.getElementById('resultOverlay');
-const resultTitle = document.getElementById('resultTitle');
-const resultCoins = document.getElementById('resultCoins');
-const nextStageBtn = document.getElementById('nextStageBtn');
-const passwordModal = document.getElementById('passwordModal');
-const generatedPassword = document.getElementById('generatedPassword');
-const usernameInput = document.getElementById('usernameInput');
+            <!-- JS will inject path cells here -->
+        </div>
 
-// ==================== UTILS ====================
-function saveState() {
-  localStorage.setItem('sniper_coins', coins);
-  localStorage.setItem('sniper_ownedChars', JSON.stringify(ownedCharacters));
-  localStorage.setItem('sniper_ownedSnipers', JSON.stringify(ownedSnipers));
-  localStorage.setItem('sniper_equipChar', equippedCharacter);
-  localStorage.setItem('sniper_equipSniper', equippedSniper);
-  localStorage.setItem('sniper_unlockedStage', unlockedStage);
-}
+        <!-- Player Status Right (Green/Yellow) -->
+        <div class="hidden md:flex flex-col gap-4 w-32">
+            <div id="p1-card" class="player-card bg-green-100 p-4 rounded-xl text-center text-green-700">
+                <div class="font-bold">Green</div>
+                <div class="text-xs mt-1" id="p1-status">Waiting</div>
+            </div>
+            <div id="p2-card" class="player-card bg-yellow-100 p-4 rounded-xl text-center text-yellow-700">
+                <div class="font-bold">Yellow</div>
+                <div class="text-xs mt-1" id="p2-status">Waiting</div>
+            </div>
+        </div>
+        
+        <!-- Mobile Player Status (Horizontal) -->
+        <div class="flex md:hidden w-full justify-between px-2 gap-2">
+            <div id="p0-card-m" class="player-card flex-1 bg-red-100 p-2 rounded text-center text-red-700 text-xs font-bold border-red-500">R</div>
+            <div id="p1-card-m" class="player-card flex-1 bg-green-100 p-2 rounded text-center text-green-700 text-xs font-bold border-green-500">G</div>
+            <div id="p2-card-m" class="player-card flex-1 bg-yellow-100 p-2 rounded text-center text-yellow-700 text-xs font-bold border-yellow-500">Y</div>
+            <div id="p3-card-m" class="player-card flex-1 bg-blue-100 p-2 rounded text-center text-blue-700 text-xs font-bold border-blue-500">B</div>
+        </div>
 
-function updateCoinDisplays() {
-  const text = `🪙 ${coins}`;
-  coinDisplayHome.textContent = text;
-  coinDisplayChar.textContent = text;
-  coinDisplaySniper.textContent = text;
-}
+    </div>
 
-function showScreen(screenId) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(screenId).classList.add('active');
-  if (screenId === 'characterStore') renderCharacterStore();
-  if (screenId === 'sniperStore') renderSniperStore();
-  if (screenId === 'stageSelect') renderStageSelect();
-  updateCoinDisplays();
-}
+    <!-- Controls -->
+    <div class="mt-6 flex flex-col items-center gap-4">
+        <div class="text-lg font-semibold text-white drop-shadow-lg" id="instruction-text">Red's Turn: Roll Dice</div>
+        
+        <div id="dice-container">
+            <div id="dice" onclick="handleDiceClick()">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                    <circle cx="12" cy="12" r="2" fill="currentColor"></circle>
+                    <circle cx="12" cy="12" r="8" stroke="currentColor" stroke-opacity="0.2"></circle>
+                </svg>
+            </div>
+        </div>
+    </div>
 
-function generatePassword(itemType, itemName, itemNumber) {
-  const usernameLength = username.length;
-  return `${username}MT${usernameLength}${itemName}${itemNumber}`;
-}
+    <!-- Winner Modal -->
+    <div id="winner-modal" class="modal">
+        <div class="bg-white p-8 rounded-2xl text-center max-w-sm mx-4 animate-[bounce_1s_ease-out]">
+            <h2 class="text-3xl font-bold mb-2 text-yellow-500">Winner!</h2>
+            <p id="winner-text" class="text-xl text-slate-700 mb-6">Red wins the game!</p>
+            <button onclick="resetGame()" class="bg-indigo-600 text-white px-6 py-2 rounded-full font-bold hover:bg-indigo-700 transition">Play Again</button>
+        </div>
+    </div>
 
-function closeModal() {
-  passwordModal.classList.remove('active');
-}
+    <script>
+        // --- Game Configuration & Constants ---
+        const PLAYERS = [
+            { id: 0, name: 'Red', color: 'red', baseClass: 'base-red', tokenClass: 'token-red' },
+            { id: 1, name: 'Green', color: 'green', baseClass: 'base-green', tokenClass: 'token-green' },
+            { id: 2, name: 'Yellow', color: 'yellow', baseClass: 'base-yellow', tokenClass: 'token-yellow' },
+            { id: 3, name: 'Blue', color: 'blue', baseClass: 'base-blue', tokenClass: 'token-blue' }
+        ];
 
-function openExternal() {
-  window.open('https://nexura.oneapp.dev/', '_blank');
-}
+        // The board is 15x15. Coordinates (0,0) is top-left.
+        // Global path of 52 steps.
+        const GLOBAL_PATH = [
+            {x: 1, y: 6}, {x: 2, y: 6}, {x: 3, y: 6}, {x: 4, y: 6}, {x: 5, y: 6},
+            {x: 6, y: 5}, {x: 6, y: 4}, {x: 6, y: 3}, {x: 6, y: 2}, {x: 6, y: 1}, {x: 6, y: 0},
+            {x: 7, y: 0}, {x: 8, y: 0},
+            {x: 8, y: 1}, {x: 8, y: 2}, {x: 8, y: 3}, {x: 8, y: 4}, {x: 8, y: 5},
+            {x: 9, y: 6}, {x: 10, y: 6}, {x: 11, y: 6}, {x: 12, y: 6}, {x: 13, y: 6}, {x: 14, y: 6},
+            {x: 14, y: 7}, {x: 14, y: 8},
+            {x: 13, y: 8}, {x: 12, y: 8}, {x: 11, y: 8}, {x: 10, y: 8}, {x: 9, y: 8},
+            {x: 8, y: 9}, {x: 8, y: 10}, {x: 8, y: 11}, {x: 8, y: 12}, {x: 8, y: 13}, {x: 8, y: 14},
+            {x: 7, y: 14}, {x: 6, y: 14},
+            {x: 6, y: 13}, {x: 6, y: 12}, {x: 6, y: 11}, {x: 6, y: 10}, {x: 6, y: 9},
+            {x: 5, y: 8}, {x: 4, y: 8}, {x: 3, y: 8}, {x: 2, y: 8}, {x: 1, y: 8}, {x: 0, y: 8},
+            {x: 0, y: 7}, {x: 0, y: 6}
+        ];
 
-function openIframe() {
-  const modal = document.createElement('div');
-  modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:200;';
-  const iframe = document.createElement('iframe');
-  iframe.src = 'https://muhammad-taqi512-lyra.hf.space';
-  iframe.style.cssText = 'width:100%;height:100%;border:none;';
-  modal.appendChild(iframe);
-  const closeBtn = document.createElement('button');
-  closeBtn.textContent = '✕ Close';
-  closeBtn.style.cssText = 'position:absolute;top:10px;right:10px;background:red;color:#fff;border:none;padding:8px 15px;border-radius:5px;cursor:pointer;font-size:1rem;';
-  closeBtn.onclick = () => document.body.removeChild(modal);
-  modal.appendChild(closeBtn);
-  document.body.appendChild(modal);
-}
+        const SAFE_INDICES = [0, 8, 13, 21, 26, 34, 39, 47];
 
-// ==================== USERNAME HANDLING ====================
-function showNameScreen() {
-  usernameInput.value = username || '';
-  showScreen('nameScreen');
-  setTimeout(() => usernameInput.focus(), 100);
-}
+        const HOME_PATHS = [
+            [{x: 1, y: 7}, {x: 2, y: 7}, {x: 3, y: 7}, {x: 4, y: 7}, {x: 5, y: 7}, {x: 6, y:7}],
+            [{x: 7, y: 1}, {x: 7, y: 2}, {x: 7, y: 3}, {x: 7, y: 4}, {x: 7, y: 5}, {x: 7, y:6}],
+            [{x: 13, y: 7}, {x: 12, y: 7}, {x: 11, y: 7}, {x: 10, y: 7}, {x: 9, y: 7}, {x: 8, y:7}],
+            [{x: 7, y: 13}, {x: 7, y: 12}, {x: 7, y: 11}, {x: 7, y: 10}, {x: 7, y: 9}, {x: 7, y:8}]
+        ];
 
-function saveUsername() {
-  const newName = usernameInput.value.trim();
-  if (newName) {
-    username = newName;
-    localStorage.setItem('sniper_username', username);
-    showScreen('homeScreen');
-  } else {
-    alert('Please enter a name!');
-  }
-}
+        // State variables
+        let tokens = [];
+        let currentPlayerIndex = 0;
+        let diceValue = 0;
+        let gameState = 'WAIT_ROLL'; // WAIT_ROLL, WAIT_MOVE, ANIMATING, GAME_OVER
+        let consecutiveSixes = 0;
 
-// ==================== STORE RENDERING ====================
-function renderCharacterStore() {
-  characterGrid.innerHTML = '';
-  CHARACTERS.forEach(char => {
-    const div = document.createElement('div');
-    div.className = 'store-item';
-    if (equippedCharacter === char.id) div.classList.add('equipped');
-    const owned = ownedCharacters.includes(char.id);
-    div.innerHTML = `
-      <div class="item-name">${char.name}</div>
-      <div class="item-price">${owned ? '✅ Owned' : `🪙 ${char.price}`}</div>
-      ${owned ? 
-        `<button class="equip" onclick="equipCharacter(${char.id})">${equippedCharacter === char.id ? 'Equipped' : 'Equip'}</button>` :
-        `<button onclick="buyCharacter(${char.id})">Buy</button>`
-      }
-    `;
-    characterGrid.appendChild(div);
-  });
-}
+        // New: game setup
+        let gameMode = 'AI';           // 'AI' or 'HUMAN'
+        let playerCount = 2;           // 2,3,4
+        let activePlayers = [0,1];     // array of player indices active in game
+        let aiPlayers = [false, true]; // array same length as activePlayers, true if AI
 
-function renderSniperStore() {
-  sniperGrid.innerHTML = '';
-  SNIPERS.forEach(sniper => {
-    const div = document.createElement('div');
-    div.className = 'store-item';
-    if (equippedSniper === sniper.id) div.classList.add('equipped');
-    const owned = ownedSnipers.includes(sniper.id);
-    div.innerHTML = `
-      <div class="item-name">${sniper.name}</div>
-      <div class="item-price">Zoom: ${sniper.zoom.toFixed(2)}x | ${owned ? '✅ Owned' : `🪙 ${sniper.price}`}</div>
-      ${owned ? 
-        `<button class="equip" onclick="equipSniper(${sniper.id})">${equippedSniper === sniper.id ? 'Equipped' : 'Equip'}</button>` :
-        `<button onclick="buySniper(${sniper.id})">Buy</button>`
-      }
-    `;
-    sniperGrid.appendChild(div);
-  });
-}
+        // --- Initialization ---
 
-function equipCharacter(id) {
-  if (!ownedCharacters.includes(id)) return;
-  equippedCharacter = id;
-  saveState();
-  renderCharacterStore();
-  updateCoinDisplays();
-}
+        function initGame() {
+            const board = document.getElementById('ludo-board');
+            for(let y=0; y<15; y++) {
+                for(let x=0; x<15; x++) {
+                    if ( (x<6 && y<6) || (x>8 && y<6) || (x<6 && y>8) || (x>8 && y>8) ) continue;
+                    if (x>=6 && x<=8 && y>=6 && y<=8) continue;
 
-function equipSniper(id) {
-  if (!ownedSnipers.includes(id)) return;
-  equippedSniper = id;
-  saveState();
-  renderSniperStore();
-  updateCoinDisplays();
-}
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.style.gridColumn = x + 1;
+                    cell.style.gridRow = y + 1;
+                    cell.id = `cell-${x}-${y}`;
 
-function buyCharacter(id) {
-  const char = CHARACTERS.find(c => c.id === id);
-  if (!char || ownedCharacters.includes(id)) return;
-  if (coins < char.price) {
-    alert('Not enough coins!');
-    return;
-  }
-  coins -= char.price;
-  ownedCharacters.push(id);
-  saveState();
-  updateCoinDisplays();
-  renderCharacterStore();
-  const pwd = generatePassword('character', char.name, id);
-  generatedPassword.textContent = pwd;
-  passwordModal.classList.add('active');
-}
+                    if (y===7 && x>0 && x<6) cell.classList.add('path-red');
+                    if (x===7 && y>0 && y<6) cell.classList.add('path-green');
+                    if (y===7 && x>8 && x<14) cell.classList.add('path-yellow');
+                    if (x===7 && y>8 && y<14) cell.classList.add('path-blue');
 
-function buySniper(id) {
-  const sniper = SNIPERS.find(s => s.id === id);
-  if (!sniper || ownedSnipers.includes(id)) return;
-  if (coins < sniper.price) {
-    alert('Not enough coins!');
-    return;
-  }
-  coins -= sniper.price;
-  ownedSnipers.push(id);
-  saveState();
-  updateCoinDisplays();
-  renderSniperStore();
-  const pwd = generatePassword('sniper', sniper.name, id);
-  generatedPassword.textContent = pwd;
-  passwordModal.classList.add('active');
-}
+                    if (x===1 && y===6) cell.classList.add('path-red', 'safe-spot');
+                    if (x===8 && y===1) cell.classList.add('path-green', 'safe-spot');
+                    if (x===13 && y===8) cell.classList.add('path-yellow', 'safe-spot');
+                    if (x===6 && y===13) cell.classList.add('path-blue', 'safe-spot');
+                    
+                    if (x===6 && y===2) cell.classList.add('safe-spot');
+                    if (x===12 && y===6) cell.classList.add('safe-spot');
+                    if (x===8 && y===12) cell.classList.add('safe-spot');
+                    if (x===2 && y===8) cell.classList.add('safe-spot');
 
-// ==================== STAGE SELECT ====================
-function renderStageSelect() {
-  stageGrid.innerHTML = '';
-  for (let i = 1; i <= 200; i++) {
-    const btn = document.createElement('button');
-    btn.className = 'stage-btn';
-    if (i < unlockedStage) btn.classList.add('completed');
-    if (i > unlockedStage) btn.classList.add('locked');
-    btn.textContent = i;
-    if (i <= unlockedStage) {
-      btn.onclick = () => startStage(i);
-    }
-    stageGrid.appendChild(btn);
-  }
-}
+                    board.appendChild(cell);
+                }
+            }
+            // Do not start game automatically; homepage is shown
+        }
 
-function startStage(stage) {
-  currentStage = stage;
-  ammo = 3;
-  gameActive = true;
-  resultOverlay.classList.remove('show');
-  showScreen('gameScreen');
-  generateStage(stage);
-  updateGameUI();
-  renderOffscreen();
-  gameLoop();
-}
+        function resetGame() {
+            document.getElementById('winner-modal').classList.remove('show');
+            tokens = [];
+            activePlayers.forEach(p => {
+                for(let t=0; t<4; t++) {
+                    tokens.push({
+                        id: p*4 + t,
+                        player: p,
+                        state: 'BASE',
+                        position: -1,
+                        element: null
+                    });
+                }
+            });
+            currentPlayerIndex = activePlayers[0];
+            diceValue = 0;
+            consecutiveSixes = 0;
+            gameState = 'WAIT_ROLL';
+            
+            renderTokens();
+            updateUI();
+            if (aiPlayers[currentPlayerIndex]) triggerAI();
+        }
 
-function replayStage() {
-  startStage(currentStage);
-}
+        // --- Start Screen Functions ---
 
-function nextStage() {
-  if (currentStage < 200) {
-    startStage(currentStage + 1);
-  } else {
-    alert('You have completed all stages!');
-    showScreen('stageSelect');
-  }
-}
+        function selectMode(mode) {
+            gameMode = mode;
+            document.getElementById('mode-ai').className = 'start-button px-4 py-2 rounded-full ' + (mode==='AI' ? 'selected font-semibold' : 'bg-slate-200 hover:bg-slate-300 font-medium');
+            document.getElementById('mode-human').className = 'start-button px-4 py-2 rounded-full ' + (mode==='HUMAN' ? 'selected font-semibold' : 'bg-slate-200 hover:bg-slate-300 font-medium');
+        }
 
-function exitToMenu() {
-  gameActive = false;
-  showScreen('stageSelect');
-}
+        function selectPlayerCount(count) {
+            playerCount = count;
+            document.getElementById('players-2').className = 'start-button px-4 py-2 rounded-full ' + (count===2 ? 'selected font-semibold' : 'bg-slate-200 hover:bg-slate-300 font-medium');
+            document.getElementById('players-3').className = 'start-button px-4 py-2 rounded-full ' + (count===3 ? 'selected font-semibold' : 'bg-slate-200 hover:bg-slate-300 font-medium');
+            document.getElementById('players-4').className = 'start-button px-4 py-2 rounded-full ' + (count===4 ? 'selected font-semibold' : 'bg-slate-200 hover:bg-slate-300 font-medium');
+        }
 
-// ==================== GAME LOGIC ====================
-function generateStage(stage) {
-  stickmen = [];
-  const blackCount = stage;
-  const total = blackCount + 1;
-  const positions = getAllCarPositions();
-  // Shuffle positions
-  for (let i = positions.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [positions[i], positions[j]] = [positions[j], positions[i]];
-  }
-  if (positions.length < total) {
-    // Fallback: generate random positions
-    for (let i = 0; i < total; i++) {
-      positions.push({ x: 100 + Math.random() * 600, y: 200 + Math.random() * 200 });
-    }
-  }
-  for (let i = 0; i < blackCount; i++) {
-    stickmen.push({ x: positions[i].x, y: positions[i].y, color: 'black', type: 'black' });
-  }
-  stickmen.push({ x: positions[blackCount].x, y: positions[blackCount].y, color: 'red', type: 'red' });
-}
+        function startGame() {
+            if (gameMode === 'AI') {
+                activePlayers = [];
+                for (let i=0; i<playerCount; i++) activePlayers.push(i);
+                aiPlayers = activePlayers.map((p, idx) => idx > 0); // player 0 human
+            } else {
+                activePlayers = [];
+                for (let i=0; i<playerCount; i++) activePlayers.push(i);
+                aiPlayers = activePlayers.map(() => false);
+            }
+            document.getElementById('home-screen').classList.remove('show');
+            resetGame();
+        }
 
-// Returns all possible window positions inside cars
-function getAllCarPositions() {
-  const positions = [];
-  const cars = getCars();
-  cars.forEach(car => {
-    car.windows.forEach(win => {
-      positions.push({ x: win.x, y: win.y });
-    });
-  });
-  return positions;
-}
+        // --- Rendering ---
 
-// Define cars with windows positions and colors
-// Now 6 rows of 10 cars = 60 cars = 240 windows (enough for 200 stages)
-function getCars() {
-  const carColors = [
-    '#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6',
-    '#1abc9c', '#e67e22', '#34495e', '#16a085', '#d35400',
-    '#c0392b', '#2980b9', '#27ae60', '#f1c40f', '#8e44ad',
-    '#16a085', '#d35400', '#2c3e50', '#f39c12', '#7f8c8d'
-  ];
-  const cars = [];
-  const carWidth = 70;
-  const carHeight = 40;
-  const startX = 30;
-  const startY = 80;
-  const rowSpacing = 65;
-  const colSpacing = 75;
-  let carIndex = 0;
-  for (let row = 0; row < 6; row++) {
-    for (let col = 0; col < 10; col++) {
-      const x = startX + col * colSpacing;
-      const y = startY + row * rowSpacing;
-      const color = carColors[carIndex % carColors.length];
-      // Window positions relative to car body
-      const windowPositions = [
-        { x: x + 15, y: y + 12 }, // front left
-        { x: x + carWidth - 15, y: y + 12 }, // front right
-        { x: x + 15, y: y + carHeight - 8 }, // back left
-        { x: x + carWidth - 15, y: y + carHeight - 8 } // back right
-      ];
-      cars.push({
-        x: x,
-        y: y,
-        width: carWidth,
-        height: carHeight,
-        windows: windowPositions,
-        color: color
-      });
-      carIndex++;
-    }
-  }
-  return cars;
-}
+        function renderTokens() {
+            document.querySelectorAll('.token').forEach(el => el.remove());
+            const cellMap = {};
 
-function renderOffscreen() {
-  offscreenCanvas.width = canvas.width;
-  offscreenCanvas.height = canvas.height;
-  const ctx2 = offscreenCtx;
-  // Sky gradient
-  const skyGrad = ctx2.createLinearGradient(0, 0, 0, canvas.height);
-  skyGrad.addColorStop(0, '#87ceeb');
-  skyGrad.addColorStop(0.7, '#b0e0e6');
-  skyGrad.addColorStop(1, '#f0e68c');
-  ctx2.fillStyle = skyGrad;
-  ctx2.fillRect(0, 0, canvas.width, canvas.height);
-  // Sun
-  ctx2.fillStyle = '#ffd700';
-  ctx2.beginPath();
-  ctx2.arc(700, 80, 40, 0, Math.PI*2);
-  ctx2.fill();
-  // Road background
-  ctx2.fillStyle = '#555';
-  ctx2.fillRect(0, 60, canvas.width, canvas.height - 60);
-  ctx2.fillStyle = '#666';
-  for (let i = 0; i < canvas.width; i += 40) {
-    ctx2.fillRect(i, canvas.height - 60, 20, 10);
-  }
-  // Draw cars
-  const cars = getCars();
-  cars.forEach(car => {
-    drawCar(ctx2, car);
-  });
-  // Draw stickman heads
-  stickmen.forEach(sm => {
-    drawStickmanHead(ctx2, sm.x, sm.y, sm.color);
-  });
-}
+            tokens.forEach(token => {
+                if (token.state === 'BASE') {
+                    const baseSlot = document.querySelector(`.base-slot[data-base="${token.player}"][data-slot="${token.id % 4}"]`);
+                    createTokenElement(token, baseSlot);
+                } else if (token.state === 'FINISHED') {
+                    const center = document.querySelector('.center-goal');
+                    createTokenElement(token, center, true);
+                } else {
+                    let coord;
+                    if (token.state === 'PATH') coord = GLOBAL_PATH[token.position];
+                    else if (token.state === 'HOME') coord = HOME_PATHS[token.player][token.position];
+                    const cellId = `cell-${coord.x}-${coord.y}`;
+                    if(!cellMap[cellId]) cellMap[cellId] = [];
+                    cellMap[cellId].push(token);
+                }
+            });
 
-// Beautiful car drawing function
-function drawCar(ctx2, car) {
-  const { x, y, width, height, color } = car;
-  // Car shadow
-  ctx2.fillStyle = 'rgba(0,0,0,0.3)';
-  ctx2.beginPath();
-  ctx2.ellipse(x + width/2, y + height + 8, width/2 + 5, 6, 0, 0, Math.PI*2);
-  ctx2.fill();
-  // Wheels
-  ctx2.fillStyle = '#222';
-  ctx2.beginPath();
-  ctx2.arc(x + 15, y + height + 5, 8, 0, Math.PI*2);
-  ctx2.arc(x + width - 15, y + height + 5, 8, 0, Math.PI*2);
-  ctx2.fill();
-  // Wheel rims
-  ctx2.fillStyle = '#ccc';
-  ctx2.beginPath();
-  ctx2.arc(x + 15, y + height + 5, 4, 0, Math.PI*2);
-  ctx2.arc(x + width - 15, y + height + 5, 4, 0, Math.PI*2);
-  ctx2.fill();
-  // Car body (main)
-  const bodyGrad = ctx2.createLinearGradient(x, y, x, y + height);
-  bodyGrad.addColorStop(0, color);
-  bodyGrad.addColorStop(1, shadeColor(color, -20));
-  ctx2.fillStyle = bodyGrad;
-  ctx2.beginPath();
-  ctx2.moveTo(x + 5, y + height);
-  ctx2.lineTo(x + 5, y + 10);
-  ctx2.quadraticCurveTo(x + 10, y, x + 25, y);
-  ctx2.lineTo(x + width - 25, y);
-  ctx2.quadraticCurveTo(x + width - 10, y, x + width - 5, y + 10);
-  ctx2.lineTo(x + width - 5, y + height);
-  ctx2.closePath();
-  ctx2.fill();
-  // Cabin (roof)
-  ctx2.fillStyle = shadeColor(color, -40);
-  ctx2.beginPath();
-  ctx2.moveTo(x + 15, y + 10);
-  ctx2.lineTo(x + 20, y + 3);
-  ctx2.lineTo(x + width - 20, y + 3);
-  ctx2.lineTo(x + width - 15, y + 10);
-  ctx2.closePath();
-  ctx2.fill();
-  // Windows (dark with slight transparency)
-  const windowColor = 'rgba(30, 40, 60, 0.8)';
-  ctx2.fillStyle = windowColor;
-  car.windows.forEach(win => {
-    ctx2.fillRect(win.x - 8, win.y - 5, 16, 10);
-  });
-  // Window glass highlight
-  ctx2.fillStyle = 'rgba(255,255,255,0.15)';
-  car.windows.forEach(win => {
-    ctx2.fillRect(win.x - 6, win.y - 4, 12, 4);
-  });
-  // Headlights
-  ctx2.fillStyle = '#f1c40f';
-  ctx2.beginPath();
-  ctx2.arc(x + 8, y + 12, 3, 0, Math.PI*2);
-  ctx2.arc(x + width - 8, y + 12, 3, 0, Math.PI*2);
-  ctx2.fill();
-  // Taillights
-  ctx2.fillStyle = '#e74c3c';
-  ctx2.beginPath();
-  ctx2.arc(x + 8, y + height - 5, 3, 0, Math.PI*2);
-  ctx2.arc(x + width - 8, y + height - 5, 3, 0, Math.PI*2);
-  ctx2.fill();
-  // Door lines
-  ctx2.strokeStyle = 'rgba(0,0,0,0.3)';
-  ctx2.lineWidth = 1;
-  ctx2.beginPath();
-  ctx2.moveTo(x + width/2, y + 5);
-  ctx2.lineTo(x + width/2, y + height - 5);
-  ctx2.stroke();
-}
+            for (const [cellId, tokenList] of Object.entries(cellMap)) {
+                const cell = document.getElementById(cellId);
+                tokenList.forEach((token, index) => {
+                    const el = createTokenElement(token, cell);
+                    if (tokenList.length > 1) {
+                        el.classList.add('stacked');
+                        const offset = (index * 5) - ((tokenList.length-1)*2.5);
+                        el.style.transform = `translate(${offset}px, ${offset}px)`;
+                    }
+                });
+            }
+        }
 
-// Helper to darken/lighten color
-function shadeColor(color, percent) {
-  const num = parseInt(color.replace('#',''), 16);
-  const amt = Math.round(2.55 * percent);
-  const R = Math.max(0, Math.min(255, (num >> 16) + amt));
-  const G = Math.max(0, Math.min(255, (num >> 8 & 0x00FF) + amt));
-  const B = Math.max(0, Math.min(255, (num & 0x0000FF) + amt));
-  return `#${(1 << 24 | R << 16 | G << 8 | B).toString(16).slice(1)}`;
-}
+        function createTokenElement(token, parent, isFinished = false) {
+            const el = document.createElement('div');
+            el.className = `token ${PLAYERS[token.player].tokenClass}`;
+            el.id = `token-${token.id}`;
+            
+            if (isFinished) {
+                el.style.width = '20px';
+                el.style.height = '20px';
+                el.style.position = 'static';
+                el.style.display = 'inline-block';
+                el.style.margin = '2px';
+            } else {
+                el.onclick = (e) => {
+                    e.stopPropagation();
+                    handleTokenClick(token);
+                };
+            }
 
-// New function: draw only head with outline for clear visibility
-function drawStickmanHead(ctx2, x, y, color) {
-  ctx2.save();
-  ctx2.translate(x, y);
-  // Outline for contrast (white for black, dark for red)
-  const outlineColor = color === 'black' ? '#ffffff' : '#000000';
-  ctx2.fillStyle = outlineColor;
-  ctx2.beginPath();
-  ctx2.arc(0, -2, 9, 0, Math.PI*2); // slightly larger outline
-  ctx2.fill();
-  // Actual head
-  ctx2.fillStyle = color;
-  ctx2.beginPath();
-  ctx2.arc(0, -2, 7, 0, Math.PI*2);
-  ctx2.fill();
-  // Eyes for red (optional)
-  if (color === 'red') {
-    ctx2.fillStyle = '#fff';
-    ctx2.beginPath();
-    ctx2.arc(-2, -3, 2, 0, Math.PI*2);
-    ctx2.arc(2, -3, 2, 0, Math.PI*2);
-    ctx2.fill();
-    ctx2.fillStyle = '#000';
-    ctx2.beginPath();
-    ctx2.arc(-2, -3, 1, 0, Math.PI*2);
-    ctx2.arc(2, -3, 1, 0, Math.PI*2);
-    ctx2.fill();
-  }
-  ctx2.restore();
-}
+            token.element = el;
+            parent.appendChild(el);
+            return el;
+        }
 
-function updateGameUI() {
-  stageDisplay.textContent = `Stage: ${currentStage}`;
-  ammoDisplay.textContent = `Ammo: ${ammo}`;
-}
+        function updateUI() {
+            for(let i=0; i<4; i++) {
+                const isActive = (i === currentPlayerIndex);
+                const inGame = activePlayers.includes(i);
+                const card = document.getElementById(`p${i}-card`);
+                const cardM = document.getElementById(`p${i}-card-m`);
+                const status = document.getElementById(`p${i}-status`);
+                
+                if (!inGame) {
+                    card.classList.add('hidden');
+                    cardM.classList.add('hidden');
+                } else {
+                    card.classList.remove('hidden');
+                    cardM.classList.remove('hidden');
+                    if(isActive) {
+                        card.classList.add('active', 'border-2', 'border-slate-800');
+                        cardM.classList.add('active', 'ring-2', 'ring-slate-800');
+                        status.textContent = gameState === 'WAIT_ROLL' ? 'Rolling...' : 'Moving...';
+                    } else {
+                        card.classList.remove('active', 'border-2', 'border-slate-800');
+                        cardM.classList.remove('active', 'ring-2', 'ring-slate-800');
+                        status.textContent = 'Waiting';
+                    }
+                }
+            }
 
-// ==================== GAME LOOP ====================
-function gameLoop() {
-  if (!gameActive) return;
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.drawImage(offscreenCanvas, 0, 0);
-  const sniper = SNIPERS.find(s => s.id === equippedSniper);
-  const zoom = sniper ? sniper.zoom : 1;
-  drawScope(zoom);
-  requestAnimationFrame(gameLoop);
-}
+            const pName = PLAYERS[currentPlayerIndex].name;
+            const instruction = document.getElementById('instruction-text');
+            if (gameState === 'WAIT_ROLL') instruction.textContent = `${pName}'s Turn: Tap Dice`;
+            else if (gameState === 'WAIT_MOVE') instruction.textContent = `${pName}'s Turn: Select Token`;
+            else if (gameState === 'ANIMATING') instruction.textContent = `...`;
 
-function drawScope(zoom) {
-  const radius = scopeRadius;
-  ctx.save();
-  ctx.beginPath();
-  ctx.arc(mouseX, mouseY, radius, 0, Math.PI*2);
-  ctx.clip();
-  const srcSize = radius / zoom;
-  const srcX = mouseX - srcSize/2;
-  const srcY = mouseY - srcSize/2;
-  ctx.drawImage(offscreenCanvas, srcX, srcY, srcSize, srcSize, mouseX - radius, mouseY - radius, radius*2, radius*2);
-  ctx.restore();
-  ctx.strokeStyle = '#000';
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.arc(mouseX, mouseY, radius, 0, Math.PI*2);
-  ctx.stroke();
-  ctx.strokeStyle = '#fff';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.arc(mouseX, mouseY, radius-2, 0, Math.PI*2);
-  ctx.stroke();
-  ctx.strokeStyle = 'rgba(255,0,0,0.8)';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(mouseX - radius, mouseY);
-  ctx.lineTo(mouseX + radius, mouseY);
-  ctx.moveTo(mouseX, mouseY - radius);
-  ctx.lineTo(mouseX, mouseY + radius);
-  ctx.stroke();
-  ctx.fillStyle = 'red';
-  ctx.beginPath();
-  ctx.arc(mouseX, mouseY, 2, 0, Math.PI*2);
-  ctx.fill();
-}
+            document.querySelectorAll('.token').forEach(t => t.classList.remove('highlight'));
+            if (gameState === 'WAIT_MOVE') {
+                const movables = getMovableTokens(currentPlayerIndex, diceValue);
+                movables.forEach(t => {
+                    if(t.element) t.element.classList.add('highlight');
+                });
+            }
+        }
 
-// ==================== INPUT HANDLING ====================
-canvas.addEventListener('mousemove', (e) => {
-  const rect = canvas.getBoundingClientRect();
-  const scaleX = canvas.width / rect.width;
-  const scaleY = canvas.height / rect.height;
-  mouseX = (e.clientX - rect.left) * scaleX;
-  mouseY = (e.clientY - rect.top) * scaleY;
-});
+        // --- Game Logic ---
 
-canvas.addEventListener('click', (e) => {
-  if (!gameActive) return;
-  if (ammo <= 0) return;
-  ammo--;
-  updateGameUI();
-  let hitRed = false;
-  let hitBlack = false;
-  const hitRadius = 20;
-  stickmen.forEach(sm => {
-    const dx = sm.x - mouseX;
-    const dy = sm.y - mouseY;
-    const dist = Math.sqrt(dx*dx + dy*dy);
-    if (dist < hitRadius) {
-      if (sm.type === 'red') hitRed = true;
-      else hitBlack = true;
-    }
-  });
-  if (hitRed) {
-    gameActive = false;
-    coins += 500;
-    if (currentStage >= unlockedStage) unlockedStage = Math.min(200, currentStage + 1);
-    saveState();
-    updateCoinDisplays();
-    resultTitle.textContent = '🎉 You Win!';
-    resultCoins.textContent = '+500 Coins';
-    nextStageBtn.style.display = currentStage < 200 ? 'inline-block' : 'none';
-    resultOverlay.classList.add('show');
-  } else if (hitBlack) {
-    gameActive = false;
-    coins += 100;
-    saveState();
-    updateCoinDisplays();
-    resultTitle.textContent = '❌ Wrong Target! You shot a black stickman!';
-    resultCoins.textContent = '+100 Coins (consolation)';
-    nextStageBtn.style.display = 'none';
-    resultOverlay.classList.add('show');
-  } else if (ammo <= 0) {
-    gameActive = false;
-    coins += 100;
-    saveState();
-    updateCoinDisplays();
-    resultTitle.textContent = '❌ Out of Ammo!';
-    resultCoins.textContent = '+100 Coins (consolation)';
-    nextStageBtn.style.display = 'none';
-    resultOverlay.classList.add('show');
-  }
-});
+        function handleDiceClick() {
+            if (aiPlayers[currentPlayerIndex]) return;
+            if (gameState !== 'WAIT_ROLL') return;
+            rollDice();
+        }
 
-// ==================== INIT ====================
-function init() {
-  updateCoinDisplays();
-  renderCharacterStore();
-  renderSniperStore();
-  renderStageSelect();
-  if (!username) {
-    showNameScreen();
-  } else {
-    showScreen('homeScreen');
-  }
-}
+        function rollDice() {
+            if (gameState !== 'WAIT_ROLL') return;
+            const dice = document.getElementById('dice');
+            dice.classList.add('rolling');
+            gameState = 'ANIMATING';
+            
+            setTimeout(() => {
+                dice.classList.remove('rolling');
+                diceValue = Math.floor(Math.random() * 6) + 1;
+                renderDice(diceValue);
+                
+                if (diceValue === 6) consecutiveSixes++;
+                else consecutiveSixes = 0;
+                if (consecutiveSixes === 3) {
+                    setTimeout(nextTurn, 1000);
+                    return;
+                }
+                
+                const moves = getMovableTokens(currentPlayerIndex, diceValue);
+                if (moves.length === 0) {
+                    setTimeout(nextTurn, 1000);
+                } else {
+                    if (aiPlayers[currentPlayerIndex]) {
+                        setTimeout(() => aiMove(moves), 800);
+                    } else {
+                        gameState = 'WAIT_MOVE';
+                        updateUI();
+                    }
+                }
+            }, 500);
+        }
 
-init();
-</script>
+        function aiMove(moves) {
+            if (gameState !== 'ANIMATING') return;
+            let chosen = null;
+            for (let m of moves) {
+                if (m.state === 'PATH') {
+                    const startIdx = m.player * 13;
+                    let stepsTaken = 0;
+                    if (m.position >= startIdx) stepsTaken = m.position - startIdx;
+                    else stepsTaken = (52 - startIdx) + m.position;
+                    const target = (m.position + diceValue) % 52;
+                    const isSafe = SAFE_INDICES.includes(target);
+                    if (!isSafe) {
+                        const opponent = tokens.find(t => t.player !== m.player && t.state === 'PATH' && t.position === target);
+                        if (opponent) {
+                            chosen = m;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (!chosen) chosen = moves[Math.floor(Math.random() * moves.length)];
+            gameState = 'WAIT_MOVE';
+            handleTokenClick(chosen);
+        }
+
+        function renderDice(val) {
+            const dice = document.getElementById('dice');
+            dice.innerHTML = '';
+            const pos = {
+                1: [[12,12]],
+                2: [[6,6], [18,18]],
+                3: [[6,6], [12,12], [18,18]],
+                4: [[6,6], [18,6], [6,18], [18,18]],
+                5: [[6,6], [18,6], [12,12], [6,18], [18,18]],
+                6: [[6,6], [18,6], [6,12], [18,12], [6,18], [18,18]]
+            };
+            const dots = pos[val].map(p => `<circle cx="${p[0]}" cy="${p[1]}" r="2.5" fill="black"/>`).join('');
+            dice.innerHTML = `<svg width="100%" height="100%" viewBox="0 0 24 24">${dots}</svg>`;
+        }
+
+        function getMovableTokens(pIndex, roll) {
+            return tokens.filter(t => t.player === pIndex).filter(t => {
+                if (t.state === 'FINISHED') return false;
+                if (t.state === 'BASE') return roll === 6;
+                if (t.state === 'PATH') {
+                    const startIdx = pIndex * 13;
+                    let stepsTaken = 0;
+                    if (t.position >= startIdx) stepsTaken = t.position - startIdx;
+                    else stepsTaken = (52 - startIdx) + t.position;
+                    if (stepsTaken + roll <= 50) return true;
+                    if (stepsTaken + roll > 56) return false;
+                    return true;
+                }
+                if (t.state === 'HOME') {
+                    return (t.position + roll) <= 5;
+                }
+                return false;
+            });
+        }
+
+        function handleTokenClick(token) {
+            if (gameState !== 'WAIT_MOVE') return;
+            if (token.player !== currentPlayerIndex) return;
+            
+            const movables = getMovableTokens(currentPlayerIndex, diceValue);
+            if (!movables.includes(token)) return;
+
+            gameState = 'ANIMATING';
+            
+            if (token.state === 'BASE') {
+                const startIndices = [0, 13, 26, 39];
+                token.state = 'PATH';
+                token.position = startIndices[currentPlayerIndex];
+            } else {
+                let stepsToMove = diceValue;
+                if (token.state === 'PATH') {
+                    const startIdx = token.player * 13;
+                    let stepsTaken = 0;
+                    if (token.position >= startIdx) stepsTaken = token.position - startIdx;
+                    else stepsTaken = (52 - startIdx) + token.position;
+
+                    if (stepsTaken + stepsToMove > 50) {
+                        const movesOnPath = 50 - stepsTaken;
+                        const movesInHome = stepsToMove - movesOnPath - 1;
+                        token.state = 'HOME';
+                        token.position = movesInHome;
+                    } else {
+                        token.position = (token.position + stepsToMove) % 52;
+                    }
+                } else if (token.state === 'HOME') {
+                    token.position += stepsToMove;
+                    if (token.position === 5) {
+                         token.state = 'FINISHED';
+                         checkWin();
+                    }
+                }
+            }
+            
+            let captured = false;
+            if (token.state === 'PATH') {
+                const isSafe = SAFE_INDICES.includes(token.position);
+                if (!isSafe) {
+                    const opponents = tokens.filter(t => t.player !== currentPlayerIndex && t.state === 'PATH' && t.position === token.position);
+                    if (opponents.length === 1) {
+                        const victim = opponents[0];
+                        victim.state = 'BASE';
+                        victim.position = -1;
+                        captured = true;
+                    }
+                }
+            }
+
+            renderTokens();
+            updateUI();
+
+            if (diceValue === 6 || captured) {
+                if (checkWinConditionForCurrentPlayer()) return;
+                gameState = 'WAIT_ROLL';
+                updateUI();
+                if (aiPlayers[currentPlayerIndex]) triggerAI();
+            } else {
+                nextTurn();
+            }
+        }
+
+        function nextTurn() {
+            const currentIdx = activePlayers.indexOf(currentPlayerIndex);
+            const nextIdx = (currentIdx + 1) % activePlayers.length;
+            currentPlayerIndex = activePlayers[nextIdx];
+            diceValue = 0;
+            consecutiveSixes = 0;
+            gameState = 'WAIT_ROLL';
+            updateUI();
+            if (aiPlayers[currentPlayerIndex]) triggerAI();
+        }
+
+        function triggerAI() {
+            if (aiPlayers[currentPlayerIndex] && gameState === 'WAIT_ROLL') {
+                setTimeout(() => {
+                    if (gameState === 'WAIT_ROLL') rollDice();
+                }, 1000);
+            }
+        }
+
+        function checkWinConditionForCurrentPlayer() {
+            const playerTokens = tokens.filter(t => t.player === currentPlayerIndex);
+            const finished = playerTokens.filter(t => t.state === 'FINISHED').length;
+            if (finished === 4) {
+                showWinner(currentPlayerIndex);
+                return true;
+            }
+            return false;
+        }
+
+        function checkWin() {
+            checkWinConditionForCurrentPlayer();
+        }
+
+        function showWinner(pIndex) {
+            gameState = 'GAME_OVER';
+            const modal = document.getElementById('winner-modal');
+            const text = document.getElementById('winner-text');
+            const name = PLAYERS[pIndex].name;
+            text.textContent = `${name} wins the game!`;
+            modal.classList.add('show');
+        }
+
+        // Initialize board structure
+        initGame();
+    </script>
 </body>
 </html>
