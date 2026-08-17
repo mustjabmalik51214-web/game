@@ -3,122 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LOST WORLD - Warehouse Cargo Arena</title>
+    <title>LOST WORLD - Voxel Craft Edition</title>
     <style>
         :root {
-            --bg-color: #0b0e14;
-            --text-color: #e0e0e0;
-            --primary: #00f0ff;
-            --secondary: #7000ff;
-            --accent: #ff0055;
-            --success: #00e676;
-            --warning: #ffd600;
-            --panel-bg: rgba(20, 25, 35, 0.95);
-            --border: #333;
-            --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --bg-color: #1a2332;
+            --text-color: #ffffff;
+            --primary: #55ff55;
+            --secondary: #ffaa00;
+            --accent: #ff5555;
+            --panel-bg: rgba(32, 32, 32, 0.9);
+            --border: #555555;
+            --font-main: 'Courier New', Courier, monospace;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-main); user-select: none; -webkit-user-select: none; }
         body { background-color: var(--bg-color); color: var(--text-color); overflow: hidden; width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; }
 
-        .screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; flex-direction: column; justify-content: center; align-items: center; background: radial-gradient(circle at center, #1a1a2e 0%, #000000 100%); transition: opacity 0.5s ease; opacity: 0; }
+        .screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; flex-direction: column; justify-content: center; align-items: center; background: #22252a; transition: opacity 0.3s ease; opacity: 0; }
         .active-screen { display: flex; opacity: 1; z-index: 10; }
 
-        button { cursor: pointer; border: none; outline: none; transition: all 0.2s ease; font-weight: bold; }
-        button:hover { transform: translateY(-2px); filter: brightness(1.1); }
-        button:active { transform: translateY(1px); }
+        button { cursor: pointer; border: none; outline: none; transition: all 0.1s ease; font-weight: bold; font-family: var(--font-main); }
+        button:hover { filter: brightness(1.2); }
+        button:active { transform: scale(0.96); }
 
-        .back-btn { position: absolute; top: 20px; left: 20px; padding: 10px 20px; background: rgba(255, 255, 255, 0.1); color: #fff; border: 1px solid #555; border-radius: 8px; z-index: 100; }
-        .back-btn:hover { background: rgba(255, 255, 255, 0.2); }
+        .back-btn { position: absolute; top: 20px; left: 20px; padding: 12px 24px; background: #3c3c3c; color: #fff; border: 3px solid #7c7c7c; border-radius: 0px; z-index: 100; font-size: 1rem; box-shadow: inset -2px -2px 0px #222, inset 2px 2px 0px #555; }
+        .back-btn:hover { background: #505050; }
 
-        .hud-top { position: absolute; top: 20px; right: 30px; display: flex; gap: 20px; background: var(--panel-bg); padding: 10px 25px; border-radius: 30px; border: 1px solid var(--border); z-index: 50; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .hud-top { position: absolute; top: 20px; right: 30px; display: flex; gap: 20px; background: var(--panel-bg); padding: 10px 25px; border: 2px solid var(--border); z-index: 50; }
         .hud-item { font-size: 1.1rem; font-weight: bold; color: #fff; }
-        .hud-item span { color: var(--primary); text-shadow: 0 0 5px var(--primary); }
+        .hud-item span { color: var(--primary); }
 
-        #home-screen { background: radial-gradient(circle, #1a233a 0%, #050811 100%); }
+        #home-screen { background: #181d24; }
         .home-content { z-index: 2; text-align: center; display: flex; flex-direction: column; align-items: center; }
 
-        .game-title { font-size: 5rem; font-weight: 900; letter-spacing: 8px; text-transform: uppercase; background: linear-gradient(to bottom, #fff, var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 15px var(--primary)); margin-bottom: 10px; }
-        .creator { font-size: 1.2rem; color: #aaa; letter-spacing: 3px; cursor: pointer; margin-bottom: 50px; transition: color 0.3s; }
-        .creator:hover { color: var(--primary); text-shadow: 0 0 10px var(--primary); }
+        .game-title { font-size: 4.5rem; font-weight: 900; letter-spacing: 4px; text-transform: uppercase; color: #55ff55; text-shadow: 4px 4px 0px #000, 8px 8px 0px rgba(0,0,0,0.4); margin-bottom: 5px; }
+        .creator { font-size: 1.1rem; color: #aaa; letter-spacing: 2px; cursor: pointer; margin-bottom: 40px; }
+        .creator:hover { color: var(--primary); }
 
-        .main-menu { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 500px; }
-        .menu-btn { padding: 25px; font-size: 1.4rem; border-radius: 15px; background: rgba(20, 20, 40, 0.8); color: #fff; border: 2px solid var(--border); backdrop-filter: blur(5px); }
-        .menu-btn:nth-child(1) { border-color: var(--primary); box-shadow: 0 0 20px rgba(0, 240, 2ff, 0.3); }
-        .menu-btn:nth-child(2) { border-color: var(--warning); box-shadow: 0 0 20px rgba(255, 214, 0, 0.3); }
-        .menu-btn:nth-child(3) { border-color: var(--success); box-shadow: 0 0 20px rgba(0, 230, 118, 0.3); }
-        .menu-btn:nth-child(4) { border-color: var(--accent); box-shadow: 0 0 20px rgba(255, 0, 85, 0.3); }
+        .main-menu { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 480px; }
+        .menu-btn { padding: 20px; font-size: 1.2rem; background: #4a4a4a; color: #fff; border: 4px solid #2e2e2e; box-shadow: inset -4px -4px 0px #222, inset 4px 4px 0px #777; }
+        .menu-btn:nth-child(1) { background: #3b7a57; }
+        .menu-btn:nth-child(2) { background: #8c6239; }
+        .menu-btn:nth-child(3) { background: #465881; }
+        .menu-btn:nth-child(4) { background: #803b3b; }
 
-        #store-screen { background: #05050a; }
-        .store-container { width: 90%; height: 90%; background: var(--panel-bg); border-radius: 20px; border: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
-        .store-tabs { display: flex; border-bottom: 1px solid var(--border); }
-        .tab-btn { flex: 1; padding: 20px; background: transparent; color: #888; font-size: 1.2rem; border-bottom: 3px solid transparent; }
-        .tab-btn.active-tab { color: var(--primary); border-bottom-color: var(--primary); background: rgba(0,240,2ff,0.05); }
+        #store-screen { background: #15181c; }
+        .store-container { width: 90%; height: 90%; background: #222; border: 4px solid #444; display: flex; flex-direction: column; overflow: hidden; box-shadow: inset -4px -4px 0px #111, inset 4px 4px 0px #555; }
+        .store-tabs { display: flex; border-bottom: 4px solid #444; background: #1b1b1b; }
+        .tab-btn { flex: 1; padding: 20px; background: #2a2a2a; color: #aaa; font-size: 1.1rem; border-right: 2px solid #444; }
+        .tab-btn.active-tab { color: #fff; background: #3c3c3c; border-bottom: 4px solid var(--primary); }
         .store-content { flex: 1; padding: 30px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; align-content: start; }
 
-        .shop-card { background: rgba(0,0,0,0.3); border-radius: 12px; border: 1px solid var(--border); padding: 20px; display: flex; flex-direction: column; gap: 15px; transition: all 0.3s; }
-        .shop-card:hover { border-color: var(--primary); box-shadow: 0 5px 15px rgba(0,0,0,0.4); }
+        .shop-card { background: #2b2b2b; border: 3px solid #444; padding: 20px; display: flex; flex-direction: column; gap: 12px; box-shadow: inset -2px -2px 0px #1a1a1a, inset 2px 2px 0px #444; }
         .card-header { display: flex; justify-content: space-between; align-items: center; }
-        .card-title { font-size: 1.3rem; font-weight: bold; color: #fff; }
-        .evo-tag { font-size: 0.7rem; padding: 4px 8px; border-radius: 4px; background: var(--secondary); color: #fff; text-transform: uppercase; }
-        .card-stats { font-size: 1rem; color: #ccc; display: flex; flex-direction: column; gap: 5px; }
+        .card-title { font-size: 1.2rem; font-weight: bold; color: #fff; }
+        .evo-tag { font-size: 0.65rem; padding: 3px 6px; background: #aa55ff; color: #fff; border: 1px solid #000; }
+        .card-stats { font-size: 0.95rem; color: #ccc; }
         .stat-highlight { color: var(--primary); font-weight: bold; }
-        .card-action { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 15px; border-top: 1px solid var(--border); }
-        .price { font-size: 1.2rem; font-weight: bold; color: var(--warning); }
-        .buy-btn { padding: 10px 25px; border-radius: 20px; background: var(--primary); color: #000; font-size: 1rem; }
-        .buy-btn:disabled { background: #555; color: #999; cursor: not-allowed; }
+        .card-action { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 12px; border-top: 2px solid #444; }
+        .price { font-size: 1.1rem; font-weight: bold; color: var(--secondary); }
+        .buy-btn { padding: 8px 20px; background: #3b7a57; color: #fff; border: 2px solid #1c3829; font-size: 0.95rem; box-shadow: inset -2px -2px 0px #1c3829, inset 2px 2px 0px #55bc85; }
+        .buy-btn:disabled { background: #444; color: #888; border-color: #222; box-shadow: none; cursor: not-allowed; }
 
         #gameplay-screen { background: #111; }
         #game-canvas { display: block; }
 
         .arena-hud { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 20; }
         
-        /* FREE FIRE STYLE TOP HUD & MINI-MAP */
         .ff-hud-top-left { position: absolute; top: 15px; left: 15px; display: flex; gap: 15px; align-items: flex-start; }
-        .ff-minimap { width: 160px; height: 110px; background: rgba(25, 30, 40, 0.85); border: 2px solid rgba(255,255,255,0.2); border-radius: 8px; position: relative; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.6); }
-        .minimap-zone { position: absolute; top: 10px; left: 20px; width: 70px; height: 60px; background: rgba(0,240,255,0.25); border: 1px dashed var(--primary); transform: skewX(-15deg); }
-        .minimap-player { position: absolute; top: 55px; left: 75px; width: 8px; height: 8px; background: #00ffcc; border-radius: 50%; box-shadow: 0 0 6px #00ffcc; }
-        .minimap-label { position: absolute; bottom: 4px; left: 6px; font-size: 0.65rem; color: #ffcc00; font-weight: bold; letter-spacing: 1px; }
+        .ff-minimap { width: 150px; height: 100px; background: rgba(30, 35, 45, 0.9); border: 3px solid #666; position: relative; overflow: hidden; box-shadow: 2px 2px 0px #000; }
+        .minimap-zone { position: absolute; top: 8px; left: 15px; width: 60px; height: 50px; background: rgba(85, 255, 85, 0.25); border: 1px dashed var(--primary); }
+        .minimap-player { position: absolute; top: 48px; left: 70px; width: 6px; height: 6px; background: #ffff55; border-radius: 50%; box-shadow: 0 0 4px #ffff55; }
+        .minimap-label { position: absolute; bottom: 3px; left: 5px; font-size: 0.6rem; color: #fff; font-weight: bold; }
 
         .ff-status-pills { display: flex; gap: 10px; }
-        .ff-pill { background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(255,255,255,0.2); padding: 5px 12px; border-radius: 4px; color: #fff; font-size: 0.85rem; font-weight: bold; display: flex; align-items: center; gap: 6px; }
-        .ff-pill span { color: var(--warning); }
+        .ff-pill { background: rgba(0, 0, 0, 0.7); border: 2px solid #555; padding: 4px 10px; color: #fff; font-size: 0.8rem; font-weight: bold; display: flex; align-items: center; gap: 5px; box-shadow: 2px 2px 0px #000; }
+        .ff-pill span { color: var(--secondary); }
 
-        /* TOP RIGHT WEAPON SLOTS & KILLS */
-        .ff-hud-top-right { position: absolute; top: 15px; right: 20px; display: flex; gap: 15px; align-items: center; }
-        .ff-stat-box { background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); padding: 6px 14px; border-radius: 4px; color: #fff; font-size: 0.85rem; font-weight: bold; }
-        .ff-stat-box span { color: var(--success); }
+        .ff-hud-top-right { position: absolute; top: 15px; right: 20px; display: flex; gap: 10px; align-items: center; }
+        .ff-stat-box { background: rgba(0,0,0,0.7); border: 2px solid #555; padding: 4px 12px; color: #fff; font-size: 0.8rem; font-weight: bold; box-shadow: 2px 2px 0px #000; }
+        .ff-stat-box span { color: var(--primary); }
         
-        .ff-weapons-dock { display: flex; gap: 6px; background: rgba(20,25,35,0.8); padding: 6px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.15); }
-        .ff-slot { width: 42px; height: 42px; background: rgba(0,0,0,0.5); border: 1px solid #444; border-radius: 4px; display: flex; justify-content: center; align-items: center; font-size: 1.1rem; color: #aaa; }
-        .ff-slot.active-gun-slot { border-color: var(--primary); background: rgba(0,240,255,0.15); }
+        .ff-weapons-dock { display: flex; gap: 4px; background: rgba(30,30,30,0.8); padding: 4px; border: 2px solid #555; box-shadow: 2px 2px 0px #000; }
+        .ff-slot { width: 38px; height: 38px; background: #222; border: 2px solid #444; display: flex; justify-content: center; align-items: center; font-size: 1rem; color: #888; }
+        .ff-slot.active-gun-slot { border-color: var(--primary); background: rgba(85,255,85,0.15); color: #fff; }
 
-        .player-health-ui { position: absolute; bottom: 30px; left: 30px; width: 300px; }
-        .health-bar-bg { width: 100%; height: 18px; background: #333; border-radius: 9px; overflow: hidden; border: 2px solid rgba(255,255,255,0.4); }
-        .health-bar-fill { height: 100%; background: var(--success); width: 100%; transition: width 0.1s linear; }
-        .health-text { color: #fff; font-weight: bold; margin-bottom: 5px; text-shadow: 1px 1px 2px #000; font-size: 0.95rem; }
+        /* MINECRAFT / VOXEL HOTBAR & HEALTH HEARTS */
+        .player-health-ui { position: absolute; bottom: 25px; left: 30px; display: flex; flex-direction: column; gap: 6px; }
+        .hearts-container { display: flex; gap: 3px; }
+        .heart { width: 22px; height: 22px; background: #ff3333; border: 2px solid #000; box-shadow: inset -2px -2px 0px #880000, inset 2px 2px 0px #ff6666; transform: skewX(-5deg); }
+        .heart.empty { background: #555555; box-shadow: inset -2px -2px 0px #222, inset 2px 2px 0px #777; }
+        .health-text { color: #fff; font-weight: bold; font-size: 0.9rem; text-shadow: 2px 2px 0px #000; }
 
-        /* CONTROL PANEL / ON-SCREEN D-PAD & FIRE BUTTON */
-        .control-panel { pointer-events: auto; position: absolute; bottom: 25px; right: 30px; width: 240px; height: 160px; display: flex; justify-content: space-between; align-items: flex-end; }
+        /* CONTROLS (D-PAD & FIRE) */
+        .control-panel { pointer-events: auto; position: absolute; bottom: 20px; right: 30px; width: 240px; height: 150px; display: flex; justify-content: space-between; align-items: flex-end; }
         
-        .dpad-container { position: relative; width: 120px; height: 120px; }
-        .dpad-btn { position: absolute; background: rgba(255, 255, 255, 0.15); border: 2px solid rgba(255, 255, 255, 0.3); color: #fff; font-size: 1.1rem; display: flex; justify-content: center; align-items: center; border-radius: 10px; transition: background 0.1s; }
-        .dpad-btn:active, .dpad-btn.pressed { background: rgba(0, 240, 2ff, 0.5); border-color: var(--primary); }
+        .dpad-container { position: relative; width: 110px; height: 110px; }
+        .dpad-btn { position: absolute; background: #555; border: 3px solid #222; color: #fff; font-size: 1rem; display: flex; justify-content: center; align-items: center; border-radius: 0px; box-shadow: inset -3px -3px 0px #333, inset 3px 3px 0px #777; }
+        .dpad-btn:active, .dpad-btn.pressed { background: #3b7a57; border-color: #1c3829; box-shadow: inset 2px 2px 0px #1c3829; }
         
-        #btn-up { top: 0; left: 40px; width: 40px; height: 40px; }
-        #btn-down { bottom: 0; left: 40px; width: 40px; height: 40px; }
-        #btn-left { top: 40px; left: 0; width: 40px; height: 40px; }
-        #btn-right { top: 40px; right: 0; width: 40px; height: 40px; }
-        #btn-center { top: 40px; left: 40px; width: 40px; height: 40px; background: rgba(0,0,0,0.3); border-radius: 50%; pointer-events: none; }
+        #btn-up { top: 0; left: 35px; width: 40px; height: 40px; }
+        #btn-down { bottom: 0; left: 35px; width: 40px; height: 40px; }
+        #btn-left { top: 35px; left: 0; width: 40px; height: 40px; }
+        #btn-right { top: 35px; right: 0; width: 40px; height: 40px; }
+        #btn-center { top: 35px; left: 35px; width: 40px; height: 40px; background: #333; border: 2px solid #222; pointer-events: none; }
 
-        .fire-btn-container { display: flex; align-items: center; justify-content: center; padding-bottom: 10px; }
-        .fire-btn { width: 85px; height: 85px; background: radial-gradient(circle, #ff0055 0%, #990033 100%); border: 3px solid #ff88aa; border-radius: 50%; color: #fff; font-weight: 900; font-size: 1.1rem; box-shadow: 0 0 15px rgba(255, 0, 85, 0.6); display: flex; justify-content: center; align-items: center; text-shadow: 1px 1px 2px #000; }
-        .fire-btn:active, .fire-btn.pressed { transform: scale(0.92); filter: brightness(1.2); box-shadow: 0 0 5px rgba(255, 0, 85, 0.8); }
+        .fire-btn-container { display: flex; align-items: center; justify-content: center; padding-bottom: 5px; }
+        .fire-btn { width: 80px; height: 80px; background: #aa3333; border: 4px solid #551111; color: #fff; font-weight: 900; font-size: 1rem; box-shadow: inset -4px -4px 0px #551111, inset 4px 4px 0px #ff6666, 0 4px 0px #000; display: flex; justify-content: center; align-items: center; text-shadow: 2px 2px 0px #000; }
+        .fire-btn:active, .fire-btn.pressed { transform: translateY(3px); background: #882222; box-shadow: inset -2px -2px 0px #440000, inset 2px 2px 0px #cc4444; }
 
-        .match-info { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; background: rgba(15, 20, 30, 0.95); padding: 40px; border-radius: 20px; border: 2px solid var(--primary); display: none; z-index: 100; pointer-events: auto; box-shadow: 0 0 30px rgba(0,240,255,0.3); }
-        .match-status { font-size: 3rem; font-weight: bold; text-transform: uppercase; margin-bottom: 20px; color: var(--primary); text-shadow: 0 0 10px var(--primary); }
-        .match-msg { font-size: 1.5rem; margin-bottom: 30px; color: #ddd; }
-        .continue-btn { padding: 15px 40px; font-size: 1.2rem; background: var(--primary); color: #000; border-radius: 10px; }
+        .match-info { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; background: #1c1f26; padding: 40px; border: 4px solid #55ff55; display: none; z-index: 100; pointer-events: auto; box-shadow: 6px 6px 0px rgba(0,0,0,0.8); }
+        .match-status { font-size: 2.5rem; font-weight: bold; text-transform: uppercase; margin-bottom: 20px; color: #55ff55; text-shadow: 3px 3px 0px #000; }
+        .match-msg { font-size: 1.2rem; margin-bottom: 30px; color: #ddd; }
+        .continue-btn { padding: 12px 30px; font-size: 1.1rem; background: #3b7a57; color: #fff; border: 3px solid #1c3829; box-shadow: inset -3px -3px 0px #1c3829, inset 3px 3px 0px #55bc85; }
     </style>
 </head>
 <body>
@@ -126,10 +123,10 @@
     <!-- HOME SCREEN -->
     <div id="home-screen" class="screen active-screen">
         <div class="home-content">
-            <h1 class="game-title">LOST WORLD</h1>
+            <h1 class="game-title">LOST WORLD 2</h1>
             <p class="creator" onclick="window.open('https://taqi.oneapp.dev', '_blank')">Created by Muhammad Taqi</p>
             <div class="main-menu">
-                <button class="menu-btn" onclick="ui.openStore()">STORE</button>
+                <button class="menu-btn" onclick="ui.openStore()">STORE [BLOCKS]</button>
                 <button class="menu-btn" onclick="game.startMatch('lone_wolf')">LONE WOLF</button>
                 <button class="menu-btn" onclick="game.startMatch('br_ranked')">BR RANKED</button>
                 <button class="menu-btn" onclick="game.startMatch('cs_ranked')">CS RANKED</button>
@@ -139,11 +136,11 @@
 
     <!-- STORE SCREEN -->
     <div id="store-screen" class="screen">
-        <button class="back-btn" onclick="ui.goHome()">← BACK</button>
+        <button class="back-btn" onclick="ui.goHome()">&lt; BACK</button>
         <div class="store-container">
             <div class="store-tabs">
-                <button class="tab-btn active-tab" onclick="ui.switchStore('char')" id="tab-char">BUY CHARACTERS</button>
-                <button class="tab-btn" onclick="ui.switchStore('gun')" id="tab-gun">BUY GUNS</button>
+                <button class="tab-btn active-tab" onclick="ui.switchStore('char')" id="tab-char">VOXEL SKINS</button>
+                <button class="tab-btn" onclick="ui.switchStore('gun')" id="tab-gun">VOXEL WEAPONS</button>
             </div>
             <div class="store-content" id="store-items"></div>
         </div>
@@ -153,12 +150,11 @@
     <div id="gameplay-screen" class="screen">
         <canvas id="game-canvas"></canvas>
         <div class="arena-hud">
-            <!-- FREE FIRE STYLE TOP LEFT MINI-MAP & WARNING -->
             <div class="ff-hud-top-left">
                 <div class="ff-minimap">
                     <div class="minimap-zone"></div>
                     <div class="minimap-player"></div>
-                    <div class="minimap-label">HANGAR</div>
+                    <div class="minimap-label">VOXEL HANGAR</div>
                 </div>
                 <div class="ff-status-pills">
                     <div class="ff-pill">COINS: <span id="coin-display">10000</span></div>
@@ -166,24 +162,25 @@
                 </div>
             </div>
 
-            <!-- FREE FIRE STYLE TOP RIGHT WEAPONS & ALIVE COUNT -->
             <div class="ff-hud-top-right">
                 <div class="ff-stat-box">Alive: <span id="alive-count">16</span></div>
                 <div class="ff-stat-box">Kill: <span id="kill-count">0</span></div>
                 <div class="ff-weapons-dock">
-                    <div class="ff-slot active-gun-slot" id="slot-1">🔫</div>
-                    <div class="ff-slot" id="slot-2">🔪</div>
-                    <div class="ff-slot" id="slot-3">🍳</div>
+                    <div class="ff-slot active-gun-slot" id="slot-1">⛏️</div>
+                    <div class="ff-slot" id="slot-2">⚔️</div>
+                    <div class="ff-slot" id="slot-3">🏹</div>
                 </div>
             </div>
 
             <div class="player-health-ui">
-                <div class="health-text" id="player-name-display">Black Stickman</div>
-                <div class="health-bar-bg"><div class="health-bar-fill" id="player-hp-fill"></div></div>
-                <div class="health-text" style="font-size: 0.85rem; margin-top: 5px; color: #ffd600;" id="round-display">Safe Zone is Now Updating</div>
+                <div class="health-text" id="player-name-display">Steve Operator</div>
+                <div class="hearts-container" id="hearts-box">
+                    <div class="heart"></div><div class="heart"></div><div class="heart"></div><div class="heart"></div><div class="heart"></div>
+                    <div class="heart"></div><div class="heart"></div><div class="heart"></div><div class="heart"></div><div class="heart"></div>
+                </div>
+                <div class="health-text" style="font-size: 0.75rem; color: #ffaa00;" id="round-display">Voxel World Active</div>
             </div>
 
-            <!-- CONTROL PANEL (D-PAD & FIRE BUTTON) -->
             <div class="control-panel">
                 <div class="dpad-container">
                     <button class="dpad-btn" id="btn-up">▲</button>
@@ -193,14 +190,14 @@
                     <button class="dpad-btn" id="btn-down">▼</button>
                 </div>
                 <div class="fire-btn-container">
-                    <button class="fire-btn" id="btn-fire">FIRE</button>
+                    <button class="fire-btn" id="btn-fire">ATTACK</button>
                 </div>
             </div>
         </div>
 
         <div class="match-info" id="match-result">
             <div class="match-status" id="result-title">VICTORY</div>
-            <div class="match-msg" id="result-msg">You won the match!</div>
+            <div class="match-msg" id="result-msg">You survived the voxel arena!</div>
             <button class="continue-btn" onclick="game.endMatchAndReturn()">CONTINUE</button>
         </div>
     </div>
@@ -210,43 +207,29 @@
             coins: 10000,
             stars: 0,
             selectedCharId: 0,
-            selectedGunId: 'ak47_simple',
+            selectedGunId: 'block_sword',
             unlockedChars: [0],
-            unlockedGuns: ['ak47_simple', 'mp40_simple', 'mp5_simple', 'groza_simple', 'aug_simple', 'awm_simple', 'svd_simple']
+            unlockedGuns: ['block_sword', 'diamond_sword', 'pixel_ak47', 'pixel_awm']
         };
 
-        const USER_COLOR = '#111111'; 
-        const ENEMY_COLOR = '#ff0033'; 
-        const ALLY_COLOR = '#0088ff';  
-
         const characters = [
-            { id: 0, name: "Black Stickman", hp: 240, price: 0, color: USER_COLOR }
+            { id: 0, name: "Steve Operator", hp: 200, price: 0, color: '#3b7a57' }
         ];
-        for (let i = 1; i <= 20; i++) {
+        for (let i = 1; i <= 10; i++) {
             characters.push({
                 id: i,
-                name: `Operator ${i}`,
-                hp: 240 + (i * 5),
-                price: i === 1 ? 500 : i * 1000,
-                color: USER_COLOR
+                name: `Voxel Hero ${i}`,
+                hp: 200 + (i * 10),
+                price: i * 1000,
+                color: '#465881'
             });
         }
 
         const guns = [
-            { id: 'ak47_simple', name: 'AK47 (Simple)', dmg: 12, price: 0, type: 'Simple' },
-            { id: 'ak47_evo', name: 'AK47 EVO D 15', dmg: 15, price: 5000, type: 'EVO' },
-            { id: 'mp40_simple', name: 'MP40 (Simple)', dmg: 12, price: 0, type: 'Simple' },
-            { id: 'mp40_evo', name: 'MP40 EVO D 15', dmg: 15, price: 5000, type: 'EVO' },
-            { id: 'mp5_simple', name: 'MP5 (Simple)', dmg: 12, price: 0, type: 'Simple' },
-            { id: 'mp5_evo', name: 'MP5 EVO', dmg: 15, price: 5000, type: 'EVO' },
-            { id: 'groza_simple', name: 'GROZA (Simple)', dmg: 12, price: 0, type: 'Simple' },
-            { id: 'groza_evo', name: 'GROZA EVO', dmg: 15, price: 5000, type: 'EVO' },
-            { id: 'aug_simple', name: 'AUG (Simple)', dmg: 12, price: 0, type: 'Simple' },
-            { id: 'aug_evo', name: 'AUG EVO', dmg: 15, price: 5000, type: 'EVO' },
-            { id: 'awm_simple', name: 'AWM D100', dmg: 100, price: 0, type: 'Simple' },
-            { id: 'awm_evo', name: 'AWM EVO D 200', dmg: 200, price: 10000, type: 'EVO' },
-            { id: 'svd_simple', name: 'SVD (Simple)', dmg: 12, price: 0, type: 'Simple' },
-            { id: 'svd_evo', name: 'SVD EVO', dmg: 15, price: 5000, type: 'EVO' }
+            { id: 'block_sword', name: 'Wooden Block Sword', dmg: 20, price: 0, type: 'Block' },
+            { id: 'diamond_sword', name: 'Diamond Voxel Blade', dmg: 40, price: 5000, type: 'EVO' },
+            { id: 'pixel_ak47', name: 'Pixel AK47 Rifle', dmg: 25, price: 3000, type: 'Block' },
+            { id: 'pixel_awm', name: 'Diamond Sniper AWM', dmg: 100, price: 10000, type: 'EVO' }
         ];
 
         const ui = {
@@ -297,7 +280,7 @@
                             <div class="shop-card">
                                 <div class="card-header">
                                     <span class="card-title">${g.name}</span>
-                                    ${g.type === 'EVO' ? '<span class="evo-tag">EVO</span>' : ''}
+                                    ${g.type === 'EVO' ? '<span class="evo-tag">RARIUM</span>' : ''}
                                 </div>
                                 <div class="card-stats">Damage: <span class="stat-highlight">${g.dmg}</span></div>
                                 <div class="card-action">
@@ -335,7 +318,7 @@
 
         const game = {
             canvas: null, ctx: null,
-            mode: '', round: 1, maxRounds: 4,
+            mode: '', round: 1, maxRounds: 3,
             playerWins: 0, enemyWins: 0, kills: 0,
             player: null, entities: [], bullets: [], obstacles: [],
             isRunning: false, animationFrameId: null,
@@ -362,8 +345,7 @@
                 this.canvas.onmousedown = (e) => this.shootAt(e.clientX, e.clientY);
                 this.setupControls();
 
-                // Build Hangar Warehouse Layout matching the screenshot exactly
-                this.generateWarehouseMap();
+                this.generateVoxelWorld();
 
                 this.setupRound();
                 this.isRunning = true;
@@ -371,30 +353,19 @@
                 this.loop();
             },
 
-            generateWarehouseMap() {
+            generateVoxelWorld() {
                 this.obstacles = [];
                 let cw = this.canvas.width;
                 let ch = this.canvas.height;
 
-                // Warehouse layout with containers & concrete structures matching the background photo
+                // Voxel blocky shipping containers & minecraft-style structures
                 this.obstacles.push(
-                    // Left blue shipping container
-                    { x: cw * 0.18, y: ch * 0.62, w: 150, h: 55, color: '#3162a8', label: 'container' },
-                    // Mid-left storage container
-                    { x: cw * 0.30, y: ch * 0.34, w: 170, h: 60, color: '#2d5899', label: 'container' },
-                    // Center logistics container
-                    { x: cw * 0.52, y: ch * 0.44, w: 190, h: 60, color: '#2d5899', label: 'container' },
-                    // Large Red Container Right
-                    { x: cw * 0.72, y: ch * 0.28, w: 230, h: 70, color: '#a83232', label: 'container' },
-                    // Back Red Container Top-Center
-                    { x: cw * 0.38, y: ch * 0.18, w: 150, h: 45, color: '#a83232', label: 'container' },
-                    // Lower-right container
-                    { x: cw * 0.86, y: ch * 0.54, w: 100, h: 48, color: '#3162a8', label: 'container' },
-
-                    // Wooden cargo crates
-                    { x: cw * 0.22, y: ch * 0.48, w: 45, h: 45, color: '#b57c42', label: 'crate' },
-                    { x: cw * 0.50, y: ch * 0.70, w: 50, h: 50, color: '#b57c42', label: 'crate' },
-                    { x: cw * 0.60, y: ch * 0.28, w: 40, h: 40, color: '#b57c42', label: 'crate' }
+                    { x: cw * 0.15, y: ch * 0.55, w: 160, h: 60, color: '#2b5a8e', label: 'voxel_container' },
+                    { x: cw * 0.35, y: ch * 0.30, w: 180, h: 60, color: '#a63a3a', label: 'voxel_container' },
+                    { x: cw * 0.58, y: ch * 0.45, w: 200, h: 70, color: '#2b5a8e', label: 'voxel_container' },
+                    { x: cw * 0.75, y: ch * 0.25, w: 140, h: 60, color: '#a63a3a', label: 'voxel_container' },
+                    { x: cw * 0.40, y: ch * 0.70, w: 70, h: 70, color: '#5b4033', label: 'block' },
+                    { x: cw * 0.22, y: ch * 0.42, w: 50, h: 50, color: '#5b4033', label: 'block' }
                 );
             },
 
@@ -433,7 +404,7 @@
             fireWeapon() {
                 if (!this.isRunning) return;
                 const gun = guns.find(g => g.id === playerData.selectedGunId);
-                const damage = gun ? gun.dmg : 12;
+                const damage = gun ? gun.dmg : 20;
 
                 let target = null;
                 let minDist = Infinity;
@@ -453,7 +424,7 @@
             shootAt(mouseX, mouseY) {
                 if (!this.isRunning) return;
                 const gun = guns.find(g => g.id === playerData.selectedGunId);
-                const damage = gun ? gun.dmg : 12;
+                const damage = gun ? gun.dmg : 20;
 
                 const rect = this.canvas.getBoundingClientRect();
                 const x = mouseX - rect.left;
@@ -465,50 +436,50 @@
 
             setupRound() {
                 const char = characters.find(c => c.id === playerData.selectedCharId);
-                const maxHp = char ? char.hp : 240;
+                const maxHp = char ? char.hp : 200;
 
                 this.player = {
                     x: this.canvas.width * 0.12, y: this.canvas.height * 0.78,
-                    hp: maxHp, maxHp: maxHp, radius: 16, speed: 4,
-                    color: USER_COLOR, dir: 1, name: char.name
+                    hp: maxHp, maxHp: maxHp, radius: 18, speed: 4.5,
+                    color: '#3b7a57', dir: 1, name: char.name
                 };
 
-                document.getElementById('player-name-display').innerText = `${this.player.name} (HP: ${this.player.hp})`;
-                document.getElementById('round-display').innerText = this.mode === 'br_ranked' ? 'Safe Zone is Now Updating (Warning Active)' : `Round ${this.round}/${this.maxRounds}`;
+                document.getElementById('player-name-display').innerText = `${this.player.name}`;
+                document.getElementById('round-display').innerText = this.mode === 'br_ranked' ? 'Voxel Storm Shrinking' : `Round ${this.round}/${this.maxRounds}`;
 
                 this.entities = [];
 
                 if (this.mode === 'lone_wolf') {
-                    this.maxRounds = 4;
+                    this.maxRounds = 3;
                     this.entities.push({
                         x: this.canvas.width * 0.85, y: this.canvas.height * 0.25,
-                        hp: 200, maxHp: 200, radius: 16, speed: 2.2,
-                        color: ENEMY_COLOR, dir: -1, isEnemy: true, attackTimer: 0
+                        hp: 180, maxHp: 180, radius: 18, speed: 2.5,
+                        color: '#aa3333', dir: -1, isEnemy: true, attackTimer: 0
                     });
                 } else if (this.mode === 'cs_ranked') {
-                    this.maxRounds = 4;
+                    this.maxRounds = 3;
                     for(let i=0; i<3; i++) {
                         this.entities.push({
                             x: this.canvas.width * 0.15, y: this.canvas.height * (0.4 + i*0.15),
-                            hp: 150, maxHp: 150, radius: 15, speed: 2.5,
-                            color: ALLY_COLOR, dir: 1, isAlly: true, attackTimer: 0
+                            hp: 150, maxHp: 150, radius: 16, speed: 3,
+                            color: '#3355aa', dir: 1, isAlly: true, attackTimer: 0
                         });
                     }
                     for(let i=0; i<4; i++) {
                         this.entities.push({
                             x: this.canvas.width * 0.8, y: this.canvas.height * (0.2 + i*0.18),
-                            hp: 150, maxHp: 150, radius: 15, speed: 2.3,
-                            color: ENEMY_COLOR, dir: -1, isEnemy: true, attackTimer: 0
+                            hp: 150, maxHp: 150, radius: 16, speed: 2.8,
+                            color: '#aa3333', dir: -1, isEnemy: true, attackTimer: 0
                         });
                     }
                 } else if (this.mode === 'br_ranked') {
                     this.maxRounds = 1;
-                    for(let i=0; i<20; i++) {
+                    for(let i=0; i<15; i++) {
                         this.entities.push({
                             x: Math.random() * (this.canvas.width - 200) + 100,
                             y: Math.random() * (this.canvas.height - 200) + 100,
-                            hp: 120, maxHp: 120, radius: 14, speed: 1.5 + Math.random(),
-                            color: ENEMY_COLOR, dir: 1, isFFA: true, attackTimer: 0
+                            hp: 120, maxHp: 120, radius: 16, speed: 2 + Math.random(),
+                            color: '#aa3333', dir: 1, isFFA: true, attackTimer: 0
                         });
                     }
                 }
@@ -551,8 +522,8 @@
                 for (let i = this.bullets.length - 1; i >= 0; i--) {
                     let b = this.bullets[i];
                     let angle = Math.atan2(b.ty - b.y, b.tx - b.x);
-                    b.x += Math.cos(angle) * 12;
-                    b.y += Math.sin(angle) * 12;
+                    b.x += Math.cos(angle) * 14;
+                    b.y += Math.sin(angle) * 14;
 
                     let hitObs = false;
                     for (let obs of this.obstacles) {
@@ -570,7 +541,7 @@
                     if (b.isPlayer) {
                         let hit = false;
                         for (let ent of this.entities) {
-                            if (ent.hp > 0 && !ent.isAlly && Math.hypot(ent.x - b.x, ent.y - b.y) < ent.radius + 5) {
+                            if (ent.hp > 0 && !ent.isAlly && Math.hypot(ent.x - b.x, ent.y - b.y) < ent.radius + 8) {
                                 ent.hp -= b.damage;
                                 if (ent.hp <= 0) {
                                     this.kills++;
@@ -582,8 +553,8 @@
                         }
                         if (hit) { this.bullets.splice(i, 1); continue; }
                     } else {
-                        if (Math.hypot(this.player.x - b.x, this.player.y - b.y) < this.player.radius + 5) {
-                            this.player.hp -= 10;
+                        if (Math.hypot(this.player.x - b.x, this.player.y - b.y) < this.player.radius + 8) {
+                            this.player.hp -= 15;
                             this.bullets.splice(i, 1);
                         }
                     }
@@ -614,7 +585,7 @@
                     }
 
                     let dist = Math.hypot(targetX - ent.x, targetY - ent.y);
-                    if (dist > 80) {
+                    if (dist > 90) {
                         let moveX = ((targetX - ent.x) / dist) * ent.speed;
                         let moveY = ((targetY - ent.y) / dist) * ent.speed;
                         
@@ -638,27 +609,34 @@
                         ent.dir = targetX >= ent.x ? 1 : -1;
                     } else {
                         ent.attackTimer++;
-                        if (ent.attackTimer > 60) {
+                        if (ent.attackTimer > 50) {
                             ent.attackTimer = 0;
-                            this.bullets.push({ x: ent.x, y: ent.y - 10, tx: targetX, ty: targetY, damage: 10, isPlayer: false });
+                            this.bullets.push({ x: ent.x, y: ent.y - 10, tx: targetX, ty: targetY, damage: 12, isPlayer: false });
                         }
                     }
                 });
 
-                document.getElementById('player-hp-fill').style.width = Math.max(0, (this.player.hp / this.player.maxHp) * 100) + '%';
-                document.getElementById('player-name-display').innerText = `${this.player.name} (HP: ${Math.max(0, this.player.hp)})`;
+                // Update Minecraft Hearts Display
+                const heartsBox = document.getElementById('hearts-box');
+                const totalHearts = 10;
+                let playerHearts = Math.ceil((Math.max(0, this.player.hp) / this.player.maxHp) * totalHearts);
+                let heartsHtml = '';
+                for (let i = 0; i < totalHearts; i++) {
+                    heartsHtml += `<div class="heart ${i >= playerHearts ? 'empty' : ''}"></div>`;
+                }
+                heartsBox.innerHTML = heartsHtml;
 
                 if (this.player.hp <= 0) {
                     this.endMatch(false);
                 } else if (this.mode === 'lone_wolf' && activeEnemies.length === 0) {
                     this.playerWins++;
-                    if (this.playerWins >= 3 || this.round >= this.maxRounds) { this.endMatch(true); }
+                    if (this.playerWins >= 2 || this.round >= this.maxRounds) { this.endMatch(true); }
                     else { this.round++; this.setupRound(); }
                 } else if (this.mode === 'cs_ranked') {
                     let aliveAllies = this.entities.filter(e => e.hp > 0 && e.isAlly).length;
                     if (activeEnemies.length === 0) {
                         this.playerWins++;
-                        if (this.playerWins >= 3 || this.round >= this.maxRounds) { this.endMatch(true); }
+                        if (this.playerWins >= 2 || this.round >= this.maxRounds) { this.endMatch(true); }
                         else { this.round++; this.setupRound(); }
                     } else if (aliveAllies === 0 && this.player.hp <= 0) {
                         this.endMatch(false);
@@ -668,113 +646,107 @@
                 }
             },
 
-            drawStickman(x, y, color, dir, isMoving) {
+            drawVoxelCharacter(x, y, color, dir) {
                 this.ctx.save();
-                this.ctx.fillStyle = 'rgba(0,0,0,0.4)';
-                this.ctx.beginPath(); this.ctx.ellipse(x, y + 20, 10, 4, 0, 0, Math.PI * 2); this.ctx.fill();
+                // Shadow block
+                this.ctx.fillStyle = 'rgba(0,0,0,0.5)';
+                this.ctx.fillRect(x - 12, y + 20, 24, 6);
 
-                let legOffset = isMoving ? Math.sin(Date.now() / 100) * 6 : 0;
-                this.ctx.strokeStyle = color; this.ctx.lineWidth = 3;
-                this.ctx.beginPath();
-                this.ctx.moveTo(x, y); this.ctx.lineTo(x - 5 - legOffset, y + 20);
-                this.ctx.moveTo(x, y); this.ctx.lineTo(x + 5 + legOffset, y + 20);
-                this.ctx.stroke();
+                // Legs (Blocky)
+                this.ctx.fillStyle = '#1c2833';
+                this.ctx.fillRect(x - 10, y + 4, 8, 18);
+                this.ctx.fillRect(x + 2, y + 4, 8, 18);
 
-                this.ctx.strokeStyle = color; this.ctx.lineWidth = 4;
-                this.ctx.beginPath(); this.ctx.moveTo(x, y - 15); this.ctx.lineTo(x, y); this.ctx.stroke();
-
+                // Torso (Blocky Steve shirt)
                 this.ctx.fillStyle = color;
-                this.ctx.beginPath(); this.ctx.arc(x, y - 24, 9, 0, Math.PI * 2); this.ctx.fill();
+                this.ctx.fillRect(x - 12, y - 14, 24, 20);
 
-                this.ctx.strokeStyle = color; this.ctx.lineWidth = 3;
-                this.ctx.beginPath();
-                this.ctx.moveTo(x, y - 10); this.ctx.lineTo(x + dir * 14, y - 5);
-                this.ctx.stroke();
+                // Head (Voxel Cube)
+                this.ctx.fillStyle = '#d4a373';
+                this.ctx.fillRect(x - 10, y - 30, 20, 18);
 
-                this.ctx.fillStyle = '#444';
-                this.ctx.fillRect(x + (dir > 0 ? 2 : -22), y - 8, 20, 4);
+                // Hair / Hat
+                this.ctx.fillStyle = '#3a2e2b';
+                this.ctx.fillRect(x - 10, y - 30, 20, 6);
+
+                // Eyes
+                this.ctx.fillStyle = '#000';
+                if (dir > 0) {
+                    this.ctx.fillRect(x + 2, y - 24, 3, 3);
+                } else {
+                    this.ctx.fillRect(x - 5, y - 24, 3, 3);
+                }
                 this.ctx.restore();
             },
 
-            drawWarehouseMap() {
-                // Realistic tactical outdoor terrain / warehouse tarmac background matching the photo
-                this.ctx.fillStyle = '#4b5563';
+            drawVoxelWorldMap() {
+                // Minecraft-style sky blue gradient / background
+                this.ctx.fillStyle = '#78a7ff';
                 this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-                // Grass fields on the left and upper sections
-                this.ctx.fillStyle = '#3f5e3b';
-                this.ctx.beginPath();
-                this.ctx.moveTo(0, 0);
-                this.ctx.lineTo(this.canvas.width * 0.45, 0);
-                this.ctx.lineTo(this.canvas.width * 0.35, this.canvas.height);
-                this.ctx.lineTo(0, this.canvas.height);
-                this.ctx.fill();
+                // Voxel Grass Field Left
+                this.ctx.fillStyle = '#5c946e';
+                this.ctx.fillRect(0, 0, this.canvas.width * 0.4, this.canvas.height);
 
-                // Tarmac runway / road patch with diagonal crosswalk stripes as in reference
-                this.ctx.fillStyle = '#374151';
-                this.ctx.beginPath();
-                this.ctx.moveTo(this.canvas.width * 0.25, this.canvas.height);
-                this.ctx.lineTo(this.canvas.width * 0.55, 0);
-                this.ctx.lineTo(this.canvas.width, 0);
-                this.ctx.lineTo(this.canvas.width, this.canvas.height);
-                this.ctx.fill();
+                // Voxel Dirt / Stone Ground Right (Tarmac style)
+                this.ctx.fillStyle = '#555555';
+                this.ctx.fillRect(this.canvas.width * 0.4, 0, this.canvas.width * 0.6, this.canvas.height);
 
-                // Crosswalk white stripes
+                // Pixelated crosswalk lines
                 this.ctx.fillStyle = '#ffffff';
-                for (let i = 0; i < 6; i++) {
-                    this.ctx.fillRect(this.canvas.width * 0.45 + (i * 35), this.canvas.height * 0.55 + (i * 20), 22, 65);
+                for (let i = 0; i < 5; i++) {
+                    this.ctx.fillRect(this.canvas.width * 0.45 + (i * 40), this.canvas.height * 0.4 + (i * 30), 25, 70);
                 }
 
-                // Distant Industrial Cooling Tower & Crane graphics
-                this.ctx.fillStyle = '#6b7280';
-                this.ctx.beginPath();
-                this.ctx.moveTo(this.canvas.width * 0.68, 180);
-                this.ctx.lineTo(this.canvas.width * 0.72, 80);
-                this.ctx.lineTo(this.canvas.width * 0.76, 80);
-                this.ctx.lineTo(this.canvas.width * 0.80, 180);
-                this.ctx.fill();
+                // Blocky Voxel Trees (Minecraft style)
+                this.drawVoxelTree(this.canvas.width * 0.15, this.canvas.height * 0.25);
+                this.drawVoxelTree(this.canvas.width * 0.28, this.canvas.height * 0.75);
 
-                // Warning text overlay on background
-                this.ctx.fillStyle = 'rgba(255, 69, 0, 0.85)T';
-                this.ctx.font = 'bold 24px sans-serif';
-                this.ctx.textAlign = 'center';
-                this.ctx.fillText("WARNING: SAFE ZONE UPDATING", this.canvas.width * 0.5, 120);
-
-                // Draw Shipping Containers & Crates
+                // Draw Voxel Shipping Containers and Blocks
                 this.obstacles.forEach(obs => {
                     this.ctx.save();
                     this.ctx.fillStyle = obs.color;
-                    this.ctx.shadowColor = 'rgba(0,0,0,0.6)';
-                    this.ctx.shadowBlur = 10;
                     this.ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
-                    
-                    this.ctx.strokeStyle = 'rgba(0,0,0,0.3)';
-                    this.ctx.lineWidth = 2;
-                    if (obs.label === 'container') {
+
+                    // 3D voxel border / shading
+                    this.ctx.strokeStyle = '#111';
+                    this.ctx.lineWidth = 3;
+                    this.ctx.strokeRect(obs.x, obs.y, obs.w, obs.h);
+
+                    if (obs.label === 'voxel_container') {
+                        // Ribbed container look
+                        this.ctx.fillStyle = 'rgba(0,0,0,0.3)';
                         for(let rx = obs.x + 15; rx < obs.x + obs.w; rx += 15) {
-                            this.ctx.beginPath(); this.ctx.moveTo(rx, obs.y); this.ctx.lineTo(rx, obs.y + obs.h); this.ctx.stroke();
+                            this.ctx.fillRect(rx, obs.y, 6, obs.h);
                         }
-                    } else {
-                        this.ctx.strokeRect(obs.x + 4, obs.y + 4, obs.w - 8, obs.h - 8);
                     }
                     this.ctx.restore();
                 });
             },
 
-            draw() {
-                this.drawWarehouseMap();
+            drawVoxelTree(x, y) {
+                // Tree Trunk
+                this.ctx.fillStyle = '#7c5232';
+                this.ctx.fillRect(x - 8, y, 16, 45);
+                // Tree Leaves Cube
+                this.ctx.fillStyle = '#2d5a27';
+                this.ctx.fillRect(x - 30, y - 45, 60, 50);
+            },
 
-                this.ctx.fillStyle = '#ffff00';
+            draw() {
+                this.drawVoxelWorldMap();
+
+                // Draw Projectiles (Pixel bullets / arrows)
+                this.ctx.fillStyle = '#ffff55';
                 this.bullets.forEach(b => {
-                    this.ctx.beginPath(); this.ctx.arc(b.x, b.y, 3, 0, Math.PI * 2); this.ctx.fill();
+                    this.ctx.fillRect(b.x - 4, b.y - 4, 8, 8);
                 });
 
-                let isMoving = this.keys['w'] || this.keys['s'] || this.keys['a'] || this.keys['d'] || this.keys['arrowup'] || this.keys['arrowdown'] || this.keys['arrowleft'] || this.keys['arrowright'];
-                this.drawStickman(this.player.x, this.player.y, this.player.color, this.player.dir, isMoving);
+                this.drawVoxelCharacter(this.player.x, this.player.y, this.player.color, this.player.dir);
 
                 this.entities.forEach(ent => {
                     if (ent.hp > 0) {
-                        this.drawStickman(ent.x, ent.y, ent.color, ent.dir, true);
+                        this.drawVoxelCharacter(ent.x, ent.y, ent.color, ent.dir);
                     }
                 });
             },
@@ -787,22 +759,22 @@
                 resultBox.style.display = 'block';
 
                 if (isWin) {
-                    title.innerText = this.mode === 'br_ranked' ? 'BOOYAH!' : 'VICTORY';
+                    title.innerText = this.mode === 'br_ranked' ? 'VICTORY [BOOYAH]!' : 'VICTORY';
                     if (this.mode === 'lone_wolf') {
-                        playerData.coins += 500;
-                        msg.innerText = 'You won the Lone Wolf match! Earned +500 Coins.';
+                        playerData.coins += 600;
+                        msg.innerText = 'You won the Voxel Lone Wolf match! Earned +600 Coins.';
                     } else if (this.mode === 'cs_ranked') {
                         playerData.stars += 1;
-                        playerData.coins += 1000;
-                        msg.innerText = 'CS Ranked Victory! Earned +1 Star and +1000 Coins.';
+                        playerData.coins += 1200;
+                        msg.innerText = 'CS Ranked Victory! Earned +1 Star and +1200 Coins.';
                     } else if (this.mode === 'br_ranked') {
                         playerData.stars += 1;
-                        playerData.coins += 200;
-                        msg.innerText = 'BOOYAH! Earned +1 Star and +200 Coins.';
+                        playerData.coins += 500;
+                        msg.innerText = 'Voxel Royale Winner! Earned +1 Star and +500 Coins.';
                     }
                 } else {
-                    title.innerText = 'DEFEATED';
-                    msg.innerText = 'You were eliminated in the warehouse arena. Try again!';
+                    title.innerText = 'YOU DIED';
+                    msg.innerText = 'Respawn and try again in the voxel arena!';
                 }
                 ui.updateHUD();
             },
