@@ -1,679 +1,818 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Stickman Sniper - Cyberpunk Sharpshooter</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;800;900&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-<style>
-    :root {
-        --bg-dark: #090d16;
-        --card-bg: rgba(15, 23, 42, 0.85);
-        --accent: #ff0055; /* Neon Pink/Red */
-        --accent-glow: #ff2a75;
-        --cyan: #00f0ff;
-        --gold: #ffbe0b;
-        --text: #f8fafc;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LOST WORLD - Warehouse Cargo Arena</title>
+    <style>
+        :root {
+            --bg-color: #0b0e14;
+            --text-color: #e0e0e0;
+            --primary: #00f0ff;
+            --secondary: #7000ff;
+            --accent: #ff0055;
+            --success: #00e676;
+            --warning: #ffd600;
+            --panel-bg: rgba(20, 25, 35, 0.95);
+            --border: #333;
+            --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; user-select: none; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-main); user-select: none; -webkit-user-select: none; }
+        body { background-color: var(--bg-color); color: var(--text-color); overflow: hidden; width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; }
 
-    body {
-        background: var(--bg-dark);
-        color: var(--text);
-        height: 100vh;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-    }
+        .screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; flex-direction: column; justify-content: center; align-items: center; background: radial-gradient(circle at center, #1a1a2e 0%, #000000 100%); transition: opacity 0.5s ease; opacity: 0; }
+        .active-screen { display: flex; opacity: 1; z-index: 10; }
 
-    /* Top Header HUD */
-    header {
-        background: rgba(9, 13, 22, 0.95);
-        padding: 12px 30px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: 2px solid var(--accent);
-        box-shadow: 0 0 20px rgba(255, 0, 85, 0.4);
-        z-index: 50;
-    }
+        button { cursor: pointer; border: none; outline: none; transition: all 0.2s ease; font-weight: bold; }
+        button:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        button:active { transform: translateY(1px); }
 
-    .brand { 
-        font-family: 'Orbitron', sans-serif; 
-        font-size: 24px; 
-        font-weight: 900; 
-        color: var(--accent); 
-        letter-spacing: 2px; 
-        text-shadow: 0 0 10px var(--accent-glow);
-    }
+        .back-btn { position: absolute; top: 20px; left: 20px; padding: 10px 20px; background: rgba(255, 255, 255, 0.1); color: #fff; border: 1px solid #555; border-radius: 8px; z-index: 100; }
+        .back-btn:hover { background: rgba(255, 255, 255, 0.2); }
 
-    .hud-info { display: flex; gap: 15px; align-items: center; }
-    .coin-badge { 
-        background: rgba(255, 190, 11, 0.1); 
-        border: 1px solid var(--gold); 
-        color: var(--gold); 
-        padding: 6px 18px; 
-        border-radius: 20px; 
-        font-weight: 700; 
-        box-shadow: 0 0 10px rgba(255, 190, 11, 0.2);
-    }
-    .user-badge { 
-        background: rgba(0, 240, 255, 0.1); 
-        border: 1px solid var(--cyan); 
-        color: var(--cyan);
-        padding: 6px 18px; 
-        border-radius: 20px; 
-        font-size: 14px; 
-        cursor: pointer; 
-        transition: 0.3s;
-    }
-    .user-badge:hover { background: var(--cyan); color: #000; box-shadow: 0 0 15px var(--cyan); }
+        .hud-top { position: absolute; top: 20px; right: 30px; display: flex; gap: 20px; background: var(--panel-bg); padding: 10px 25px; border-radius: 30px; border: 1px solid var(--border); z-index: 50; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .hud-item { font-size: 1.1rem; font-weight: bold; color: #fff; }
+        .hud-item span { color: var(--primary); text-shadow: 0 0 5px var(--primary); }
 
-    .view-container { flex-grow: 1; position: relative; overflow: hidden; }
-    .view { display: none; padding: 30px; height: 100%; }
-    .view.active { display: block; }
+        #home-screen { background: radial-gradient(circle, #1a233a 0%, #050811 100%); }
+        .home-content { z-index: 2; text-align: center; display: flex; flex-direction: column; align-items: center; }
 
-    /* Home View */
-    .home-menu { 
-        display: flex; 
-        flex-direction: column; 
-        align-items: center; 
-        justify-content: center; 
-        height: 100%; 
-        text-align: center;
-        background: radial-gradient(circle at center, rgba(0, 240, 255, 0.1), transparent 70%);
-    }
-    .home-menu h1 { 
-        font-family: 'Orbitron', sans-serif;
-        font-size: 55px; 
-        margin-bottom: 15px; 
-        background: linear-gradient(45deg, var(--accent), var(--cyan));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        filter: drop-shadow(0 0 15px rgba(255, 0, 85, 0.6));
-    }
-    
-    .btn-group { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; margin-top: 30px; }
-    
-    .btn {
-        background: var(--card-bg); 
-        border: 2px solid var(--cyan); 
-        color: white;
-        padding: 14px 28px; 
-        font-size: 15px; 
-        font-weight: 700; 
-        border-radius: 12px; 
-        cursor: pointer;
-        transition: 0.3s; 
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
-    .btn:hover { 
-        background: var(--cyan); 
-        color: #000;
-        box-shadow: 0 0 20px var(--cyan); 
-        transform: translateY(-3px); 
-    }
-    .btn.primary { background: var(--accent); border-color: var(--accent); }
-    .btn.primary:hover { 
-        background: var(--accent-glow); 
-        color: #fff;
-        box-shadow: 0 0 25px var(--accent); 
-    }
+        .game-title { font-size: 5rem; font-weight: 900; letter-spacing: 8px; text-transform: uppercase; background: linear-gradient(to bottom, #fff, var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 15px var(--primary)); margin-bottom: 10px; }
+        .creator { font-size: 1.2rem; color: #aaa; letter-spacing: 3px; cursor: pointer; margin-bottom: 50px; transition: color 0.3s; }
+        .creator:hover { color: var(--primary); text-shadow: 0 0 10px var(--primary); }
 
-    /* Stages Grid */
-    .stages-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)); gap: 15px; max-width: 900px; margin: 0 auto; height: 75vh; overflow-y: auto; padding-bottom: 50px; }
-    .stage-box {
-        background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);
-        height: 85px; display: flex; justify-content: center; align-items: center;
-        font-family: 'Orbitron', sans-serif; font-size: 22px; font-weight: 800; border-radius: 14px; cursor: not-allowed; opacity: 0.4; transition: 0.3s;
-    }
-    .stage-box.unlocked { cursor: pointer; opacity: 1; border-color: var(--accent); color: var(--accent); background: rgba(255, 0, 85, 0.08); }
-    .stage-box.unlocked:hover { background: var(--accent); color: white; box-shadow: 0 0 20px var(--accent); transform: scale(1.05); }
+        .main-menu { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 500px; }
+        .menu-btn { padding: 25px; font-size: 1.4rem; border-radius: 15px; background: rgba(20, 20, 40, 0.8); color: #fff; border: 2px solid var(--border); backdrop-filter: blur(5px); }
+        .menu-btn:nth-child(1) { border-color: var(--primary); box-shadow: 0 0 20px rgba(0, 240, 2ff, 0.3); }
+        .menu-btn:nth-child(2) { border-color: var(--warning); box-shadow: 0 0 20px rgba(255, 214, 0, 0.3); }
+        .menu-btn:nth-child(3) { border-color: var(--success); box-shadow: 0 0 20px rgba(0, 230, 118, 0.3); }
+        .menu-btn:nth-child(4) { border-color: var(--accent); box-shadow: 0 0 20px rgba(255, 0, 85, 0.3); }
 
-    /* Store Grid */
-    .store-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; max-width: 1100px; margin: 0 auto; height: 70vh; overflow-y: auto; padding-bottom: 50px;}
-    .store-item { background: var(--card-bg); border: 1px solid rgba(0, 240, 255, 0.2); padding: 20px; border-radius: 16px; text-align: center; backdrop-filter: blur(10px); }
-    .store-item h3 { margin-bottom: 10px; font-size: 18px; color: var(--cyan); }
-    .store-item p { color: var(--gold); font-weight: 600; margin-bottom: 15px; }
-    .store-item.premium p { color: #c084fc; }
-    .buy-btn { width: 100%; padding: 10px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; background: white; color: black; transition: 0.2s;}
-    .buy-btn.equip { background: var(--accent); color: white; }
-    .buy-btn.equipped { background: #10b981; color: white; }
+        #store-screen { background: #05050a; }
+        .store-container { width: 90%; height: 90%; background: var(--panel-bg); border-radius: 20px; border: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+        .store-tabs { display: flex; border-bottom: 1px solid var(--border); }
+        .tab-btn { flex: 1; padding: 20px; background: transparent; color: #888; font-size: 1.2rem; border-bottom: 3px solid transparent; }
+        .tab-btn.active-tab { color: var(--primary); border-bottom-color: var(--primary); background: rgba(0,240,2ff,0.05); }
+        .store-content { flex: 1; padding: 30px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; align-content: start; }
 
-    /* Game UI */
-    #gameArea { position: relative; width: 100%; height: 100%; background: #050811; overflow: hidden; cursor: crosshair; }
-    #gameCanvas { display: block; transition: transform 0.05s ease-out; }
-    .ammo-counter { 
-        position: absolute; bottom: 25px; right: 25px; font-family: 'Orbitron', sans-serif; font-size: 22px; font-weight: 800; 
-        color: var(--gold); background: rgba(9, 13, 22, 0.85); padding: 12px 25px; border-radius: 12px; border: 2px solid var(--gold);
-        box-shadow: 0 0 15px rgba(255, 190, 11, 0.3); backdrop-filter: blur(5px);
-    }
-    
-    /* Scope Overlay */
-    .scope-overlay { 
-        position: absolute; top:0; left:0; width: 100%; height: 100%; pointer-events: none; 
-        background: radial-gradient(circle at center, transparent 18%, rgba(5, 8, 17, 0.98) 28%); 
-        display: none; 
-        transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    .scope-overlay.active { display: block; }
+        .shop-card { background: rgba(0,0,0,0.3); border-radius: 12px; border: 1px solid var(--border); padding: 20px; display: flex; flex-direction: column; gap: 15px; transition: all 0.3s; }
+        .shop-card:hover { border-color: var(--primary); box-shadow: 0 5px 15px rgba(0,0,0,0.4); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; }
+        .card-title { font-size: 1.3rem; font-weight: bold; color: #fff; }
+        .evo-tag { font-size: 0.7rem; padding: 4px 8px; border-radius: 4px; background: var(--secondary); color: #fff; text-transform: uppercase; }
+        .card-stats { font-size: 1rem; color: #ccc; display: flex; flex-direction: column; gap: 5px; }
+        .stat-highlight { color: var(--primary); font-weight: bold; }
+        .card-action { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 15px; border-top: 1px solid var(--border); }
+        .price { font-size: 1.2rem; font-weight: bold; color: var(--warning); }
+        .buy-btn { padding: 10px 25px; border-radius: 20px; background: var(--primary); color: #000; font-size: 1rem; }
+        .buy-btn:disabled { background: #555; color: #999; cursor: not-allowed; }
 
-    .crosshair-center { 
-        position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-        width: 2px; height: 50px; background: rgba(255, 0, 85, 0.8); pointer-events: none; display: none;
-        box-shadow: 0 0 8px var(--accent);
-    }
-    .crosshair-center::after { 
-        content:''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-        width: 50px; height: 2px; background: rgba(255, 0, 85, 0.8); box-shadow: 0 0 8px var(--accent);
-    }
-    .scope-overlay.active + .crosshair-center { display: block; }
+        #gameplay-screen { background: #111; }
+        #game-canvas { display: block; }
 
-    /* Modals */
-    .overlay { display: none; position: fixed; top:0; left:0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 100; justify-content: center; align-items: center; backdrop-filter: blur(8px);}
-    .modal-box { background: #0f172a; border: 2px solid var(--accent); padding: 30px; border-radius: 20px; text-align: center; width: 90%; max-width: 400px; box-shadow: 0 0 30px rgba(255, 0, 85, 0.3); }
-    .modal-box input { width: 100%; padding: 12px; margin: 15px 0; border-radius: 8px; border: 1px solid var(--cyan); background: #090d16; color: white; outline: none; }
-    .modal-box button { padding: 10px 20px; margin: 5px; font-weight: 700; border-radius: 8px; cursor: pointer; border: none; }
-    
-    footer { background: #090d16; text-align: center; padding: 15px; border-top: 1px solid rgba(255,255,255,0.05); z-index: 50; }
-    footer a { color: var(--cyan); text-decoration: none; font-weight: 700; letter-spacing: 1px; font-size: 14px; text-shadow: 0 0 8px var(--cyan); }
-    .back-btn { position: absolute; top: 20px; left: 20px; background: rgba(0,0,0,0.6); color: white; border: 1px solid var(--cyan); padding: 8px 20px; border-radius: 8px; cursor: pointer; z-index: 10;}
-</style>
+        .arena-hud { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 20; }
+        
+        /* FREE FIRE STYLE TOP HUD & MINI-MAP */
+        .ff-hud-top-left { position: absolute; top: 15px; left: 15px; display: flex; gap: 15px; align-items: flex-start; }
+        .ff-minimap { width: 160px; height: 110px; background: rgba(25, 30, 40, 0.85); border: 2px solid rgba(255,255,255,0.2); border-radius: 8px; position: relative; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.6); }
+        .minimap-zone { position: absolute; top: 10px; left: 20px; width: 70px; height: 60px; background: rgba(0,240,255,0.25); border: 1px dashed var(--primary); transform: skewX(-15deg); }
+        .minimap-player { position: absolute; top: 55px; left: 75px; width: 8px; height: 8px; background: #00ffcc; border-radius: 50%; box-shadow: 0 0 6px #00ffcc; }
+        .minimap-label { position: absolute; bottom: 4px; left: 6px; font-size: 0.65rem; color: #ffcc00; font-weight: bold; letter-spacing: 1px; }
+
+        .ff-status-pills { display: flex; gap: 10px; }
+        .ff-pill { background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(255,255,255,0.2); padding: 5px 12px; border-radius: 4px; color: #fff; font-size: 0.85rem; font-weight: bold; display: flex; align-items: center; gap: 6px; }
+        .ff-pill span { color: var(--warning); }
+
+        /* TOP RIGHT WEAPON SLOTS & KILLS */
+        .ff-hud-top-right { position: absolute; top: 15px; right: 20px; display: flex; gap: 15px; align-items: center; }
+        .ff-stat-box { background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); padding: 6px 14px; border-radius: 4px; color: #fff; font-size: 0.85rem; font-weight: bold; }
+        .ff-stat-box span { color: var(--success); }
+        
+        .ff-weapons-dock { display: flex; gap: 6px; background: rgba(20,25,35,0.8); padding: 6px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.15); }
+        .ff-slot { width: 42px; height: 42px; background: rgba(0,0,0,0.5); border: 1px solid #444; border-radius: 4px; display: flex; justify-content: center; align-items: center; font-size: 1.1rem; color: #aaa; }
+        .ff-slot.active-gun-slot { border-color: var(--primary); background: rgba(0,240,255,0.15); }
+
+        .player-health-ui { position: absolute; bottom: 30px; left: 30px; width: 300px; }
+        .health-bar-bg { width: 100%; height: 18px; background: #333; border-radius: 9px; overflow: hidden; border: 2px solid rgba(255,255,255,0.4); }
+        .health-bar-fill { height: 100%; background: var(--success); width: 100%; transition: width 0.1s linear; }
+        .health-text { color: #fff; font-weight: bold; margin-bottom: 5px; text-shadow: 1px 1px 2px #000; font-size: 0.95rem; }
+
+        /* CONTROL PANEL / ON-SCREEN D-PAD & FIRE BUTTON */
+        .control-panel { pointer-events: auto; position: absolute; bottom: 25px; right: 30px; width: 240px; height: 160px; display: flex; justify-content: space-between; align-items: flex-end; }
+        
+        .dpad-container { position: relative; width: 120px; height: 120px; }
+        .dpad-btn { position: absolute; background: rgba(255, 255, 255, 0.15); border: 2px solid rgba(255, 255, 255, 0.3); color: #fff; font-size: 1.1rem; display: flex; justify-content: center; align-items: center; border-radius: 10px; transition: background 0.1s; }
+        .dpad-btn:active, .dpad-btn.pressed { background: rgba(0, 240, 2ff, 0.5); border-color: var(--primary); }
+        
+        #btn-up { top: 0; left: 40px; width: 40px; height: 40px; }
+        #btn-down { bottom: 0; left: 40px; width: 40px; height: 40px; }
+        #btn-left { top: 40px; left: 0; width: 40px; height: 40px; }
+        #btn-right { top: 40px; right: 0; width: 40px; height: 40px; }
+        #btn-center { top: 40px; left: 40px; width: 40px; height: 40px; background: rgba(0,0,0,0.3); border-radius: 50%; pointer-events: none; }
+
+        .fire-btn-container { display: flex; align-items: center; justify-content: center; padding-bottom: 10px; }
+        .fire-btn { width: 85px; height: 85px; background: radial-gradient(circle, #ff0055 0%, #990033 100%); border: 3px solid #ff88aa; border-radius: 50%; color: #fff; font-weight: 900; font-size: 1.1rem; box-shadow: 0 0 15px rgba(255, 0, 85, 0.6); display: flex; justify-content: center; align-items: center; text-shadow: 1px 1px 2px #000; }
+        .fire-btn:active, .fire-btn.pressed { transform: scale(0.92); filter: brightness(1.2); box-shadow: 0 0 5px rgba(255, 0, 85, 0.8); }
+
+        .match-info { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; background: rgba(15, 20, 30, 0.95); padding: 40px; border-radius: 20px; border: 2px solid var(--primary); display: none; z-index: 100; pointer-events: auto; box-shadow: 0 0 30px rgba(0,240,255,0.3); }
+        .match-status { font-size: 3rem; font-weight: bold; text-transform: uppercase; margin-bottom: 20px; color: var(--primary); text-shadow: 0 0 10px var(--primary); }
+        .match-msg { font-size: 1.5rem; margin-bottom: 30px; color: #ddd; }
+        .continue-btn { padding: 15px 40px; font-size: 1.2rem; background: var(--primary); color: #000; border-radius: 10px; }
+    </style>
 </head>
 <body>
 
-<header>
-    <div class="brand">STICKMAN SNIPER SHOOTER</div>
-    <div class="hud-info">
-        <div class="coin-badge">🪙 <span id="ui-coins">0</span></div>
-        <div class="user-badge" onclick="editUsername()">👤 <span id="ui-username">Muhammad Taqi</span></div>
-    </div>
-</header>
-
-<div class="view-container">
-    <!-- HOME VIEW -->
-    <div id="homeView" class="view active">
-        <div class="home-menu">
-            <h1>Stickman SHOOTER</h1>
-            <p style="color:#94a3b8; max-width: 500px; margin-bottom: 20px; line-height: 1.6;">Hover over stickmen to acquire <b>RED DOT LASER LOCK</b>. Click to open <b>SCOPE</b> and instantly ELIMINATE the target!</p>
-            <div class="btn-group">
-                <button class="btn primary" onclick="navTo('stagesView')">🎯 PLAY STAGES</button>
-                <button class="btn" onclick="navTo('storeView'); renderStore('snipers');">🔫 SNIPER STORE</button>
-                <button class="btn" onclick="navTo('storeView'); renderStore('characters');">👤 CHARACTER STORE</button>
+    <!-- HOME SCREEN -->
+    <div id="home-screen" class="screen active-screen">
+        <div class="home-content">
+            <h1 class="game-title">LOST WORLD</h1>
+            <p class="creator" onclick="window.open('https://taqi.oneapp.dev', '_blank')">Created by Muhammad Taqi</p>
+            <div class="main-menu">
+                <button class="menu-btn" onclick="ui.openStore()">STORE</button>
+                <button class="menu-btn" onclick="game.startMatch('lone_wolf')">LONE WOLF</button>
+                <button class="menu-btn" onclick="game.startMatch('br_ranked')">BR RANKED</button>
+                <button class="menu-btn" onclick="game.startMatch('cs_ranked')">CS RANKED</button>
             </div>
         </div>
     </div>
 
-    <!-- STAGES VIEW -->
-    <div id="stagesView" class="view">
-        <button class="back-btn" onclick="navTo('homeView')">⬅ Back</button>
-        <h2 style="text-align: center; margin-bottom: 30px; font-family: 'Orbitron'; color: var(--cyan);">SELECT MISSION</h2>
-        <div class="stages-grid" id="stagesGrid"></div>
-    </div>
-
-    <!-- STORE VIEW -->
-    <div id="storeView" class="view">
-        <button class="back-btn" onclick="navTo('homeView')">⬅ Back</button>
-        <h2 style="text-align: center; margin-bottom: 20px; font-family: 'Orbitron'; color: var(--cyan);" id="storeTitle">STORE</h2>
-        <div class="btn-group" style="margin-bottom: 25px;">
-            <button class="btn" onclick="renderStore('characters')">CHARACTERS</button>
-            <button class="btn" onclick="renderStore('snipers')">SNIPERS</button>
-        </div>
-        <div class="store-grid" id="storeGrid"></div>
-    </div>
-
-    <!-- GAME VIEW -->
-    <div id="gameView" class="view" style="padding: 0;">
-        <div id="gameArea" onclick="handleGameClick(event)">
-            <canvas id="gameCanvas"></canvas>
-            <div class="scope-overlay" id="scopeOverlay"></div>
-            <div class="crosshair-center"></div>
-            <div class="ammo-counter">AMMO: <span id="gameAmmo">3</span></div>
+    <!-- STORE SCREEN -->
+    <div id="store-screen" class="screen">
+        <button class="back-btn" onclick="ui.goHome()">← BACK</button>
+        <div class="store-container">
+            <div class="store-tabs">
+                <button class="tab-btn active-tab" onclick="ui.switchStore('char')" id="tab-char">BUY CHARACTERS</button>
+                <button class="tab-btn" onclick="ui.switchStore('gun')" id="tab-gun">BUY GUNS</button>
+            </div>
+            <div class="store-content" id="store-items"></div>
         </div>
     </div>
-</div>
 
-<footer>
-    <a href="https://nexura.oneapp.dev/" target="_blank">CREATED BY MUHAMMAD TAQI</a>
-</footer>
+    <!-- GAMEPLAY SCREEN -->
+    <div id="gameplay-screen" class="screen">
+        <canvas id="game-canvas"></canvas>
+        <div class="arena-hud">
+            <!-- FREE FIRE STYLE TOP LEFT MINI-MAP & WARNING -->
+            <div class="ff-hud-top-left">
+                <div class="ff-minimap">
+                    <div class="minimap-zone"></div>
+                    <div class="minimap-player"></div>
+                    <div class="minimap-label">HANGAR</div>
+                </div>
+                <div class="ff-status-pills">
+                    <div class="ff-pill">COINS: <span id="coin-display">10000</span></div>
+                    <div class="ff-pill">STARS: <span id="star-display">0</span></div>
+                </div>
+            </div>
 
-<!-- Modals -->
-<div class="overlay" id="resultModal">
-    <div class="modal-box">
-        <h2 id="resultTitle" style="font-family: 'Orbitron';">STAGE CLEARED</h2>
-        <p id="resultMsg" style="color: var(--gold); font-size: 20px; font-weight: bold; margin: 15px 0;">+500 Coins</p>
-        <button style="background: var(--accent); color: white;" onclick="navTo('stagesView'); closeModals()">Continue</button>
+            <!-- FREE FIRE STYLE TOP RIGHT WEAPONS & ALIVE COUNT -->
+            <div class="ff-hud-top-right">
+                <div class="ff-stat-box">Alive: <span id="alive-count">16</span></div>
+                <div class="ff-stat-box">Kill: <span id="kill-count">0</span></div>
+                <div class="ff-weapons-dock">
+                    <div class="ff-slot active-gun-slot" id="slot-1">🔫</div>
+                    <div class="ff-slot" id="slot-2">🔪</div>
+                    <div class="ff-slot" id="slot-3">🍳</div>
+                </div>
+            </div>
+
+            <div class="player-health-ui">
+                <div class="health-text" id="player-name-display">Black Stickman</div>
+                <div class="health-bar-bg"><div class="health-bar-fill" id="player-hp-fill"></div></div>
+                <div class="health-text" style="font-size: 0.85rem; margin-top: 5px; color: #ffd600;" id="round-display">Safe Zone is Now Updating</div>
+            </div>
+
+            <!-- CONTROL PANEL (D-PAD & FIRE BUTTON) -->
+            <div class="control-panel">
+                <div class="dpad-container">
+                    <button class="dpad-btn" id="btn-up">▲</button>
+                    <button class="dpad-btn" id="btn-left">◀</button>
+                    <div id="btn-center"></div>
+                    <button class="dpad-btn" id="btn-right">▶</button>
+                    <button class="dpad-btn" id="btn-down">▼</button>
+                </div>
+                <div class="fire-btn-container">
+                    <button class="fire-btn" id="btn-fire">FIRE</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="match-info" id="match-result">
+            <div class="match-status" id="result-title">VICTORY</div>
+            <div class="match-msg" id="result-msg">You won the match!</div>
+            <button class="continue-btn" onclick="game.endMatchAndReturn()">CONTINUE</button>
+        </div>
     </div>
-</div>
 
-<script>
-    let user = {
-        username: "Muhammad Taqi",
-        coins: 1000,
-        maxStage: 1,
-        charsOwned: [0],
-        snipersOwned: [0],
-        charEquipped: 0,
-        sniperEquipped: 0
-    };
-
-    const characters = [{ id: 0, name: "Default Cyber", price: 0, type: 'coin' }];
-    const snipers = [{ id: 0, name: "Standard Sniper", price: 0, type: 'coin', zoom: 1 }];
-
-    for (let i = 1; i <= 50; i++) {
-        let price = i * 400;
-        characters.push({ id: i, name: `Agent ${i}`, price: price, type: 'coin' });
-        snipers.push({ id: i, name: `Hyper-Rifle ${i}`, price: price, type: 'coin', zoom: 1 + (i * 0.03) });
-    }
-
-    function loadData() {
-        let saved = localStorage.getItem('sniper_game_save_beautiful');
-        if (saved) user = JSON.parse(saved);
-        updateHUD();
-        buildStages();
-    }
-    
-    function saveData() {
-        localStorage.setItem('sniper_game_save_beautiful', JSON.stringify(user));
-        updateHUD();
-    }
-
-    function updateHUD() {
-        document.getElementById('ui-coins').innerText = user.coins;
-        document.getElementById('ui-username').innerText = user.username;
-    }
-
-    function editUsername() {
-        let newName = prompt("Enter your new Username:", user.username);
-        if (newName && newName.trim() !== "") {
-            user.username = newName.trim();
-            saveData();
-        }
-    }
-
-    function navTo(viewId) {
-        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-        document.getElementById(viewId).classList.add('active');
-        if (viewId === 'stagesView') buildStages();
-        if (viewId !== 'gameView') isGameRunning = false;
-    }
-
-    function buildStages() {
-        const grid = document.getElementById('stagesGrid');
-        grid.innerHTML = '';
-        for (let i = 1; i <= 200; i++) {
-            let box = document.createElement('div');
-            box.className = `stage-box ${i <= user.maxStage ? 'unlocked' : ''}`;
-            box.innerText = i;
-            if (i <= user.maxStage) {
-                box.onclick = () => initGame(i);
-            }
-            grid.appendChild(box);
-        }
-    }
-
-    function renderStore(type) {
-        document.getElementById('storeTitle').innerText = (type === 'characters' ? 'CHARACTER' : 'SNIPER') + ' STORE';
-        const grid = document.getElementById('storeGrid');
-        grid.innerHTML = '';
-
-        const items = type === 'characters' ? characters : snipers;
-        const owned = type === 'characters' ? user.charsOwned : user.snipersOwned;
-        const equipped = type === 'characters' ? user.charEquipped : user.sniperEquipped;
-
-        items.forEach(item => {
-            if(item.id === 0) return;
-            let div = document.createElement('div');
-            div.className = `store-item`;
-            
-            let isOwned = owned.includes(item.id);
-            let isEquipped = (equipped === item.id);
-            
-            let statusHTML = '';
-            if (isEquipped) {
-                statusHTML = `<button class="buy-btn equipped">Equipped</button>`;
-            } else if (isOwned) {
-                statusHTML = `<button class="buy-btn equip" onclick="equipItem('${type}', ${item.id})">Equip</button>`;
-            } else {
-                statusHTML = `<button class="buy-btn" onclick="buyCoinItem('${type}', ${item.id})">Buy 🪙 ${item.price}</button>`;
-            }
-
-            div.innerHTML = `
-                <h3>${item.name}</h3>
-                <p>Price: 🪙 ${item.price}</p>
-                ${statusHTML}
-            `;
-            grid.appendChild(div);
-        });
-    }
-
-    function buyCoinItem(type, id) {
-        const items = type === 'characters' ? characters : snipers;
-        const item = items.find(i => i.id === id);
-        if (user.coins >= item.price) {
-            user.coins -= item.price;
-            if (type === 'characters') user.charsOwned.push(id);
-            else user.snipersOwned.push(id);
-            saveData();
-            renderStore(type);
-        } else {
-            alert("Not enough coins!");
-        }
-    }
-
-    function equipItem(type, id) {
-        if (type === 'characters') user.charEquipped = id;
-        else user.sniperEquipped = id;
-        saveData();
-        renderStore(type);
-    }
-
-    function closeModals() {
-        document.getElementById('resultModal').style.display = 'none';
-    }
-
-    // --- GAME ENGINE (COMPACT BEAUTIFUL WORLD) ---
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
-    let isGameRunning = false;
-    let currentStage = 1;
-    let ammo = 3;
-    
-    // COMPACT WORLD MAP (Fit & Beautiful)
-    const worldW = 1400;
-    const worldH = 800;
-    let cameraX = worldW / 2;
-    let cameraY = worldH / 2;
-    
-    let targets = [];
-    let scopeZoom = 1;
-    let hoveredTarget = null;
-    let isScoped = false;
-    let laserPulse = 0;
-
-    document.getElementById('gameArea').addEventListener('mousemove', (e) => {
-        if(!isGameRunning || isScoped) return;
-        const rect = canvas.getBoundingClientRect();
-        const mx = e.clientX - rect.left;
-        const my = e.clientY - rect.top;
-        
-        let panX = (mx / canvas.width) - 0.5;
-        let panY = (my / canvas.height) - 0.5;
-
-        // Smooth Camera Movement in Compact Map
-        cameraX = (worldW / 2) + (panX * 400);
-        cameraY = (worldH / 2) + (panY * 250);
-        
-        cameraX = Math.max(canvas.width/2, Math.min(worldW - canvas.width/2, cameraX));
-        cameraY = Math.max(canvas.height/2, Math.min(worldH - canvas.height/2, cameraY));
-
-        detectHoverTarget(mx, my);
-    });
-
-    function detectHoverTarget(mx, my) {
-        hoveredTarget = null;
-        for(let t of targets) {
-            if(t.isHit) continue;
-            let screenX = t.x - (cameraX - canvas.width/2);
-            let screenY = t.y - (cameraY - canvas.height/2);
-            
-            let dist = Math.hypot(screenX - mx, screenY - my);
-            if(dist < 45) {
-                hoveredTarget = t;
-                break;
-            }
-        }
-    }
-
-    function initGame(stage) {
-        currentStage = stage;
-        ammo = 3;
-        isScoped = false;
-        hoveredTarget = null;
-        document.getElementById('gameAmmo').innerText = ammo;
-        document.getElementById('scopeOverlay').classList.remove('active');
-        
-        let equippedSniper = snipers.find(s => s.id === user.sniperEquipped);
-        scopeZoom = equippedSniper.zoom;
-
-        resizeCanvas();
-        generateTargets(stage);
-        
-        isGameRunning = true;
-        navTo('gameView');
-        requestAnimationFrame(gameLoop);
-    }
-
-    function resizeCanvas() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resizeCanvas);
-
-    function generateTargets(stageNum) {
-        targets = [];
-        targets.push(createStickman(true)); // Target
-        for(let i=0; i<Math.min(stageNum + 2, 25); i++) {
-            targets.push(createStickman(false)); // Decoys
-        }
-    }
-
-    function createStickman(isRed) {
-        return {
-            x: Math.random() * (worldW - 300) + 150,
-            y: Math.random() * (worldH - 300) + 150,
-            isRed: isRed,
-            isHit: false,
-            vx: (Math.random() - 0.5) * 1.5,
-            vy: (Math.random() - 0.5) * 1.5
+    <script>
+        const playerData = {
+            coins: 10000,
+            stars: 0,
+            selectedCharId: 0,
+            selectedGunId: 'ak47_simple',
+            unlockedChars: [0],
+            unlockedGuns: ['ak47_simple', 'mp40_simple', 'mp5_simple', 'groza_simple', 'aug_simple', 'awm_simple', 'svd_simple']
         };
-    }
 
-    function drawStickman(t, screenX, screenY) {
-        if(t.isHit) return;
-        
-        let scale = isScoped ? scopeZoom * 1.4 : 1;
-        ctx.save();
-        ctx.translate(screenX, screenY);
-        ctx.scale(scale, scale);
+        const USER_COLOR = '#111111'; 
+        const ENEMY_COLOR = '#ff0033'; 
+        const ALLY_COLOR = '#0088ff';  
 
-        // Visual Colors & Glow
-        let mainColor = t.isRed ? '#ff0055' : '#00f0ff';
-        ctx.strokeStyle = mainColor;
-        ctx.shadowColor = mainColor;
-        ctx.shadowBlur = 10;
-        ctx.lineWidth = 3.5;
-        ctx.lineCap = 'round';
-
-        // Head
-        ctx.beginPath();
-        ctx.arc(0, -25, 8, 0, Math.PI * 2);
-        ctx.stroke();
-        ctx.fillStyle = mainColor;
-        ctx.fill();
-
-        // Body
-        ctx.beginPath();
-        ctx.moveTo(0, -17);
-        ctx.lineTo(0, 15);
-        ctx.stroke();
-
-        // Arms
-        ctx.beginPath();
-        ctx.moveTo(0, -10);
-        ctx.lineTo(-12, 2);
-        ctx.moveTo(0, -10);
-        ctx.lineTo(12, 2);
-        ctx.stroke();
-
-        // Legs
-        ctx.beginPath();
-        ctx.moveTo(0, 15);
-        ctx.lineTo(-12, 35);
-        ctx.moveTo(0, 15);
-        ctx.lineTo(12, 35);
-        ctx.stroke();
-
-        // BEAUTIFUL RED DOT & TARGET LOCKING EFFECT
-        if(hoveredTarget === t) {
-            ctx.shadowBlur = 15;
-            ctx.shadowColor = '#ff0055';
-            
-            // Outer Ring
-            ctx.beginPath();
-            ctx.arc(0, -5, 22 + Math.sin(laserPulse) * 3, 0, Math.PI * 2);
-            ctx.strokeStyle = '#ff0055';
-            ctx.lineWidth = 1.5;
-            ctx.stroke();
-
-            // Center Bright Red Dot
-            ctx.beginPath();
-            ctx.arc(0, -5, 5, 0, Math.PI * 2);
-            ctx.fillStyle = '#ff0055';
-            ctx.fill();
+        const characters = [
+            { id: 0, name: "Black Stickman", hp: 240, price: 0, color: USER_COLOR }
+        ];
+        for (let i = 1; i <= 20; i++) {
+            characters.push({
+                id: i,
+                name: `Operator ${i}`,
+                hp: 240 + (i * 5),
+                price: i === 1 ? 500 : i * 1000,
+                color: USER_COLOR
+            });
         }
 
-        ctx.restore();
-    }
+        const guns = [
+            { id: 'ak47_simple', name: 'AK47 (Simple)', dmg: 12, price: 0, type: 'Simple' },
+            { id: 'ak47_evo', name: 'AK47 EVO D 15', dmg: 15, price: 5000, type: 'EVO' },
+            { id: 'mp40_simple', name: 'MP40 (Simple)', dmg: 12, price: 0, type: 'Simple' },
+            { id: 'mp40_evo', name: 'MP40 EVO D 15', dmg: 15, price: 5000, type: 'EVO' },
+            { id: 'mp5_simple', name: 'MP5 (Simple)', dmg: 12, price: 0, type: 'Simple' },
+            { id: 'mp5_evo', name: 'MP5 EVO', dmg: 15, price: 5000, type: 'EVO' },
+            { id: 'groza_simple', name: 'GROZA (Simple)', dmg: 12, price: 0, type: 'Simple' },
+            { id: 'groza_evo', name: 'GROZA EVO', dmg: 15, price: 5000, type: 'EVO' },
+            { id: 'aug_simple', name: 'AUG (Simple)', dmg: 12, price: 0, type: 'Simple' },
+            { id: 'aug_evo', name: 'AUG EVO', dmg: 15, price: 5000, type: 'EVO' },
+            { id: 'awm_simple', name: 'AWM D100', dmg: 100, price: 0, type: 'Simple' },
+            { id: 'awm_evo', name: 'AWM EVO D 200', dmg: 200, price: 10000, type: 'EVO' },
+            { id: 'svd_simple', name: 'SVD (Simple)', dmg: 12, price: 0, type: 'Simple' },
+            { id: 'svd_evo', name: 'SVD EVO', dmg: 15, price: 5000, type: 'EVO' }
+        ];
 
-    function drawCyberBackground() {
-        // Futuristic Dark Grid Floor
-        let grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-        grad.addColorStop(0, '#050811');
-        grad.addColorStop(1, '#0f172a');
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        ctx.strokeStyle = 'rgba(0, 240, 255, 0.08)';
-        ctx.lineWidth = 1;
-        let offsetX = -(cameraX - canvas.width/2) % 60;
-        let offsetY = -(cameraY - canvas.height/2) % 60;
-        
-        for(let x=offsetX; x<canvas.width; x+=60) {
-            ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
-        }
-        for(let y=offsetY; y<canvas.height; y+=60) {
-            ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
-        }
-    }
+        const ui = {
+            switchScreen(screenId) {
+                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
+                document.getElementById(screenId).classList.add('active-screen');
+            },
+            openStore() {
+                this.switchScreen('store-screen');
+                this.switchStore('char');
+            },
+            goHome() {
+                this.switchScreen('home-screen');
+                document.getElementById('match-result').style.display = 'none';
+            },
+            updateHUD() {
+                document.getElementById('coin-display').innerText = playerData.coins;
+                document.getElementById('star-display').innerText = playerData.stars;
+            },
+            switchStore(type) {
+                document.getElementById('tab-char').classList.toggle('active-tab', type === 'char');
+                document.getElementById('tab-gun').classList.toggle('active-tab', type === 'gun');
+                const container = document.getElementById('store-items');
+                container.innerHTML = '';
 
-    function gameLoop() {
-        if(!isGameRunning) return;
-
-        laserPulse += 0.1;
-        drawCyberBackground();
-
-        targets.forEach(t => {
-            t.x += t.vx; t.y += t.vy;
-            if(t.x < 100 || t.x > worldW-100) t.vx *= -1;
-            if(t.y < 100 || t.y > worldH-100) t.vy *= -1;
-
-            let screenX = t.x - (cameraX - canvas.width/2);
-            let screenY = t.y - (cameraY - canvas.height/2);
-
-            drawStickman(t, screenX, screenY);
-        });
-
-        requestAnimationFrame(gameLoop);
-    }
-
-    function handleGameClick(e) {
-        if(!isGameRunning || ammo <= 0) return;
-
-        if(!isScoped) {
-            // Lock Camera smooth to Target
-            if(hoveredTarget) {
-                cameraX = hoveredTarget.x;
-                cameraY = hoveredTarget.y;
-            }
-            isScoped = true;
-            document.getElementById('scopeOverlay').classList.add('active');
-            
-            // Auto Shoot
-            setTimeout(() => {
-                if(isGameRunning) fireGun();
-            }, 250);
-        } else {
-            fireGun();
-        }
-    }
-
-    function fireGun() {
-        if(!isGameRunning || ammo <= 0) return;
-        
-        ammo--;
-        document.getElementById('gameAmmo').innerText = ammo;
-        
-        const cx = canvas.width / 2;
-        const cy = canvas.height / 2;
-        
-        let hitMade = false;
-        for(let i=0; i<targets.length; i++) {
-            let t = targets[i];
-            if(t.isHit) continue;
-
-            let screenX = t.x - (cameraX - canvas.width/2);
-            let screenY = t.y - (cameraY - canvas.height/2);
-            
-            let hitbox = 45 * scopeZoom;
-            let dist = Math.hypot(screenX - cx, screenY - cy);
-            
-            if(dist < hitbox) {
-                t.isHit = true;
-                hitMade = true;
-                if(t.isRed) {
-                    setTimeout(() => finishStage(true), 400);
+                if (type === 'char') {
+                    characters.forEach(c => {
+                        const isUnlocked = playerData.unlockedChars.includes(c.id);
+                        const isSelected = playerData.selectedCharId === c.id;
+                        container.innerHTML += `
+                            <div class="shop-card">
+                                <div class="card-header"><span class="card-title">${c.name}</span></div>
+                                <div class="card-stats">HP: <span class="stat-highlight">${c.hp}</span></div>
+                                <div class="card-action">
+                                    <span class="price">${c.price === 0 ? 'FREE' : c.price + ' Coins'}</span>
+                                    ${isUnlocked ? 
+                                        `<button class="buy-btn" ${isSelected ? 'disabled' : ''} onclick="ui.selectChar(${c.id})">${isSelected ? 'EQUIPPED' : 'EQUIP'}</button>` :
+                                        `<button class="buy-btn" onclick="ui.buyChar(${c.id}, ${c.price})">BUY</button>`
+                                    }
+                                </div>
+                            </div>`;
+                    });
                 } else {
-                    setTimeout(() => finishStage(false, "CIVILIAN CASUALTY!"), 400);
+                    guns.forEach(g => {
+                        const isUnlocked = playerData.unlockedGuns.includes(g.id);
+                        const isSelected = playerData.selectedGunId === g.id;
+                        container.innerHTML += `
+                            <div class="shop-card">
+                                <div class="card-header">
+                                    <span class="card-title">${g.name}</span>
+                                    ${g.type === 'EVO' ? '<span class="evo-tag">EVO</span>' : ''}
+                                </div>
+                                <div class="card-stats">Damage: <span class="stat-highlight">${g.dmg}</span></div>
+                                <div class="card-action">
+                                    <span class="price">${g.price === 0 ? 'OWNED' : g.price + ' Coins'}</span>
+                                    ${isUnlocked ? 
+                                        `<button class="buy-btn" ${isSelected ? 'disabled' : ''} onclick="ui.selectGun('${g.id}')">${isSelected ? 'EQUIPPED' : 'EQUIP'}</button>` :
+                                        `<button class="buy-btn" onclick="ui.buyGun('${g.id}', ${g.price})">BUY</button>`
+                                    }
+                                </div>
+                            </div>`;
+                    });
                 }
-                break;
+            },
+            buyChar(id, price) {
+                if (playerData.coins >= price) {
+                    playerData.coins -= price;
+                    playerData.unlockedChars.push(id);
+                    playerData.selectedCharId = id;
+                    this.updateHUD();
+                    this.switchStore('char');
+                } else { alert('Not enough coins!'); }
+            },
+            selectChar(id) { playerData.selectedCharId = id; this.switchStore('char'); },
+            buyGun(id, price) {
+                if (playerData.coins >= price) {
+                    playerData.coins -= price;
+                    playerData.unlockedGuns.push(id);
+                    playerData.selectedGunId = id;
+                    this.updateHUD();
+                    this.switchStore('gun');
+                } else { alert('Not enough coins!'); }
+            },
+            selectGun(id) { playerData.selectedGunId = id; this.switchStore('gun'); }
+        };
+
+        const game = {
+            canvas: null, ctx: null,
+            mode: '', round: 1, maxRounds: 4,
+            playerWins: 0, enemyWins: 0, kills: 0,
+            player: null, entities: [], bullets: [], obstacles: [],
+            isRunning: false, animationFrameId: null,
+            keys: {},
+
+            startMatch(mode) {
+                this.mode = mode;
+                this.round = 1;
+                this.playerWins = 0;
+                this.enemyWins = 0;
+                this.kills = 0;
+                document.getElementById('kill-count').innerText = this.kills;
+                ui.switchScreen('gameplay-screen');
+                document.getElementById('match-result').style.display = 'none';
+
+                this.canvas = document.getElementById('game-canvas');
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+                this.ctx = this.canvas.getContext('2d');
+
+                window.onkeydown = e => this.keys[e.key.toLowerCase()] = true;
+                window.onkeyup = e => this.keys[e.key.toLowerCase()] = false;
+
+                this.canvas.onmousedown = (e) => this.shootAt(e.clientX, e.clientY);
+                this.setupControls();
+
+                // Build Hangar Warehouse Layout matching the screenshot exactly
+                this.generateWarehouseMap();
+
+                this.setupRound();
+                this.isRunning = true;
+                if (this.animationFrameId) cancelAnimationFrame(this.animationFrameId);
+                this.loop();
+            },
+
+            generateWarehouseMap() {
+                this.obstacles = [];
+                let cw = this.canvas.width;
+                let ch = this.canvas.height;
+
+                // Warehouse layout with containers & concrete structures matching the background photo
+                this.obstacles.push(
+                    // Left blue shipping container
+                    { x: cw * 0.18, y: ch * 0.62, w: 150, h: 55, color: '#3162a8', label: 'container' },
+                    // Mid-left storage container
+                    { x: cw * 0.30, y: ch * 0.34, w: 170, h: 60, color: '#2d5899', label: 'container' },
+                    // Center logistics container
+                    { x: cw * 0.52, y: ch * 0.44, w: 190, h: 60, color: '#2d5899', label: 'container' },
+                    // Large Red Container Right
+                    { x: cw * 0.72, y: ch * 0.28, w: 230, h: 70, color: '#a83232', label: 'container' },
+                    // Back Red Container Top-Center
+                    { x: cw * 0.38, y: ch * 0.18, w: 150, h: 45, color: '#a83232', label: 'container' },
+                    // Lower-right container
+                    { x: cw * 0.86, y: ch * 0.54, w: 100, h: 48, color: '#3162a8', label: 'container' },
+
+                    // Wooden cargo crates
+                    { x: cw * 0.22, y: ch * 0.48, w: 45, h: 45, color: '#b57c42', label: 'crate' },
+                    { x: cw * 0.50, y: ch * 0.70, w: 50, h: 50, color: '#b57c42', label: 'crate' },
+                    { x: cw * 0.60, y: ch * 0.28, w: 40, h: 40, color: '#b57c42', label: 'crate' }
+                );
+            },
+
+            setupControls() {
+                const bindControl = (id, keyName) => {
+                    const el = document.getElementById(id);
+                    if (!el) return;
+                    const press = (e) => { e.preventDefault(); this.keys[keyName] = true; el.classList.add('pressed'); };
+                    const release = (e) => { e.preventDefault(); this.keys[keyName] = false; el.classList.remove('pressed'); };
+                    
+                    el.onmousedown = press;
+                    el.onmouseup = release;
+                    el.onmouseleave = release;
+                    el.onttouchstart = press;
+                    el.ontouchend = release;
+                };
+
+                bindControl('btn-up', 'arrowup');
+                bindControl('btn-down', 'arrowdown');
+                bindControl('btn-left', 'arrowleft');
+                bindControl('btn-right', 'arrowright');
+
+                const fireBtn = document.getElementById('btn-fire');
+                if (fireBtn) {
+                    const fireAction = (e) => {
+                        e.preventDefault();
+                        this.fireWeapon();
+                        fireBtn.classList.add('pressed');
+                        setTimeout(() => fireBtn.classList.remove('pressed'), 150);
+                    };
+                    fireBtn.onmousedown = fireAction;
+                    fireBtn.ontouchstart = fireAction;
+                }
+            },
+
+            fireWeapon() {
+                if (!this.isRunning) return;
+                const gun = guns.find(g => g.id === playerData.selectedGunId);
+                const damage = gun ? gun.dmg : 12;
+
+                let target = null;
+                let minDist = Infinity;
+                this.entities.forEach(ent => {
+                    if (ent.hp > 0 && !ent.isAlly) {
+                        let d = Math.hypot(ent.x - this.player.x, ent.y - this.player.y);
+                        if (d < minDist) { minDist = d; target = ent; }
+                    }
+                });
+
+                let tx = target ? target.x : this.player.x + (this.player.dir * 200);
+                let ty = target ? target.y : this.player.y;
+
+                this.bullets.push({ x: this.player.x, y: this.player.y - 10, tx: tx, ty: ty, damage: damage, isPlayer: true });
+            },
+
+            shootAt(mouseX, mouseY) {
+                if (!this.isRunning) return;
+                const gun = guns.find(g => g.id === playerData.selectedGunId);
+                const damage = gun ? gun.dmg : 12;
+
+                const rect = this.canvas.getBoundingClientRect();
+                const x = mouseX - rect.left;
+                const y = mouseY - rect.top;
+
+                this.player.dir = x >= this.player.x ? 1 : -1;
+                this.bullets.push({ x: this.player.x, y: this.player.y - 10, tx: x, ty: y, damage: damage, isPlayer: true });
+            },
+
+            setupRound() {
+                const char = characters.find(c => c.id === playerData.selectedCharId);
+                const maxHp = char ? char.hp : 240;
+
+                this.player = {
+                    x: this.canvas.width * 0.12, y: this.canvas.height * 0.78,
+                    hp: maxHp, maxHp: maxHp, radius: 16, speed: 4,
+                    color: USER_COLOR, dir: 1, name: char.name
+                };
+
+                document.getElementById('player-name-display').innerText = `${this.player.name} (HP: ${this.player.hp})`;
+                document.getElementById('round-display').innerText = this.mode === 'br_ranked' ? 'Safe Zone is Now Updating (Warning Active)' : `Round ${this.round}/${this.maxRounds}`;
+
+                this.entities = [];
+
+                if (this.mode === 'lone_wolf') {
+                    this.maxRounds = 4;
+                    this.entities.push({
+                        x: this.canvas.width * 0.85, y: this.canvas.height * 0.25,
+                        hp: 200, maxHp: 200, radius: 16, speed: 2.2,
+                        color: ENEMY_COLOR, dir: -1, isEnemy: true, attackTimer: 0
+                    });
+                } else if (this.mode === 'cs_ranked') {
+                    this.maxRounds = 4;
+                    for(let i=0; i<3; i++) {
+                        this.entities.push({
+                            x: this.canvas.width * 0.15, y: this.canvas.height * (0.4 + i*0.15),
+                            hp: 150, maxHp: 150, radius: 15, speed: 2.5,
+                            color: ALLY_COLOR, dir: 1, isAlly: true, attackTimer: 0
+                        });
+                    }
+                    for(let i=0; i<4; i++) {
+                        this.entities.push({
+                            x: this.canvas.width * 0.8, y: this.canvas.height * (0.2 + i*0.18),
+                            hp: 150, maxHp: 150, radius: 15, speed: 2.3,
+                            color: ENEMY_COLOR, dir: -1, isEnemy: true, attackTimer: 0
+                        });
+                    }
+                } else if (this.mode === 'br_ranked') {
+                    this.maxRounds = 1;
+                    for(let i=0; i<20; i++) {
+                        this.entities.push({
+                            x: Math.random() * (this.canvas.width - 200) + 100,
+                            y: Math.random() * (this.canvas.height - 200) + 100,
+                            hp: 120, maxHp: 120, radius: 14, speed: 1.5 + Math.random(),
+                            color: ENEMY_COLOR, dir: 1, isFFA: true, attackTimer: 0
+                        });
+                    }
+                }
+            },
+
+            loop() {
+                if (!this.isRunning) return;
+                this.update();
+                this.draw();
+                this.animationFrameId = requestAnimationFrame(() => this.loop());
+            },
+
+            checkCollision(nx, ny, radius) {
+                if (nx < 40 || nx > this.canvas.width - 40 || ny < 100 || ny > this.canvas.height - 40) return true;
+                for (let obs of this.obstacles) {
+                    if (nx + radius > obs.x && nx - radius < obs.x + obs.w &&
+                        ny + radius > obs.y && ny - radius < obs.y + obs.h) {
+                        return true;
+                    }
+                }
+                return false;
+            },
+
+            update() {
+                let dx = 0, dy = 0;
+                if (this.keys['w'] || this.keys['arrowup']) dy -= this.player.speed;
+                if (this.keys['s'] || this.keys['arrowdown']) dy += this.player.speed;
+                if (this.keys['a'] || this.keys['arrowleft']) { dx -= this.player.speed; this.player.dir = -1; }
+                if (this.keys['d'] || this.keys['arrowright']) { dx += this.player.speed; this.player.dir = 1; }
+
+                let nextX = this.player.x + dx;
+                let nextY = this.player.y + dy;
+                if (!this.checkCollision(nextX, this.player.y, this.player.radius)) {
+                    this.player.x = nextX;
+                }
+                if (!this.checkCollision(this.player.x, nextY, this.player.radius)) {
+                    this.player.y = nextY;
+                }
+
+                for (let i = this.bullets.length - 1; i >= 0; i--) {
+                    let b = this.bullets[i];
+                    let angle = Math.atan2(b.ty - b.y, b.tx - b.x);
+                    b.x += Math.cos(angle) * 12;
+                    b.y += Math.sin(angle) * 12;
+
+                    let hitObs = false;
+                    for (let obs of this.obstacles) {
+                        if (b.x > obs.x && b.x < obs.x + obs.w && b.y > obs.y && b.y < obs.y + obs.h) {
+                            hitObs = true;
+                            break;
+                        }
+                    }
+
+                    if (hitObs || b.x < 0 || b.x > this.canvas.width || b.y < 0 || b.y > this.canvas.height) {
+                        this.bullets.splice(i, 1);
+                        continue;
+                    }
+
+                    if (b.isPlayer) {
+                        let hit = false;
+                        for (let ent of this.entities) {
+                            if (ent.hp > 0 && !ent.isAlly && Math.hypot(ent.x - b.x, ent.y - b.y) < ent.radius + 5) {
+                                ent.hp -= b.damage;
+                                if (ent.hp <= 0) {
+                                    this.kills++;
+                                    document.getElementById('kill-count').innerText = this.kills;
+                                }
+                                hit = true;
+                                break;
+                            }
+                        }
+                        if (hit) { this.bullets.splice(i, 1); continue; }
+                    } else {
+                        if (Math.hypot(this.player.x - b.x, this.player.y - b.y) < this.player.radius + 5) {
+                            this.player.hp -= 10;
+                            this.bullets.splice(i, 1);
+                        }
+                    }
+                }
+
+                let activeEnemies = this.entities.filter(e => e.hp > 0 && !e.isAlly);
+                if (this.mode === 'br_ranked') {
+                    document.getElementById('alive-count').innerText = activeEnemies.length + 1;
+                }
+
+                this.entities.forEach(ent => {
+                    if (ent.hp <= 0) return;
+
+                    let targetX = this.player.x, targetY = this.player.y;
+                    if (this.mode === 'cs_ranked' && ent.isAlly) {
+                        let nearestEnemy = activeEnemies[0];
+                        if (nearestEnemy) { targetX = nearestEnemy.x; targetY = nearestEnemy.y; }
+                    } else if (this.mode === 'br_ranked' || (this.mode === 'cs_ranked' && ent.isEnemy)) {
+                        let closest = this.player;
+                        let minDist = Math.hypot(this.player.x - ent.x, this.player.y - ent.y);
+                        this.entities.forEach(other => {
+                            if (other !== ent && other.hp > 0 && other.isAlly !== ent.isAlly) {
+                                let d = Math.hypot(other.x - ent.x, other.y - ent.y);
+                                if (d < minDist) { minDist = d; closest = other; }
+                            }
+                        });
+                        targetX = closest.x; targetY = closest.y;
+                    }
+
+                    let dist = Math.hypot(targetX - ent.x, targetY - ent.y);
+                    if (dist > 80) {
+                        let moveX = ((targetX - ent.x) / dist) * ent.speed;
+                        let moveY = ((targetY - ent.y) / dist) * ent.speed;
+                        
+                        let nx = ent.x + moveX;
+                        let ny = ent.y + moveY;
+                        let collided = false;
+                        for (let obs of this.obstacles) {
+                            if (nx + ent.radius > obs.x && nx - ent.radius < obs.x + obs.w &&
+                                ny + ent.radius > obs.y && ny - ent.radius < obs.y + obs.h) {
+                                collided = true;
+                                break;
+                            }
+                        }
+                        if (!collided) {
+                            ent.x = nx;
+                            ent.y = ny;
+                        } else {
+                            ent.x += moveY;
+                            ent.y -= moveX;
+                        }
+                        ent.dir = targetX >= ent.x ? 1 : -1;
+                    } else {
+                        ent.attackTimer++;
+                        if (ent.attackTimer > 60) {
+                            ent.attackTimer = 0;
+                            this.bullets.push({ x: ent.x, y: ent.y - 10, tx: targetX, ty: targetY, damage: 10, isPlayer: false });
+                        }
+                    }
+                });
+
+                document.getElementById('player-hp-fill').style.width = Math.max(0, (this.player.hp / this.player.maxHp) * 100) + '%';
+                document.getElementById('player-name-display').innerText = `${this.player.name} (HP: ${Math.max(0, this.player.hp)})`;
+
+                if (this.player.hp <= 0) {
+                    this.endMatch(false);
+                } else if (this.mode === 'lone_wolf' && activeEnemies.length === 0) {
+                    this.playerWins++;
+                    if (this.playerWins >= 3 || this.round >= this.maxRounds) { this.endMatch(true); }
+                    else { this.round++; this.setupRound(); }
+                } else if (this.mode === 'cs_ranked') {
+                    let aliveAllies = this.entities.filter(e => e.hp > 0 && e.isAlly).length;
+                    if (activeEnemies.length === 0) {
+                        this.playerWins++;
+                        if (this.playerWins >= 3 || this.round >= this.maxRounds) { this.endMatch(true); }
+                        else { this.round++; this.setupRound(); }
+                    } else if (aliveAllies === 0 && this.player.hp <= 0) {
+                        this.endMatch(false);
+                    }
+                } else if (this.mode === 'br_ranked' && activeEnemies.length === 0) {
+                    this.endMatch(true);
+                }
+            },
+
+            drawStickman(x, y, color, dir, isMoving) {
+                this.ctx.save();
+                this.ctx.fillStyle = 'rgba(0,0,0,0.4)';
+                this.ctx.beginPath(); this.ctx.ellipse(x, y + 20, 10, 4, 0, 0, Math.PI * 2); this.ctx.fill();
+
+                let legOffset = isMoving ? Math.sin(Date.now() / 100) * 6 : 0;
+                this.ctx.strokeStyle = color; this.ctx.lineWidth = 3;
+                this.ctx.beginPath();
+                this.ctx.moveTo(x, y); this.ctx.lineTo(x - 5 - legOffset, y + 20);
+                this.ctx.moveTo(x, y); this.ctx.lineTo(x + 5 + legOffset, y + 20);
+                this.ctx.stroke();
+
+                this.ctx.strokeStyle = color; this.ctx.lineWidth = 4;
+                this.ctx.beginPath(); this.ctx.moveTo(x, y - 15); this.ctx.lineTo(x, y); this.ctx.stroke();
+
+                this.ctx.fillStyle = color;
+                this.ctx.beginPath(); this.ctx.arc(x, y - 24, 9, 0, Math.PI * 2); this.ctx.fill();
+
+                this.ctx.strokeStyle = color; this.ctx.lineWidth = 3;
+                this.ctx.beginPath();
+                this.ctx.moveTo(x, y - 10); this.ctx.lineTo(x + dir * 14, y - 5);
+                this.ctx.stroke();
+
+                this.ctx.fillStyle = '#444';
+                this.ctx.fillRect(x + (dir > 0 ? 2 : -22), y - 8, 20, 4);
+                this.ctx.restore();
+            },
+
+            drawWarehouseMap() {
+                // Realistic tactical outdoor terrain / warehouse tarmac background matching the photo
+                this.ctx.fillStyle = '#4b5563';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+                // Grass fields on the left and upper sections
+                this.ctx.fillStyle = '#3f5e3b';
+                this.ctx.beginPath();
+                this.ctx.moveTo(0, 0);
+                this.ctx.lineTo(this.canvas.width * 0.45, 0);
+                this.ctx.lineTo(this.canvas.width * 0.35, this.canvas.height);
+                this.ctx.lineTo(0, this.canvas.height);
+                this.ctx.fill();
+
+                // Tarmac runway / road patch with diagonal crosswalk stripes as in reference
+                this.ctx.fillStyle = '#374151';
+                this.ctx.beginPath();
+                this.ctx.moveTo(this.canvas.width * 0.25, this.canvas.height);
+                this.ctx.lineTo(this.canvas.width * 0.55, 0);
+                this.ctx.lineTo(this.canvas.width, 0);
+                this.ctx.lineTo(this.canvas.width, this.canvas.height);
+                this.ctx.fill();
+
+                // Crosswalk white stripes
+                this.ctx.fillStyle = '#ffffff';
+                for (let i = 0; i < 6; i++) {
+                    this.ctx.fillRect(this.canvas.width * 0.45 + (i * 35), this.canvas.height * 0.55 + (i * 20), 22, 65);
+                }
+
+                // Distant Industrial Cooling Tower & Crane graphics
+                this.ctx.fillStyle = '#6b7280';
+                this.ctx.beginPath();
+                this.ctx.moveTo(this.canvas.width * 0.68, 180);
+                this.ctx.lineTo(this.canvas.width * 0.72, 80);
+                this.ctx.lineTo(this.canvas.width * 0.76, 80);
+                this.ctx.lineTo(this.canvas.width * 0.80, 180);
+                this.ctx.fill();
+
+                // Warning text overlay on background
+                this.ctx.fillStyle = 'rgba(255, 69, 0, 0.85)T';
+                this.ctx.font = 'bold 24px sans-serif';
+                this.ctx.textAlign = 'center';
+                this.ctx.fillText("WARNING: SAFE ZONE UPDATING", this.canvas.width * 0.5, 120);
+
+                // Draw Shipping Containers & Crates
+                this.obstacles.forEach(obs => {
+                    this.ctx.save();
+                    this.ctx.fillStyle = obs.color;
+                    this.ctx.shadowColor = 'rgba(0,0,0,0.6)';
+                    this.ctx.shadowBlur = 10;
+                    this.ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
+                    
+                    this.ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+                    this.ctx.lineWidth = 2;
+                    if (obs.label === 'container') {
+                        for(let rx = obs.x + 15; rx < obs.x + obs.w; rx += 15) {
+                            this.ctx.beginPath(); this.ctx.moveTo(rx, obs.y); this.ctx.lineTo(rx, obs.y + obs.h); this.ctx.stroke();
+                        }
+                    } else {
+                        this.ctx.strokeRect(obs.x + 4, obs.y + 4, obs.w - 8, obs.h - 8);
+                    }
+                    this.ctx.restore();
+                });
+            },
+
+            draw() {
+                this.drawWarehouseMap();
+
+                this.ctx.fillStyle = '#ffff00';
+                this.bullets.forEach(b => {
+                    this.ctx.beginPath(); this.ctx.arc(b.x, b.y, 3, 0, Math.PI * 2); this.ctx.fill();
+                });
+
+                let isMoving = this.keys['w'] || this.keys['s'] || this.keys['a'] || this.keys['d'] || this.keys['arrowup'] || this.keys['arrowdown'] || this.keys['arrowleft'] || this.keys['arrowright'];
+                this.drawStickman(this.player.x, this.player.y, this.player.color, this.player.dir, isMoving);
+
+                this.entities.forEach(ent => {
+                    if (ent.hp > 0) {
+                        this.drawStickman(ent.x, ent.y, ent.color, ent.dir, true);
+                    }
+                });
+            },
+
+            endMatch(isWin) {
+                this.isRunning = false;
+                const resultBox = document.getElementById('match-result');
+                const title = document.getElementById('result-title');
+                const msg = document.getElementById('result-msg');
+                resultBox.style.display = 'block';
+
+                if (isWin) {
+                    title.innerText = this.mode === 'br_ranked' ? 'BOOYAH!' : 'VICTORY';
+                    if (this.mode === 'lone_wolf') {
+                        playerData.coins += 500;
+                        msg.innerText = 'You won the Lone Wolf match! Earned +500 Coins.';
+                    } else if (this.mode === 'cs_ranked') {
+                        playerData.stars += 1;
+                        playerData.coins += 1000;
+                        msg.innerText = 'CS Ranked Victory! Earned +1 Star and +1000 Coins.';
+                    } else if (this.mode === 'br_ranked') {
+                        playerData.stars += 1;
+                        playerData.coins += 200;
+                        msg.innerText = 'BOOYAH! Earned +1 Star and +200 Coins.';
+                    }
+                } else {
+                    title.innerText = 'DEFEATED';
+                    msg.innerText = 'You were eliminated in the warehouse arena. Try again!';
+                }
+                ui.updateHUD();
+            },
+
+            endMatchAndReturn() {
+                ui.goHome();
             }
-        }
-        
-        // Muzzle Shake
-        canvas.style.transform = `scale(1.02) translate(${Math.random()*12-6}px, ${Math.random()*12-6}px)`;
-        setTimeout(() => {
-            canvas.style.transform = 'scale(1) translate(0,0)';
-            document.getElementById('scopeOverlay').classList.remove('active');
-            isScoped = false;
-        }, 150);
+        };
 
-        if(!hitMade && ammo === 0) {
-            let redAlive = targets.some(t => t.isRed && !t.isHit);
-            if(redAlive) {
-                setTimeout(() => finishStage(false, "OUT OF AMMO!"), 400);
-            }
-        }
-    }
-
-    function finishStage(isWin, reason = "") {
-        isGameRunning = false;
-        isScoped = false;
-        document.getElementById('scopeOverlay').classList.remove('active');
-        
-        let reward = 100;
-        let title = isWin ? "TARGET ELIMINATED" : "MISSION FAILED";
-        
-        if (isWin) {
-            if (currentStage === user.maxStage) {
-                reward = 400;
-                user.maxStage++;
-            }
-        }
-
-        user.coins += reward;
-        saveData();
-
-        document.getElementById('resultTitle').innerText = title;
-        document.getElementById('resultTitle').style.color = isWin ? '#00f0ff' : '#ff0055';
-        document.getElementById('resultMsg').innerText = `+${reward} Coins ${!isWin ? '('+reason+')' : ''}`;
-        
-        document.getElementById('resultModal').style.display = 'flex';
-    }
-
-    loadData();
-</script>
+        ui.updateHUD();
+    </script>
 </body>
 </html>
