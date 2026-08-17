@@ -259,7 +259,7 @@
   <!-- HOME SCREEN -->
   <div id="homeScreen" class="screen">
     <button class="rename-btn" onclick="showNameScreen()">✏️ Rename</button>
-    <div class="title">Stickman Sniper Shooter</div>
+    <div class="title">Stickman Sniper Shooter 3</div>
     <div class="creator">Created by Muhammad Taqi</div>
     <div class="coin-display" id="coinDisplayHome">🪙 0</div>
     <button class="btn" onclick="showScreen('stageSelect')">🎯 Play Game</button>
@@ -585,12 +585,14 @@ function generateStage(stage) {
   stickmen = [];
   const blackCount = stage;
   const total = blackCount + 1;
-  const positions = getAllWindowPositions();
+  const positions = getAllCarPositions();
+  // Shuffle positions
   for (let i = positions.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [positions[i], positions[j]] = [positions[j], positions[i]];
   }
   if (positions.length < total) {
+    // Fallback: generate random positions
     for (let i = 0; i < total; i++) {
       positions.push({ x: 100 + Math.random() * 600, y: 200 + Math.random() * 200 });
     }
@@ -601,101 +603,206 @@ function generateStage(stage) {
   stickmen.push({ x: positions[blackCount].x, y: positions[blackCount].y, color: 'red', type: 'red' });
 }
 
-function getAllWindowPositions() {
+// Returns all possible window positions inside cars
+function getAllCarPositions() {
   const positions = [];
-  const buildings = getBuildings();
-  buildings.forEach(b => {
-    for (let floor = 0; floor < b.floors; floor++) {
-      for (let w = 0; w < b.windowsPerFloor; w++) {
-        const wx = b.x + b.windowMargin + w * (b.windowWidth + b.windowSpacing);
-        const wy = b.y + b.roofHeight + floor * (b.windowHeight + b.floorSpacing);
-        positions.push({ x: wx + b.windowWidth/2, y: wy + b.windowHeight/2 });
-      }
-    }
+  const cars = getCars();
+  cars.forEach(car => {
+    car.windows.forEach(win => {
+      positions.push({ x: win.x, y: win.y });
+    });
   });
   return positions;
 }
 
-function getBuildings() {
-  return [
-    { x: 30, y: 80, width: 130, floors: 12, windowsPerFloor: 3, windowWidth: 20, windowHeight: 25, windowSpacing: 10, windowMargin: 10, roofHeight: 20, floorSpacing: 35 },
-    { x: 170, y: 50, width: 140, floors: 14, windowsPerFloor: 3, windowWidth: 20, windowHeight: 25, windowSpacing: 10, windowMargin: 10, roofHeight: 20, floorSpacing: 35 },
-    { x: 320, y: 100, width: 120, floors: 10, windowsPerFloor: 3, windowWidth: 20, windowHeight: 25, windowSpacing: 10, windowMargin: 10, roofHeight: 20, floorSpacing: 35 },
-    { x: 450, y: 60, width: 150, floors: 13, windowsPerFloor: 3, windowWidth: 20, windowHeight: 25, windowSpacing: 10, windowMargin: 10, roofHeight: 20, floorSpacing: 35 },
-    { x: 610, y: 90, width: 130, floors: 11, windowsPerFloor: 3, windowWidth: 20, windowHeight: 25, windowSpacing: 10, windowMargin: 10, roofHeight: 20, floorSpacing: 35 },
+// Define cars with windows positions and colors
+// Now 6 rows of 10 cars = 60 cars = 240 windows (enough for 200 stages)
+function getCars() {
+  const carColors = [
+    '#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6',
+    '#1abc9c', '#e67e22', '#34495e', '#16a085', '#d35400',
+    '#c0392b', '#2980b9', '#27ae60', '#f1c40f', '#8e44ad',
+    '#16a085', '#d35400', '#2c3e50', '#f39c12', '#7f8c8d'
   ];
+  const cars = [];
+  const carWidth = 70;
+  const carHeight = 40;
+  const startX = 30;
+  const startY = 80;
+  const rowSpacing = 65;
+  const colSpacing = 75;
+  let carIndex = 0;
+  for (let row = 0; row < 6; row++) {
+    for (let col = 0; col < 10; col++) {
+      const x = startX + col * colSpacing;
+      const y = startY + row * rowSpacing;
+      const color = carColors[carIndex % carColors.length];
+      // Window positions relative to car body
+      const windowPositions = [
+        { x: x + 15, y: y + 12 }, // front left
+        { x: x + carWidth - 15, y: y + 12 }, // front right
+        { x: x + 15, y: y + carHeight - 8 }, // back left
+        { x: x + carWidth - 15, y: y + carHeight - 8 } // back right
+      ];
+      cars.push({
+        x: x,
+        y: y,
+        width: carWidth,
+        height: carHeight,
+        windows: windowPositions,
+        color: color
+      });
+      carIndex++;
+    }
+  }
+  return cars;
 }
 
 function renderOffscreen() {
   offscreenCanvas.width = canvas.width;
   offscreenCanvas.height = canvas.height;
   const ctx2 = offscreenCtx;
+  // Sky gradient
   const skyGrad = ctx2.createLinearGradient(0, 0, 0, canvas.height);
   skyGrad.addColorStop(0, '#87ceeb');
   skyGrad.addColorStop(0.7, '#b0e0e6');
   skyGrad.addColorStop(1, '#f0e68c');
   ctx2.fillStyle = skyGrad;
   ctx2.fillRect(0, 0, canvas.width, canvas.height);
+  // Sun
   ctx2.fillStyle = '#ffd700';
   ctx2.beginPath();
   ctx2.arc(700, 80, 40, 0, Math.PI*2);
   ctx2.fill();
-  const buildings = getBuildings();
-  buildings.forEach(b => {
-    ctx2.fillStyle = '#4a4a5a';
-    ctx2.fillRect(b.x, b.y, b.width, canvas.height - b.y);
-    ctx2.fillStyle = '#5a5a6a';
-    ctx2.fillRect(b.x-5, b.y-10, b.width+10, 15);
-    for (let floor = 0; floor < b.floors; floor++) {
-      for (let w = 0; w < b.windowsPerFloor; w++) {
-        const wx = b.x + b.windowMargin + w * (b.windowWidth + b.windowSpacing);
-        const wy = b.y + b.roofHeight + floor * (b.windowHeight + b.floorSpacing);
-        ctx2.fillStyle = '#2c3e50';
-        ctx2.fillRect(wx, wy, b.windowWidth, b.windowHeight);
-        ctx2.fillStyle = 'rgba(255,255,150,0.3)';
-        ctx2.fillRect(wx+2, wy+2, b.windowWidth-4, b.windowHeight-4);
-        ctx2.strokeStyle = '#666';
-        ctx2.lineWidth = 1;
-        ctx2.strokeRect(wx, wy, b.windowWidth, b.windowHeight);
-      }
-    }
+  // Road background
+  ctx2.fillStyle = '#555';
+  ctx2.fillRect(0, 60, canvas.width, canvas.height - 60);
+  ctx2.fillStyle = '#666';
+  for (let i = 0; i < canvas.width; i += 40) {
+    ctx2.fillRect(i, canvas.height - 60, 20, 10);
+  }
+  // Draw cars
+  const cars = getCars();
+  cars.forEach(car => {
+    drawCar(ctx2, car);
   });
+  // Draw stickman heads
   stickmen.forEach(sm => {
-    drawStickman(ctx2, sm.x, sm.y, sm.color);
+    drawStickmanHead(ctx2, sm.x, sm.y, sm.color);
   });
 }
 
-function drawStickman(ctx2, x, y, color) {
+// Beautiful car drawing function
+function drawCar(ctx2, car) {
+  const { x, y, width, height, color } = car;
+  // Car shadow
+  ctx2.fillStyle = 'rgba(0,0,0,0.3)';
+  ctx2.beginPath();
+  ctx2.ellipse(x + width/2, y + height + 8, width/2 + 5, 6, 0, 0, Math.PI*2);
+  ctx2.fill();
+  // Wheels
+  ctx2.fillStyle = '#222';
+  ctx2.beginPath();
+  ctx2.arc(x + 15, y + height + 5, 8, 0, Math.PI*2);
+  ctx2.arc(x + width - 15, y + height + 5, 8, 0, Math.PI*2);
+  ctx2.fill();
+  // Wheel rims
+  ctx2.fillStyle = '#ccc';
+  ctx2.beginPath();
+  ctx2.arc(x + 15, y + height + 5, 4, 0, Math.PI*2);
+  ctx2.arc(x + width - 15, y + height + 5, 4, 0, Math.PI*2);
+  ctx2.fill();
+  // Car body (main)
+  const bodyGrad = ctx2.createLinearGradient(x, y, x, y + height);
+  bodyGrad.addColorStop(0, color);
+  bodyGrad.addColorStop(1, shadeColor(color, -20));
+  ctx2.fillStyle = bodyGrad;
+  ctx2.beginPath();
+  ctx2.moveTo(x + 5, y + height);
+  ctx2.lineTo(x + 5, y + 10);
+  ctx2.quadraticCurveTo(x + 10, y, x + 25, y);
+  ctx2.lineTo(x + width - 25, y);
+  ctx2.quadraticCurveTo(x + width - 10, y, x + width - 5, y + 10);
+  ctx2.lineTo(x + width - 5, y + height);
+  ctx2.closePath();
+  ctx2.fill();
+  // Cabin (roof)
+  ctx2.fillStyle = shadeColor(color, -40);
+  ctx2.beginPath();
+  ctx2.moveTo(x + 15, y + 10);
+  ctx2.lineTo(x + 20, y + 3);
+  ctx2.lineTo(x + width - 20, y + 3);
+  ctx2.lineTo(x + width - 15, y + 10);
+  ctx2.closePath();
+  ctx2.fill();
+  // Windows (dark with slight transparency)
+  const windowColor = 'rgba(30, 40, 60, 0.8)';
+  ctx2.fillStyle = windowColor;
+  car.windows.forEach(win => {
+    ctx2.fillRect(win.x - 8, win.y - 5, 16, 10);
+  });
+  // Window glass highlight
+  ctx2.fillStyle = 'rgba(255,255,255,0.15)';
+  car.windows.forEach(win => {
+    ctx2.fillRect(win.x - 6, win.y - 4, 12, 4);
+  });
+  // Headlights
+  ctx2.fillStyle = '#f1c40f';
+  ctx2.beginPath();
+  ctx2.arc(x + 8, y + 12, 3, 0, Math.PI*2);
+  ctx2.arc(x + width - 8, y + 12, 3, 0, Math.PI*2);
+  ctx2.fill();
+  // Taillights
+  ctx2.fillStyle = '#e74c3c';
+  ctx2.beginPath();
+  ctx2.arc(x + 8, y + height - 5, 3, 0, Math.PI*2);
+  ctx2.arc(x + width - 8, y + height - 5, 3, 0, Math.PI*2);
+  ctx2.fill();
+  // Door lines
+  ctx2.strokeStyle = 'rgba(0,0,0,0.3)';
+  ctx2.lineWidth = 1;
+  ctx2.beginPath();
+  ctx2.moveTo(x + width/2, y + 5);
+  ctx2.lineTo(x + width/2, y + height - 5);
+  ctx2.stroke();
+}
+
+// Helper to darken/lighten color
+function shadeColor(color, percent) {
+  const num = parseInt(color.replace('#',''), 16);
+  const amt = Math.round(2.55 * percent);
+  const R = Math.max(0, Math.min(255, (num >> 16) + amt));
+  const G = Math.max(0, Math.min(255, (num >> 8 & 0x00FF) + amt));
+  const B = Math.max(0, Math.min(255, (num & 0x0000FF) + amt));
+  return `#${(1 << 24 | R << 16 | G << 8 | B).toString(16).slice(1)}`;
+}
+
+// New function: draw only head with outline for clear visibility
+function drawStickmanHead(ctx2, x, y, color) {
   ctx2.save();
   ctx2.translate(x, y);
+  // Outline for contrast (white for black, dark for red)
+  const outlineColor = color === 'black' ? '#ffffff' : '#000000';
+  ctx2.fillStyle = outlineColor;
+  ctx2.beginPath();
+  ctx2.arc(0, -2, 9, 0, Math.PI*2); // slightly larger outline
+  ctx2.fill();
+  // Actual head
   ctx2.fillStyle = color;
   ctx2.beginPath();
-  ctx2.arc(0, -18, 8, 0, Math.PI*2);
+  ctx2.arc(0, -2, 7, 0, Math.PI*2);
   ctx2.fill();
-  ctx2.strokeStyle = color;
-  ctx2.lineWidth = 2;
-  ctx2.beginPath();
-  ctx2.moveTo(0, -10);
-  ctx2.lineTo(0, 10);
-  ctx2.moveTo(0, -5);
-  ctx2.lineTo(-8, 5);
-  ctx2.moveTo(0, -5);
-  ctx2.lineTo(8, 5);
-  ctx2.moveTo(0, 10);
-  ctx2.lineTo(-7, 22);
-  ctx2.moveTo(0, 10);
-  ctx2.lineTo(7, 22);
-  ctx2.stroke();
+  // Eyes for red (optional)
   if (color === 'red') {
     ctx2.fillStyle = '#fff';
     ctx2.beginPath();
-    ctx2.arc(-3, -20, 2, 0, Math.PI*2);
-    ctx2.arc(3, -20, 2, 0, Math.PI*2);
+    ctx2.arc(-2, -3, 2, 0, Math.PI*2);
+    ctx2.arc(2, -3, 2, 0, Math.PI*2);
     ctx2.fill();
     ctx2.fillStyle = '#000';
     ctx2.beginPath();
-    ctx2.arc(-3, -20, 1, 0, Math.PI*2);
-    ctx2.arc(3, -20, 1, 0, Math.PI*2);
+    ctx2.arc(-2, -3, 1, 0, Math.PI*2);
+    ctx2.arc(2, -3, 1, 0, Math.PI*2);
     ctx2.fill();
   }
   ctx2.restore();
@@ -768,7 +875,7 @@ canvas.addEventListener('click', (e) => {
   updateGameUI();
   let hitRed = false;
   let hitBlack = false;
-  const hitRadius = 30;
+  const hitRadius = 20;
   stickmen.forEach(sm => {
     const dx = sm.x - mouseX;
     const dy = sm.y - mouseY;
