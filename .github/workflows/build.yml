@@ -1,4 +1,4 @@
-name: Build Clean APK with Icon & Splash
+name: Build Clean APK with Icon & Splash 
 
 on:
   push:
