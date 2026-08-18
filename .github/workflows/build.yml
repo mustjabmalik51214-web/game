@@ -1,4 +1,4 @@
-name: Build Clean APK with Icon & Splash 
+name: Build Clean APK with Icon 
 
 on:
   push:
@@ -30,38 +30,27 @@ jobs:
       - name: Build Cordova APK
         run: |
           npm install -g cordova
-
+          
           # 1. Create Cordova project
-          cordova create app com.super.ludo "SUPER LUDO"
-
+          cordova create app com.stickman.nexura "Super Ludo"
+          
           # 2. Copy Web Source Assets
           cp -r index.html app/www/ 2>/dev/null || true
           cp -r characters gun bg stage app/www/ 2>/dev/null || true
-
+          
           # 3. Add Custom Icon if present
           if [ -f "icon.png" ]; then
             cp icon.png app/www/icon.png
             sed -i '/<\/widget>/i \    <icon src="www/icon.png" \/>' app/config.xml
           fi
-
-          # 4. Add Custom Splash Screen if present
-          if [ -f "splash.png" ]; then
-            cp splash.png app/www/splash.png
-            sed -i '/<\/widget>/i \    <preference name="SplashScreen" value="screen" \/>' app/config.xml
-            sed -i '/<\/widget>/i \    <preference name="SplashScreenDelay" value="3000" \/>' app/config.xml
-            sed -i '/<\/widget>/i \    <preference name="AutoHideSplashScreen" value="true" \/>' app/config.xml
-            sed -i '/<\/widget>/i \    <preference name="FadeSplashScreen" value="true" \/>' app/config.xml
-            sed -i '/<\/widget>/i \    <preference name="FadeSplashScreenDuration" value="500" \/>' app/config.xml
-          fi
-
-          # 5. Set Landscape Orientation in config.xml
+          
+          # 4. Set Landscape Orientation in config.xml
           sed -i '/<\/widget>/i \    <preference name="Orientation" value="landscape" \/>' app/config.xml
 
-          # 6. Add Android Platform, Splash Plugin & Build
+          # 5. Add Android Platform & Build
           cd app
-          cordova plugin add cordova-plugin-splashscreen
           cordova platform add android
-
+          
           # Fix Gradle executable permissions
           if [ -d "platforms/android" ]; then
             chmod +x platforms/android/gradlew || true
@@ -72,5 +61,5 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: SUPER-LUDO-GAME
+          name: Stickman-Shooter-GAME
           path: app/platforms/android/app/build/outputs/apk/debug/app-debug.apk
