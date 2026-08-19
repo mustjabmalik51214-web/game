@@ -27,7 +27,7 @@
         /* Minimap Container */
         #minimap-container {
             position: absolute; top: 15px; left: 50%; transform: translateX(-50%);
-            width: 130px; height: 130px; background: rgba(15, 23, 42, 0.85);
+            width: 110px; height: 110px; background: rgba(15, 23, 42, 0.85);
             border: 2px solid #38bdf8; border-radius: 50%; overflow: hidden; box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
         }
         #minimap-canvas { width: 100%; height: 100%; }
@@ -40,17 +40,18 @@
         #branding h1 { margin: 0; font-size: 1.1rem; color: #38bdf8; letter-spacing: 1px; }
         #branding span { color: #ff4757; font-size: 0.75rem; font-weight: bold; }
 
-        /* Stats & Health */
+        /* Stats, Star Ratings & Health */
         #stats-bar {
             position: absolute; top: 15px; right: 20px; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px);
             padding: 10px 16px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.15); text-align: right;
         }
         #hp-container { font-size: 1.1rem; font-weight: bold; color: #2ed573; }
+        #star-container { font-size: 1rem; color: #ffea00; font-weight: bold; margin-top: 2px; }
 
         #match-info {
-            position: absolute; top: 155px; left: 50%; transform: translateX(-50%);
+            position: absolute; top: 135px; left: 50%; transform: translateX(-50%);
             background: rgba(15, 23, 42, 0.9); border: 1px solid #38bdf8; padding: 6px 16px; border-radius: 20px;
-            font-size: 0.85rem; text-align: center; color: #38bdf8; font-weight: bold;
+            font-size: 0.85rem; text-align: center; color: #38bdf8; font-weight: bold; width: max-content;
         }
 
         /* Gun Armory Modal */
@@ -64,17 +65,17 @@
 
         /* Mobile Controls: Touch Joystick & D-Pad */
         #joystick-zone {
-            position: absolute; bottom: 30px; left: 30px; width: 140px; height: 140px;
+            position: absolute; bottom: 30px; left: 30px; width: 130px; height: 130px;
             background: rgba(15, 23, 42, 0.85); border: 2px solid rgba(56, 189, 248, 0.4);
             border-radius: 50%; touch-action: none; display: flex; align-items: center; justify-content: center;
         }
         #joystick-knob {
-            width: 50px; height: 50px; background: #38bdf8; border-radius: 50%;
-            box-shadow: 0 0 15px #38bdf8; position: absolute;
+            width: 45px; height: 45px; background: #38bdf8; border-radius: 50%;
+            box-shadow: 0 0 15px #38bdf8; position: absolute; pointer-events: none;
         }
 
         #btn-jump {
-            position: absolute; bottom: 180px; left: 70px; width: 60px; height: 40px;
+            position: absolute; bottom: 175px; left: 65px; width: 60px; height: 40px;
             background: rgba(15, 23, 42, 0.85); border: 1px solid #2ed573; color: #2ed573; border-radius: 20px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 10px rgba(46, 213, 115, 0.3);
         }
 
@@ -83,19 +84,19 @@
         }
 
         #btn-fire {
-            position: absolute; bottom: 40px; right: 40px; width: 85px; height: 85px;
+            position: absolute; bottom: 40px; right: 40px; width: 80px; height: 80px;
             background: rgba(255, 71, 87, 0.85); border: 3px solid #ff6b81; border-radius: 50%;
             color: white; font-weight: bold; font-size: 1rem; display: flex; align-items: center; justify-content: center;
             box-shadow: 0 0 20px rgba(255, 71, 87, 0.5); cursor: pointer;
         }
         #btn-scope {
-            position: absolute; bottom: 140px; right: 50px; width: 60px; height: 60px;
+            position: absolute; bottom: 135px; right: 50px; width: 55px; height: 55px;
             background: rgba(52, 152, 219, 0.8); border: 2px solid #54a0ff; border-radius: 50%;
             color: white; font-weight: bold; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; cursor: pointer;
         }
 
         #sens-container {
-            position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+            position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%);
             background: rgba(15, 23, 42, 0.85); padding: 6px 14px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.15); font-size: 0.8rem;
         }
 
@@ -176,22 +177,25 @@
             <canvas id="minimap-canvas"></canvas>
         </div>
 
-        <div id="match-info">TARGET: <span id="target-score-text">10 KILLS</span> | KILLS: <span id="my-kills">0</span></div>
+        <div id="match-info">
+            ROUND: <span id="current-round-text">1</span>/10 | TARGET: <span id="target-score-text">10 KILLS</span> | KILLS: <span id="my-kills">0</span>
+        </div>
 
         <div id="stats-bar" class="interactive">
             <div id="hp-container">HP: <span id="hp-val">200</span> / 200</div>
-            <div style="font-size: 0.8rem; color: #2ed573;" id="current-gun-text">Gun: AK47</div>
+            <div id="star-container">⭐ Stars: <span id="star-count-text">0</span></div>
+            <div style="font-size: 0.8rem; color: #2ed573; margin-top:2px;" id="current-gun-text">Gun: AK47</div>
             <button class="interactive" style="margin-top:4px; padding:3px 8px; background:#ff4757; border:none; color:white; border-radius:4px; cursor:pointer;" onclick="toggleArmory()">Change Gun</button>
         </div>
 
         <!-- Central Gun Armory Modal -->
         <div id="armory" class="interactive">
             <h3 style="color:#ff4757; margin-bottom:10px;">Select Weapon</h3>
-            <button class="gun-btn" onclick="selectWeapon('AK47')">AK47 (Rate: 0.5s | Body: 30)</button>
-            <button class="gun-btn" onclick="selectWeapon('MP5')">MP5 (Rate: 0.3s | Body: 20)</button>
-            <button class="gun-btn" onclick="selectWeapon('AWM')">AWM (Rate: 2.0s | Body: 100)</button>
-            <button class="gun-btn" onclick="selectWeapon('DEAGLE')">Desert Eagle (Rate: 0.7s | Body: 45)</button>
-            <button class="gun-btn" onclick="selectWeapon('MP40')">MP40 (Rate: 0.3s | Body: 20)</button>
+            <button class="gun-btn" onclick="selectWeapon('AK47')">AK47 (Rate: 0.4s | Body: 35)</button>
+            <button class="gun-btn" onclick="selectWeapon('MP5')">MP5 (Rate: 0.2s | Body: 22)</button>
+            <button class="gun-btn" onclick="selectWeapon('AWM')">AWM (Rate: 1.8s | Body: 110)</button>
+            <button class="gun-btn" onclick="selectWeapon('DEAGLE')">Desert Eagle (Rate: 0.6s | Body: 50)</button>
+            <button class="gun-btn" onclick="selectWeapon('MP40')">MP40 (Rate: 0.18s | Body: 24)</button>
             <button class="interactive" style="background:#334155; border:none; color:white; padding:8px; margin-top:10px; border-radius:4px; width:100%; cursor:pointer;" onclick="toggleArmory()">Close</button>
         </div>
 
@@ -214,7 +218,7 @@
     <div id="modal-layer" class="modal-backdrop interactive">
         <div id="auth-screen" class="card" style="max-width: 400px; text-align: center;">
             <h1 style="color:#38bdf8;">WARRIOR ARENA 3D</h1>
-            <p style="color: #94a3b8; font-size: 13px;">Callsign save to local `name.db` database profile.</p>
+            <p style="color: #94a3b8; font-size: 13px;">Callsign save to local profile.</p>
             <input type="text" id="player-name-input" placeholder="Callsign..." maxlength="16" class="mp-input" value="Warrior" style="width:100%; margin:10px 0;" />
             <button class="btn" onclick="saveAuthName()">Save & Launch Profile</button>
         </div>
@@ -230,12 +234,12 @@
                     <h4 style="color:#aaa; margin-bottom:8px;">Select Character Avatar</h4>
                     <div class="grid-options" id="character-options"></div>
 
-                    <h4 style="color:#aaa; margin:14px 0 8px 0;">Game Modes (200 HP Match)</h4>
+                    <h4 style="color:#aaa; margin:14px 0 8px 0;">Game Modes</h4>
                     <div style="background:#0f172a; padding:12px; border-radius:8px; border:1px solid #1e293b;">
-                        <button class="btn" style="width:100%; margin-bottom:10px; background: linear-gradient(135deg, #2ed573, #10ac84);" onclick="startBotMode()">🤖 PLAY VS 4 BOTS (MP5 Armed) (40 Kills Target)</button>
+                        <button class="btn" style="width:100%; margin-bottom:10px; background: linear-gradient(135deg, #2ed573, #10ac84);" onclick="startBotMode()">🤖 BOT MODE (10 Continuous Rounds)</button>
 
                         <div style="display:flex; gap:8px; margin-bottom:10px;">
-                            <button class="btn" style="flex:1;" onclick="createRoom('vs')">Host 2-4 Player Match</button>
+                            <button class="btn" style="flex:1;" onclick="createRoom()">Host VS Room (5 Rounds)</button>
                         </div>
 
                         <div style="display:flex; gap:8px;">
@@ -252,10 +256,6 @@
                     <div style="margin-top:10px; text-align:center;">
                         <span style="font-size:11px; color:#38bdf8;" id="room-code-display">Room Code: Not Connected</span>
                     </div>
-
-                    <div style="border-top:1px solid #1e293b; margin-top:10px; padding-top:8px; font-size:11px; color:#888;">
-                        `damage.db`: <span id="db-status-text" style="color:#00ff88;">0 Hits Logged</span>
-                    </div>
                 </div>
             </div>
         </div>
@@ -265,7 +265,7 @@
         /* DATABASE & WEAPONS CONFIG */
         const DatabaseManager = {
             NAME_KEY: 'lastwarrior_name_db',
-            DAMAGE_KEY: 'lastwarrior_damage_db',
+            STARS_KEY: 'lastwarrior_stars_db',
 
             getProfile() {
                 const data = localStorage.getItem(this.NAME_KEY);
@@ -276,31 +276,27 @@
                 localStorage.setItem(this.NAME_KEY, JSON.stringify(profile));
                 return profile;
             },
-            logDamage(attacker, victim, weapon, damage, isHeadshot) {
-                let logs = this.getDamageLogs();
-                logs.push({ timestamp: Date.now(), attacker, victim, weapon, damage, isHeadshot });
-                localStorage.setItem(this.DAMAGE_KEY, JSON.stringify(logs));
-                this.clearOldDamageLogs();
+            getStars() {
+                return parseInt(localStorage.getItem(this.STARS_KEY) || '0', 10);
             },
-            getDamageLogs() {
-                const data = localStorage.getItem(this.DAMAGE_KEY);
-                return data ? JSON.parse(data) : [];
+            addStar() {
+                let current = this.getStars() + 1;
+                localStorage.setItem(this.STARS_KEY, current.toString());
+                return current;
             },
-            clearOldDamageLogs() {
-                const TEN_MINS = 10 * 60 * 1000;
-                let logs = this.getDamageLogs().filter(l => (Date.now() - l.timestamp) < TEN_MINS);
-                localStorage.setItem(this.DAMAGE_KEY, JSON.stringify(logs));
-                const el = document.getElementById('db-status-text');
-                if(el) el.innerText = `${logs.length} Hits Logged`;
+            removeStar() {
+                let current = Math.max(0, this.getStars() - 1);
+                localStorage.setItem(this.STARS_KEY, current.toString());
+                return current;
             }
         };
 
         const WEAPONS = {
-            AK47:   { name: 'AK47',         fireRate: 0.5, bodyDamage: 30, headMultiplier: 3 },
-            MP5:    { name: 'MP5',          fireRate: 0.3, bodyDamage: 20, headMultiplier: 3 },
-            AWM:    { name: 'AWM',          fireRate: 2.0, bodyDamage: 100, headMultiplier: 3 },
-            DEAGLE: { name: 'Desert Eagle', fireRate: 0.7, bodyDamage: 45, headMultiplier: 3 },
-            MP40:   { name: 'MP40',         fireRate: 0.3, bodyDamage: 20, headMultiplier: 3 }
+            AK47:   { name: 'AK47',         fireRate: 0.4, bodyDamage: 35, headMultiplier: 3 },
+            MP5:    { name: 'MP5',          fireRate: 0.2, bodyDamage: 22, headMultiplier: 3 },
+            AWM:    { name: 'AWM',          fireRate: 1.8, bodyDamage: 110, headMultiplier: 3 },
+            DEAGLE: { name: 'Desert Eagle', fireRate: 0.6, bodyDamage: 50, headMultiplier: 3 },
+            MP40:   { name: 'MP40',         fireRate: 0.18, bodyDamage: 24, headMultiplier: 3 }
         };
 
         const CHARACTERS = [
@@ -315,7 +311,7 @@
         let currentGunKey = 'AK47';
         let currentUserProfile = null;
 
-        /* GAME VARS */
+        /* GAME & ROUND VARS */
         const MAX_HP = 200;
         let playerHP = MAX_HP;
         let kills = 0;
@@ -324,6 +320,9 @@
         let gameMode = 'bots'; // 'bots' or 'vs'
         let sensitivity = 1.0;
         let lastShotTime = 0;
+
+        let currentRound = 1;
+        let maxRounds = 10; // Default 10 for Bot, 5 for VS
 
         /* PEERJS NETWORKING */
         let peer = null, connections = [], roomCode = "", isHost = false;
@@ -339,7 +338,7 @@
         let isScoped = false;
         let botsList = [];
 
-        const roomW = 42, roomL = 38, roomH = 15;
+        const roomW = 42, roomL = 38;
 
         /* AUTH & LOBBY SYSTEM */
         function initAuth() {
@@ -363,6 +362,7 @@
             document.getElementById('auth-screen').style.display = 'none';
             document.getElementById('lobby-screen').style.display = 'block';
             document.getElementById('user-display-name').innerText = currentUserProfile.name;
+            document.getElementById('star-count-text').innerText = DatabaseManager.getStars();
 
             const charContainer = document.getElementById('character-options');
             charContainer.innerHTML = '';
@@ -375,7 +375,6 @@
             });
 
             updateSquadUI();
-            DatabaseManager.clearOldDamageLogs();
         }
 
         function updateSquadUI() {
@@ -399,13 +398,13 @@
             document.getElementById('connected-count').innerText = count;
         }
 
-        /* PROCEDURAL TEXTURES FOR WAREHOUSE MAP */
+        /* MAP TEXTURES */
         function generateFloorTexture() {
             const canvas = document.createElement('canvas'); canvas.width = 512; canvas.height = 512;
             const ctx = canvas.getContext('2d');
-            ctx.fillStyle = '#3a3f44'; ctx.fillRect(0, 0, 512, 512);
-            ctx.fillStyle = '#d97706'; ctx.fillRect(15, 15, 482, 482);
-            ctx.fillStyle = '#2d3135'; ctx.fillRect(30, 30, 452, 452);
+            ctx.fillStyle = '#1e293b'; ctx.fillRect(0, 0, 512, 512);
+            ctx.fillStyle = '#334155'; ctx.fillRect(15, 15, 482, 482);
+            ctx.fillStyle = '#0f172a'; ctx.fillRect(30, 30, 452, 452);
             const texture = new THREE.CanvasTexture(canvas);
             texture.wrapS = THREE.RepeatWrapping; texture.wrapT = THREE.RepeatWrapping;
             return texture;
@@ -421,28 +420,22 @@
             return new THREE.CanvasTexture(canvas);
         }
 
-        /* 3D MODELS: BEAUTIFUL STICKMAN & SCI-FI CHARACTERS WITH MP5 GUN ATTACHED */
-        function createMP5Mesh() {
+        /* 3D MODELS */
+        function createGunMesh() {
             const gunGroup = new THREE.Group();
             const gunMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.8, roughness: 0.2 });
-            
-            // Gun Body & Barrel
             const body = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.12, 0.5), gunMat);
             const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.25), gunMat);
             barrel.rotation.x = Math.PI / 2; barrel.position.set(0, 0.02, 0.32);
-            
-            // Magazine
             const mag = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.22, 0.08), new THREE.MeshStandardMaterial({ color: 0x0f172a }));
             mag.position.set(0, -0.1, 0.1); mag.rotation.x = -0.2;
-
             gunGroup.add(body, barrel, mag);
             return gunGroup;
         }
 
         function create3DStickmanMesh() {
             const group = new THREE.Group();
-            const headCanvas = document.createElement('canvas');
-            headCanvas.width = 256; headCanvas.height = 256;
+            const headCanvas = document.createElement('canvas'); headCanvas.width = 256; headCanvas.height = 256;
             const ctx = headCanvas.getContext('2d');
             ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, 256, 256);
             ctx.fillStyle = '#000000';
@@ -452,17 +445,9 @@
 
             const headTex = new THREE.CanvasTexture(headCanvas);
             const headMat = new THREE.MeshStandardMaterial({ map: headTex, roughness: 0.2 });
-
             const head = new THREE.Mesh(new THREE.SphereGeometry(0.38, 32, 32), headMat);
             head.position.y = 1.65; head.rotation.y = -Math.PI / 2; head.name = "head";
             group.add(head);
-
-            const hairMat = new THREE.MeshBasicMaterial({ color: 0x111111 });
-            for(let i = 0; i < 4; i++) {
-                const hair = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.35), hairMat);
-                hair.position.set(-0.06 + i * 0.04, 2.05, 0); hair.rotation.z = -0.25 - i * 0.12;
-                group.add(hair);
-            }
 
             const bodyMat = new THREE.MeshStandardMaterial({ color: 0xf5f5f7, roughness: 0.2 });
             const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.09, 0.75), bodyMat);
@@ -475,10 +460,9 @@
             legR.position.set(0.14, 0.35, 0); legR.name = "body";
             group.add(legL, legR);
 
-            // Add MP5 Gun in Stickman Right Arm
-            const mp5 = createMP5Mesh();
-            mp5.position.set(0.25, 1.1, 0.2);
-            group.add(mp5);
+            const gun = createGunMesh();
+            gun.position.set(0.25, 1.1, 0.2);
+            group.add(gun);
 
             return group;
         }
@@ -497,23 +481,21 @@
             const chestPlate = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.75, 0.42), armorMat);
             chestPlate.position.y = 1.0; chestPlate.name = "body"; group.add(chestPlate);
 
-            // Add MP5 Gun in Sci-Fi Character Right Hand
-            const mp5 = createMP5Mesh();
-            mp5.position.set(0.4, 1.0, 0.3);
-            group.add(mp5);
+            const gun = createGunMesh();
+            gun.position.set(0.4, 1.0, 0.3);
+            group.add(gun);
 
             return group;
         }
 
         function createCharacterMesh(char) {
-            if(char.type === 'scifi') {
-                return createSciFiCharacterMesh(char.color, char.visor);
-            }
+            if(char && char.type === 'scifi') return createSciFiCharacterMesh(char.color, char.visor);
             return create3DStickmanMesh();
         }
 
-        /* THREE.JS SCENE SETUP */
+        /* THREE.JS SETUP */
         function initScene() {
+            if(scene) return;
             const canvas = document.getElementById('game-canvas');
             scene = new THREE.Scene();
             scene.background = new THREE.Color(0x0b0f19);
@@ -530,7 +512,6 @@
             const dirLight = new THREE.DirectionalLight(0x38bdf8, 1.2);
             dirLight.position.set(20, 40, 20); scene.add(dirLight);
 
-            // Ground & Warehouse Structure
             const floorMat = new THREE.MeshStandardMaterial({ map: generateFloorTexture(), roughness: 0.8 });
             const floor = new THREE.Mesh(new THREE.PlaneGeometry(roomW, roomL), floorMat);
             floor.rotation.x = -Math.PI / 2; scene.add(floor);
@@ -554,12 +535,20 @@
         /* GAME LAUNCH & MODES */
         function startBotMode() {
             gameMode = 'bots';
-            winTargetKills = 40;
-            document.getElementById('target-score-text').innerText = "40 BOT KILLS";
+            maxRounds = 10;
+            currentRound = 1;
+            winTargetKills = 5;
+            document.getElementById('target-score-text').innerText = `${winTargetKills} KILLS`;
             launchGame();
+            startBotRound();
+        }
 
+        function startBotRound() {
+            respawnPlayer();
+            botsList.forEach(b => scene.remove(b.mesh));
             botsList = [];
             for(let i = 0; i < 4; i++) spawnBot(i);
+            updateHUDInfo();
         }
 
         function spawnBot(id) {
@@ -570,8 +559,8 @@
                 hp: MAX_HP,
                 x: (Math.random() - 0.5) * 30,
                 z: (Math.random() - 0.5) * 30,
-                weapon: WEAPONS.MP5, // MP5 EQUIPPED
-                lastShotTime: Date.now() + Math.random() * 2000 // Stagger initial attack times
+                weapon: WEAPONS.MP5,
+                lastShotTime: Date.now() + Math.random() * 2000
             };
             mesh.position.set(bot.x, 0, bot.z);
             scene.add(mesh);
@@ -584,26 +573,40 @@
             document.getElementById('hud').style.display = 'block';
 
             initScene();
-            playerHP = MAX_HP;
             kills = 0;
-            updateHPUI();
             isGameRunning = true;
             requestAnimationFrame(gameLoop);
         }
 
-        /* PEERJS MULTIPLAYER ROOMS */
-        function createRoom(mode) {
+        function respawnPlayer() {
+            playerHP = MAX_HP;
+            playerPos = { x: (Math.random() - 0.5) * 10, z: 10 };
+            updateHPUI();
+        }
+
+        function updateHUDInfo() {
+            document.getElementById('current-round-text').innerText = currentRound;
+            document.getElementById('my-kills').innerText = kills;
+            document.getElementById('star-count-text').innerText = DatabaseManager.getStars();
+        }
+
+        /* PEERJS MULTIPLAYER (CROSS-DEVICE VS MODE) */
+        function createRoom() {
             gameMode = 'vs';
-            winTargetKills = 10;
-            document.getElementById('target-score-text').innerText = "10 PLAYER KILLS";
+            maxRounds = 5;
+            currentRound = 1;
+            winTargetKills = 3;
+            document.getElementById('target-score-text').innerText = `${winTargetKills} KILLS`;
 
             roomCode = Math.floor(1000 + Math.random() * 9000).toString();
-            peer = new Peer('STICK-' + roomCode);
+            peer = new Peer('WARRIOR-' + roomCode);
 
             peer.on('open', () => {
                 document.getElementById('room-code-display').innerText = `ROOM CODE: ${roomCode}`;
-                alert(`Room Created! Share Code: ${roomCode}`);
+                alert(`Room Created! Code: ${roomCode}`);
                 launchGame();
+                respawnPlayer();
+                updateHUDInfo();
             });
 
             peer.on('connection', conn => setupConnection(conn));
@@ -611,17 +614,22 @@
 
         function joinRoom() {
             gameMode = 'vs';
-            winTargetKills = 10;
-            document.getElementById('target-score-text').innerText = "10 PLAYER KILLS";
+            maxRounds = 5;
+            currentRound = 1;
+            winTargetKills = 3;
+            document.getElementById('target-score-text').innerText = `${winTargetKills} KILLS`;
 
             const code = document.getElementById('join-room-input').value.trim().toUpperCase();
             if(!code) return alert("Enter Room Code!");
 
             peer = new Peer();
             peer.on('open', () => {
-                const conn = peer.connect('STICK-' + code);
+                const conn = peer.connect('WARRIOR-' + code);
                 setupConnection(conn);
                 document.getElementById('room-code-display').innerText = `CONNECTED TO: ${code}`;
+                launchGame();
+                respawnPlayer();
+                updateHUDInfo();
             });
         }
 
@@ -629,7 +637,6 @@
             connections.push(conn);
             conn.on('open', () => {
                 conn.send({ type: 'join', id: currentUserProfile.id, name: currentUserProfile.name, char: selectedCharacter });
-                if(!isGameRunning) launchGame();
             });
             conn.on('data', data => handleNetData(data));
         }
@@ -655,17 +662,10 @@
                     updateHPUI();
                     triggerDamageEffect();
                     if(playerHP <= 0) {
-                        alert("☠️ DEFEAT! Aap Mar Gaye!");
-                        location.reload();
+                        handlePlayerDeath();
                     }
                 }
             }
-        }
-
-        function triggerDamageEffect() {
-            const flash = document.getElementById('damage-flash');
-            flash.style.background = 'rgba(255, 0, 0, 0.4)';
-            setTimeout(() => flash.style.background = 'rgba(255, 0, 0, 0)', 150);
         }
 
         function spawnRemotePlayerMesh(id) {
@@ -678,7 +678,7 @@
             p.mesh = mesh;
         }
 
-        /* CONTROLS (WASD, MOUSE & TOUCH JOYSTICK) */
+        /* CONTROLS (DESKTOP & MOBILE TOUCH) */
         window.addEventListener('keydown', (e) => {
             if(e.code === 'KeyW') moveState.forward = 1;
             if(e.code === 'KeyS') moveState.forward = -1;
@@ -709,7 +709,7 @@
         });
         window.addEventListener('contextmenu', e => e.preventDefault());
 
-        /* MOBILE JOYSTICK */
+        /* MOBILE JOYSTICK & TOUCH LOOK */
         const joystickZone = document.getElementById('joystick-zone');
         const joystickKnob = document.getElementById('joystick-knob');
         let joystickTouchId = null, joyStartX = 0, joyStartY = 0;
@@ -723,10 +723,10 @@
             for(let t of e.changedTouches) {
                 if(t.identifier === joystickTouchId) {
                     let dx = t.clientX - joyStartX, dy = t.clientY - joyStartY;
-                    let dist = Math.min(Math.hypot(dx, dy), 50), angle = Math.atan2(dy, dx);
+                    let dist = Math.min(Math.hypot(dx, dy), 45), angle = Math.atan2(dy, dx);
                     let moveX = Math.cos(angle) * dist, moveY = Math.sin(angle) * dist;
                     joystickKnob.style.transform = `translate(${moveX}px, ${moveY}px)`;
-                    moveState.right = moveX / 50; moveState.forward = -moveY / 50;
+                    moveState.right = moveX / 45; moveState.forward = -moveY / 45;
                 }
             }
         });
@@ -738,7 +738,6 @@
         joystickZone.addEventListener('touchend', resetJoystick);
         joystickZone.addEventListener('touchcancel', resetJoystick);
 
-        /* TOUCH LOOK AREA */
         const touchLookZone = document.getElementById('touch-look-zone');
         let lookTouchId = null, lastTouchX = 0, lastTouchY = 0;
 
@@ -773,7 +772,7 @@
             document.getElementById('scope-overlay').style.display = isScoped ? 'block' : 'none';
         }
 
-        /* SHOOTING, DAMAGE & MINIMAP */
+        /* SHOOTING, ROUND ENGINE & STARS SYSTEM */
         function executeShoot() {
             if(!isGameRunning) return;
 
@@ -802,14 +801,14 @@
                         showFloatingDamage(hits[0].point, dmg, isHead);
                         if(bot.hp <= 0) {
                             kills++;
-                            document.getElementById('my-kills').innerText = kills;
+                            updateHUDInfo();
                             scene.remove(bot.mesh);
                             botsList = botsList.filter(b => b.id !== botId);
-                            spawnBot(Math.random());
 
                             if(kills >= winTargetKills) {
-                                alert("🏆 VICTORY! Aapne Match Jeet Liya!");
-                                location.reload();
+                                handleRoundWin();
+                            } else {
+                                spawnBot(Math.random());
                             }
                         }
                     }
@@ -830,13 +829,53 @@
                     const dmg = isHead ? wpn.bodyDamage * wpn.headMultiplier : wpn.bodyDamage;
 
                     broadcast({ type: 'hit', targetId: remoteId, damage: dmg });
-                    DatabaseManager.logDamage(currentUserProfile.name, remoteId, wpn.name, dmg, isHead);
                     showFloatingDamage(hits[0].point, dmg, isHead);
                 }
             }
         }
 
+        function handleRoundWin() {
+            if(gameMode === 'vs') {
+                DatabaseManager.addStar();
+                alert(`🏆 Round Won! +1 ⭐ Star Received! (Stars: ${DatabaseManager.getStars()})`);
+            } else {
+                alert(`🏆 Round ${currentRound} Complete!`);
+            }
+
+            advanceRound();
+        }
+
+        function handlePlayerDeath() {
+            if(gameMode === 'vs') {
+                DatabaseManager.removeStar();
+                alert(`☠️ Defeat in Round! -1 ⭐ Star Lost! (Stars: ${DatabaseManager.getStars()})`);
+            } else {
+                alert(`☠️ DEFEAT in Round ${currentRound}! Respawning for next round...`);
+            }
+
+            advanceRound();
+        }
+
+        function advanceRound() {
+            currentRound++;
+            kills = 0;
+
+            if(currentRound > maxRounds) {
+                alert(`🎮 Game Set Complete! (${maxRounds} Rounds Played). Returning to Lobby.`);
+                location.reload();
+            } else {
+                if(gameMode === 'bots') startBotRound();
+                else { respawnPlayer(); updateHUDInfo(); }
+            }
+        }
+
         function updateHPUI() { document.getElementById('hp-val').innerText = playerHP; }
+
+        function triggerDamageEffect() {
+            const flash = document.getElementById('damage-flash');
+            flash.style.background = 'rgba(255, 0, 0, 0.4)';
+            setTimeout(() => flash.style.background = 'rgba(255, 0, 0, 0)', 150);
+        }
 
         function showFloatingDamage(point3D, dmg, isHeadshot) {
             const vector = point3D.clone().project(camera);
@@ -865,14 +904,14 @@
         /* MINIMAP CANVAS */
         const mmCanvas = document.getElementById('minimap-canvas');
         const mmCtx = mmCanvas.getContext('2d');
-        mmCanvas.width = 130; mmCanvas.height = 130;
+        mmCanvas.width = 110; mmCanvas.height = 110;
 
         function drawMinimap() {
-            mmCtx.clearRect(0, 0, 130, 130);
-            mmCtx.fillStyle = '#0f172a'; mmCtx.fillRect(0, 0, 130, 130);
+            mmCtx.clearRect(0, 0, 110, 110);
+            mmCtx.fillStyle = '#0f172a'; mmCtx.fillRect(0, 0, 110, 110);
 
-            const mapX = (x) => (x + roomW / 2) * (130 / roomW);
-            const mapZ = (z) => (z + roomL / 2) * (130 / roomL);
+            const mapX = (x) => (x + roomW / 2) * (110 / roomW);
+            const mapZ = (z) => (z + roomL / 2) * (110 / roomL);
 
             mmCtx.fillStyle = '#ff4757';
             if(gameMode === 'bots') {
@@ -890,21 +929,19 @@
             mmCtx.beginPath(); mmCtx.arc(mapX(playerPos.x), mapZ(playerPos.z), 5, 0, Math.PI * 2); mmCtx.fill();
         }
 
-        /* MAIN GAME LOOP & BOT ATTACK LOGIC */
+        /* MAIN GAME LOOP & BOTS AI */
         let lastNetSync = 0;
 
         function gameLoop() {
             if(!isGameRunning) return;
             requestAnimationFrame(gameLoop);
 
-            // Ground Movement & Jump Physics
             let speed = 0.12;
             let cos = Math.cos(cameraAngleY), sin = Math.sin(cameraAngleY);
 
             playerPos.x += (moveState.right * cos - moveState.forward * sin) * speed;
             playerPos.z += (moveState.right * sin + moveState.forward * cos) * speed;
 
-            // Jump gravity mechanics
             if (isJumping) {
                 camera.position.y += playerVelY;
                 playerVelY -= 0.015;
@@ -926,38 +963,27 @@
 
             const now = Date.now();
 
-            // BOTS ATTACK AND MOVEMENT LOGIC
             if(gameMode === 'bots') {
                 botsList.forEach(bot => {
-                    // Face Player
                     bot.mesh.lookAt(playerPos.x, 0, playerPos.z);
-
-                    // Move towards player slowly
                     const dist = Math.hypot(playerPos.x - bot.x, playerPos.z - bot.z);
+
                     if (dist > 4.0) {
                         const dirX = (playerPos.x - bot.x) / dist;
                         const dirZ = (playerPos.z - bot.z) / dist;
-                        bot.x += dirX * 0.035;
-                        bot.z += dirZ * 0.035;
+                        bot.x += dirX * 0.032;
+                        bot.z += dirZ * 0.032;
                         bot.mesh.position.set(bot.x, 0, bot.z);
                     }
 
-                    // Bot MP5 Shooting Logic (Shoots every ~1.0 seconds when in range)
-                    if (dist < 25.0 && (now - bot.lastShotTime) > 1000) {
+                    if (dist < 22.0 && (now - bot.lastShotTime) > 1200) {
                         bot.lastShotTime = now;
-
-                        // MP5 Attack Damage on Player
                         playerHP = Math.max(0, playerHP - bot.weapon.bodyDamage);
                         updateHPUI();
                         triggerDamageEffect();
 
-                        // Check Death
                         if(playerHP <= 0) {
-                            isGameRunning = false;
-                            setTimeout(() => {
-                                alert("☠️ DEFEAT! Bot ne MP5 se aapko dher kar diya!");
-                                location.reload();
-                            }, 100);
+                            handlePlayerDeath();
                         }
                     }
                 });
