@@ -32,7 +32,7 @@ jobs:
           npm install -g cordova
           
           # 1. Create Cordova project
-          cordova create app com.stickman.nexura "MT WORLD"
+          cordova create app com.stickman6.nexura "LAST WARRIOR"
           
           # 2. Copy Web Source Assets
           cp -r index.html app/www/ 2>/dev/null || true
