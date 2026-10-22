@@ -35,8 +35,10 @@ jobs:
           cordova create app com.tiny.velora "TINY FISHING"
           
           # 2. Copy Web Source Assets
-          cp -r index.html app/www/ 2>/dev/null || true
-          cp -r characters gun bg stage app/www/ 2>/dev/null || true
+          cp *.html app/www/ 2>/dev/null || true
+          cp *.js app/www/ 2>/dev/null || true
+          cp *.css app/www/ 2>/dev/null || true
+          cp *.png app/www/ 2>/dev/null || true
           
           # 3. Add Custom Icon if present
           if [ -f "icon.png" ]; then
